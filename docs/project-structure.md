@@ -24,7 +24,7 @@ O backend é uma solution .NET separada:
 
 ```text
 backend/
-  PainelObrigacoes.Backend.sln
+  PainelObrigacoes.sln
   src/
     Api/
     Application/
@@ -65,4 +65,3 @@ componentes Ant Design e chamadas HTTP para a API.
 
 O frontend não entra no Domain do backend. Ele consome contratos HTTP expostos
 por `backend/src/Api`.
-

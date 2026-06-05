@@ -19,7 +19,7 @@ entregas.
 ```text
 painel-obrigacoes/
   backend/
-    PainelObrigacoes.Backend.sln
+    PainelObrigacoes.sln
     src/
       Api/
       Application/
@@ -39,8 +39,8 @@ painel-obrigacoes/
 ```
 
 O repositório é um monorepo: backend, frontend, docs e Docker Compose ficam no
-mesmo Git. A solution .NET é apenas do backend. O React/Vite é uma SPA separada
-que consumirá a API.
+mesmo Git. A solution .NET fica dentro de `backend/`, então não precisa repetir
+"Backend" no nome. O React/Vite é uma SPA separada que consumirá a API.
 
 ## Como Rodar
 Pré-requisitos: Docker e Docker Compose.
@@ -88,7 +88,7 @@ Banco:
 
 ## Testes
 ```bash
-dotnet test backend/PainelObrigacoes.Backend.sln --configuration Release
+dotnet test backend/PainelObrigacoes.sln --configuration Release
 ```
 
 Cobertura atual: engine de regras, cálculo de vencimentos e value object de

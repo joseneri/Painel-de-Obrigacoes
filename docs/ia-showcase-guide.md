@@ -59,8 +59,7 @@ explicar o que o produto faz, não como nome alternativo do projeto.
 
 Estrutura:
 
-- `backend/`: solution .NET do backend, chamada
-  `PainelObrigacoes.Backend.sln`.
+- `backend/`: solution .NET do backend, chamada `PainelObrigacoes.sln`.
 - `frontend/`: SPA React/Vite separada, cliente da API.
 - `docs/`: decisões, guia de showcase e instruções para agentes.
 - `docker-compose.yml`: comando único para subir serviços do case.
@@ -167,9 +166,9 @@ Correções e decisões humanas:
 
 Validações executadas:
 
-- `dotnet test backend/PainelObrigacoes.Backend.sln --configuration Release`: 18 testes
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 18 testes
   passaram.
-- `dotnet build backend/PainelObrigacoes.Backend.sln --configuration Release`: 0 erros e
+- `dotnet build backend/PainelObrigacoes.sln --configuration Release`: 0 erros e
   0 warnings após alinhar pacotes EF Core.
 - `dotnet dotnet-ef migrations add InitialCreate`: migration gerada com sucesso.
 - `docker compose config`: compose válido.
@@ -231,7 +230,8 @@ O que mudou:
 - Nome oficial padronizado como **Painel de Obrigações Acessórias**.
 - "Calendário fiscal inteligente" passa a ser descrição funcional, não nome do
   produto.
-- Solution renomeada para `PainelObrigacoes.Backend.sln`.
+- Solution mantida como `PainelObrigacoes.sln`, porque ela já está dentro de
+  `backend/` e não precisa repetir o papel da pasta no nome.
 - Estrutura `frontend/` adicionada como futura SPA React/Vite separada.
 - README e docs atualizados para explicar monorepo, backend, API e frontend.
 
@@ -249,7 +249,36 @@ Decisão humana:
 
 Validações executadas:
 
-- `dotnet build backend/PainelObrigacoes.Backend.sln --configuration Release`.
-- `dotnet test backend/PainelObrigacoes.Backend.sln --configuration Release`.
+- `dotnet build backend/PainelObrigacoes.sln --configuration Release`.
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`.
 - `rg` para garantir que a solution antiga não ficou referenciada.
 - Conferir `git status` e estrutura final.
+
+### Pendente de hash - `chore: simplify backend solution name`
+
+O que mudou:
+
+- Solution voltou para `backend/PainelObrigacoes.sln`.
+- Referências em README, Dockerfile e docs foram atualizadas.
+
+Decisão técnica:
+
+- Como a solution já está fisicamente dentro de `backend/`, repetir o papel da
+  pasta no nome deixava o caminho ruidoso.
+- O monorepo já comunica a separação por pastas top-level: `backend/` e
+  `frontend/`.
+
+Como a IA ajudou:
+
+- Ajudou a localizar todas as referências ao nome antigo e a manter a
+  documentação coerente.
+
+Decisão humana:
+
+- Simplificar o nome para melhorar leitura no Visual Studio, terminal e docs.
+
+Validações executadas:
+
+- `dotnet build backend/PainelObrigacoes.sln --configuration Release`.
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release --no-build`.
+- `rg` para garantir que o nome redundante antigo não ficou referenciado.

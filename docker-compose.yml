@@ -1,3 +1,5 @@
+name: painel-obrigacoes
+
 services:
   db:
     image: postgres:16
@@ -46,4 +48,3 @@ volumes:
 networks:
   painel:
     driver: bridge
-

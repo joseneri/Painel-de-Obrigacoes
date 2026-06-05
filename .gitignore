@@ -5,8 +5,9 @@ obj/
 TestResults/
 coverage/
 tmp/
+frontend/node_modules/
+frontend/dist/
 *.user
 *.suo
 *.nupkg
 *.snupkg
-

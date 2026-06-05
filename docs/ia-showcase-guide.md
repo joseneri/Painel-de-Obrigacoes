@@ -51,6 +51,27 @@ Pontos importantes:
 8. Fechar com limitações documentadas: feriados nacionais fora do escopo e
    Imune/Isento sem obrigações nesta versão.
 
+## Nome e Estrutura Para Explicar
+Nome oficial do produto: **Painel de Obrigações Acessórias**.
+
+Termo descritivo: **calendário fiscal inteligente**. Use esse termo para
+explicar o que o produto faz, não como nome alternativo do projeto.
+
+Estrutura:
+
+- `backend/`: solution .NET do backend, chamada
+  `PainelObrigacoes.Backend.sln`.
+- `frontend/`: SPA React/Vite separada, cliente da API.
+- `docs/`: decisões, guia de showcase e instruções para agentes.
+- `docker-compose.yml`: comando único para subir serviços do case.
+
+Frase de apresentação:
+
+> Mantive um monorepo para facilitar a entrega full-stack com Docker Compose,
+> mas separei backend e frontend em aplicações independentes. A Clean
+> Architecture vale para o backend; o React é um cliente SPA externo que consome
+> a API.
+
 ## Perguntas Prováveis e Respostas
 
 ### Por que Clean Architecture?
@@ -146,9 +167,9 @@ Correções e decisões humanas:
 
 Validações executadas:
 
-- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 18 testes
+- `dotnet test backend/PainelObrigacoes.Backend.sln --configuration Release`: 18 testes
   passaram.
-- `dotnet build backend/PainelObrigacoes.sln --configuration Release`: 0 erros e
+- `dotnet build backend/PainelObrigacoes.Backend.sln --configuration Release`: 0 erros e
   0 warnings após alinhar pacotes EF Core.
 - `dotnet dotnet-ef migrations add InitialCreate`: migration gerada com sucesso.
 - `docker compose config`: compose válido.
@@ -163,3 +184,72 @@ Como apresentar esse commit:
 - "A falha no scaffold da migration virou uma decisão arquitetural melhor e
   documentada."
 
+### `42ee8bc` - `docs: add AI showcase guide`
+
+O que mudou:
+
+- Criado este guia de justificativa técnica e uso de IA.
+- Atualizado o README com link para o guia.
+- Atualizado `docs/agents.md` para lembrar que este documento deve ser mantido
+  antes de novos commits.
+
+Decisões técnicas:
+
+- Separar README operacional de guia de defesa técnica. O README fica objetivo
+  para executar o projeto; este documento concentra narrativa, decisões,
+  trade-offs e uso de IA.
+- Registrar commits como diário de engenharia para facilitar preparação do
+  showcase.
+
+Como a IA ajudou:
+
+- Ajudou a transformar decisões tomadas durante a implementação em respostas
+  de entrevista.
+- Organizou perguntas prováveis e uma narrativa curta sobre uso responsável de
+  IA.
+
+Correções e decisões humanas:
+
+- Definir que o guia deve ser atualizado antes de cada commit para evitar
+  perder contexto.
+- Explicitar que o hash do próprio commit só pode ser completado em atualização
+  posterior, porque o hash depende do conteúdo commitado.
+
+Validações executadas:
+
+- `git status --short --branch`: workspace limpo após commit.
+
+Como apresentar esse commit:
+
+- "Documentei não só o que foi construído, mas por que foi construído assim."
+- "Usei IA também para produzir rastreabilidade das decisões, não só código."
+
+### Pendente de hash - `chore: clarify monorepo structure and naming`
+
+O que mudou:
+
+- Nome oficial padronizado como **Painel de Obrigações Acessórias**.
+- "Calendário fiscal inteligente" passa a ser descrição funcional, não nome do
+  produto.
+- Solution renomeada para `PainelObrigacoes.Backend.sln`.
+- Estrutura `frontend/` adicionada como futura SPA React/Vite separada.
+- README e docs atualizados para explicar monorepo, backend, API e frontend.
+
+Como a IA ajudou:
+
+- Ajudou a transformar a dúvida sobre nomenclatura em uma decisão documentável
+  para entrevista.
+- Revisou inconsistências entre nome de produto, descrição funcional, solution
+  .NET e estrutura futura do frontend.
+
+Decisão humana:
+
+- Manter backend e frontend no mesmo Git para facilitar entrega do case, mas
+  separar aplicações em pastas top-level.
+
+Validações executadas:
+
+- `dotnet build backend/PainelObrigacoes.Backend.sln --configuration Release`.
+- `dotnet test backend/PainelObrigacoes.Backend.sln --configuration Release`.
+- `rg` para garantir que a solution antiga não ficou referenciada.
+- Conferir `git status` e estrutura final.

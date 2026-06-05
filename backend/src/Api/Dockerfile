@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-COPY backend/PainelObrigacoes.sln backend/
+COPY backend/PainelObrigacoes.Backend.sln backend/
 COPY backend/src/Domain/PainelObrigacoes.Domain.csproj backend/src/Domain/
 COPY backend/src/Application/PainelObrigacoes.Application.csproj backend/src/Application/
 COPY backend/src/Infrastructure/PainelObrigacoes.Infrastructure.csproj backend/src/Infrastructure/
@@ -31,4 +31,3 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["dotnet", "PainelObrigacoes.Api.dll"]
-

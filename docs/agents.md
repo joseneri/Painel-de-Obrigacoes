@@ -6,10 +6,11 @@
 3. Nunca escreva código sem antes ter um plano em `tmp/plano-execucao.md`.
 
 ## Este Projeto
-Painel de Obrigações Acessórias: backend .NET 9 para a e-Auditoria.
-Sistema de calendário fiscal: não calcula impostos. Gera e controla obrigações
-tributárias por regime: Simples Nacional, Lucro Presumido, Lucro Real e
-Imune/Isento.
+Nome oficial do produto: Painel de Obrigações Acessórias.
+Descrição funcional: calendário fiscal inteligente para obrigações acessórias.
+O backend é .NET 9 para a e-Auditoria. O sistema não calcula impostos; gera e
+controla obrigações tributárias por regime: Simples Nacional, Lucro Presumido,
+Lucro Real e Imune/Isento.
 
 ## Regras de Ouro
 - Domain layer: zero imports de `Microsoft.*` ou `System.Data.*`.

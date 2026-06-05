@@ -6,4 +6,5 @@
 tmp/
 TestResults/
 coverage/
-
+frontend/node_modules/
+frontend/dist/

@@ -1,12 +1,23 @@
-# Architecture Decision Record: Painel de Obrigações
+# Architecture Decision Record: Painel de Obrigações Acessórias
 
 ## Stack
 - Runtime: .NET 9
 - API: Minimal APIs com extension methods por feature
 - ORM: Entity Framework Core 9
 - Banco: PostgreSQL 16
+- Frontend: React + Vite em aplicação SPA separada
 - Testes: xUnit + FluentAssertions
 - Container: Docker + Docker Compose
+
+## Organização do Repositório
+- `backend/`: solution .NET exclusiva do backend.
+- `backend/src/Api`: camada HTTP e composition root.
+- `backend/src/Application`: use cases e DTOs.
+- `backend/src/Domain`: regras fiscais puras.
+- `backend/src/Infrastructure`: EF Core, seed, migrations e repositórios.
+- `backend/tests`: testes automatizados do backend.
+- `frontend/`: SPA React/Vite, cliente externo que consome a API.
+- `docker-compose.yml`: orquestra API, frontend e banco quando a SPA existir.
 
 ## Padrões Obrigatórios
 - Clean Architecture: Domain -> Application -> Infrastructure -> Api.

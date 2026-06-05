@@ -1,16 +1,46 @@
 # Painel de Obrigações Acessórias
 
-Backend .NET 9 para o case técnico da e-Auditoria. O sistema é um calendário
-fiscal: ele não calcula impostos; gera obrigações acessórias por regime
-tributário, calcula vencimentos e permite registrar entregas.
+Aplicação full-stack para o case técnico da e-Auditoria. O nome do produto é
+**Painel de Obrigações Acessórias**; sua função principal é ser um calendário
+fiscal inteligente. O sistema não calcula impostos: ele gera obrigações
+acessórias por regime tributário, calcula vencimentos e permite registrar
+entregas.
 
 ## Stack
 - .NET 9 com Minimal APIs
 - Clean Architecture com DDD leve
 - Entity Framework Core 9
 - PostgreSQL 16
+- React + Vite em `frontend/` quando a SPA for implementada
 - xUnit + FluentAssertions
 - Docker + Docker Compose
+
+## Estrutura
+```text
+painel-obrigacoes/
+  backend/
+    PainelObrigacoes.Backend.sln
+    src/
+      Api/
+      Application/
+      Domain/
+      Infrastructure/
+    tests/
+      Domain.Tests/
+  frontend/
+    src/
+      api/
+      app/
+      features/
+      pages/
+      shared/
+  docs/
+  docker-compose.yml
+```
+
+O repositório é um monorepo: backend, frontend, docs e Docker Compose ficam no
+mesmo Git. A solution .NET é apenas do backend. O React/Vite é uma SPA separada
+que consumirá a API.
 
 ## Como Rodar
 Pré-requisitos: Docker e Docker Compose.
@@ -58,7 +88,7 @@ Banco:
 
 ## Testes
 ```bash
-dotnet test backend/PainelObrigacoes.sln --configuration Release
+dotnet test backend/PainelObrigacoes.Backend.sln --configuration Release
 ```
 
 Cobertura atual: engine de regras, cálculo de vencimentos e value object de

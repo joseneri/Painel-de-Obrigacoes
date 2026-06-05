@@ -71,3 +71,4 @@ o mapeamento de `Competencia`: o plano inicial tentou usar membro aninhado de
 complex property no índice EF, mas a migration validou que colunas escalares
 eram a opção mais segura para manter o Domain imutável.
 
+Para preparar a defesa técnica e o showcase, veja `docs/ia-showcase-guide.md`.

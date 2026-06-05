@@ -17,8 +17,11 @@ Imune/Isento.
 - Engine de regras: stateless, sem injeção de infraestrutura.
 - Testes antes de avançar para a camada seguinte.
 - Sempre salve planos em `tmp/` antes de codificar.
+- Antes de qualquer commit, atualize `docs/ia-showcase-guide.md` com as
+  decisões técnicas, uso de IA, validações e pontos de apresentação daquela
+  mudança. Se o hash final ainda não existir, registre o assunto do commit e
+  complete o hash na atualização seguinte.
 
 ## Hand-Off
 Se esta conversa ficar longa, gere um resumo de hand-off em Markdown com:
 o que foi feito, o que está pendente, decisões tomadas e próximo passo.
-

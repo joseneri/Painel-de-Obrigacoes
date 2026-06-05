@@ -1,0 +1,64 @@
+using Microsoft.EntityFrameworkCore;
+using PainelObrigacoes.Api.Endpoints;
+using PainelObrigacoes.Application.UseCases.Empresas;
+using PainelObrigacoes.Application.UseCases.Entregas;
+using PainelObrigacoes.Application.UseCases.Obrigacoes;
+using PainelObrigacoes.Domain.Services;
+using PainelObrigacoes.Infrastructure.Extensions;
+using PainelObrigacoes.Infrastructure.Persistence;
+using PainelObrigacoes.Infrastructure.Persistence.Seed;
+using Scalar.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<ObrigacaoRulesEngine>();
+builder.Services.AddSingleton<VencimentoCalculator>();
+builder.Services.AddScoped<CreateEmpresaUseCase>();
+builder.Services.AddScoped<GetEmpresasUseCase>();
+builder.Services.AddScoped<DeleteEmpresaUseCase>();
+builder.Services.AddScoped<GetCalendarioUseCase>();
+builder.Services.AddScoped<GetAlertasUseCase>();
+builder.Services.AddScoped<GetDashboardUseCase>();
+builder.Services.AddScoped<RegistrarEntregaUseCase>();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+
+app.UseCors("Frontend");
+app.MapGet("/health", () => Results.Ok(new { status = "ok", utc = DateTime.UtcNow }));
+app.MapGroup("/api/empresas").WithTags("Empresas").MapEmpresasEndpoints();
+app.MapGroup("/api/obrigacoes").WithTags("Obrigações").MapObrigacoesEndpoints();
+app.MapGroup("/api/entregas").WithTags("Entregas").MapEntregasEndpoints();
+
+await ApplyMigrationsAndSeedAsync(app);
+await app.RunAsync();
+
+static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+
+    await dbContext.Database.MigrateAsync();
+    await seeder.SeedAsync();
+}
+

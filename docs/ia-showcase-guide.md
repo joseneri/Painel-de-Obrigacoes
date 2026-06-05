@@ -282,3 +282,50 @@ Validações executadas:
 - `dotnet build backend/PainelObrigacoes.sln --configuration Release`.
 - `dotnet test backend/PainelObrigacoes.sln --configuration Release --no-build`.
 - `rg` para garantir que o nome redundante antigo não ficou referenciado.
+
+### Pendente de hash - `chore: add development docker compose`
+
+O que mudou:
+
+- Criado `docker-compose.dev.yml` para subir apenas o PostgreSQL em ambiente de
+  desenvolvimento.
+- README atualizado com comandos para alternar entre desenvolvimento local
+  (`PostgreSQL em Docker + API no Visual Studio/dotnet run`) e modo entrega/demo
+  (`API + PostgreSQL em Docker`).
+- `docs/project-structure.md` atualizado para explicar que o Compose dev é
+  auxiliar e pode ser removido antes da entrega final.
+
+Decisão técnica:
+
+- O fluxo recomendado para desenvolver backend é rodar o banco em container e a
+  API localmente. Isso simplifica debug com F5, breakpoints, hot reload e logs
+  da IDE, sem obrigar attach em processo dentro de container.
+- O Compose principal continua sendo o modo de demonstração e entrega, porque
+  garante ambiente reproduzível com API e banco juntos.
+- O Compose dev usa a porta `5432`, igual ao `appsettings.json`, para evitar
+  connection string especial no Visual Studio. Por isso, ele deve ser usado
+  alternado com o Compose principal, não em paralelo.
+
+Como a IA ajudou:
+
+- Ajudou a separar os cenários de execução em comandos claros: desenvolvimento,
+  reset de dados e retorno para release/demo.
+- Transformou a dúvida sobre debug moderno em uma decisão prática e explicável
+  para entrevista.
+
+Decisão humana:
+
+- Manter o arquivo como auxiliar e removível antes da entrega, como pedido pelo
+  fluxo de preparação do case.
+
+Validações executadas:
+
+- `docker compose -f docker-compose.dev.yml config`.
+- `dotnet build backend/PainelObrigacoes.sln --configuration Release`.
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release --no-build`.
+
+Como apresentar esse commit:
+
+- "Separei o fluxo de desenvolvimento do fluxo de entrega. Para codar e debugar,
+  subo só o banco em Docker e rodo a API local; para demonstrar, subo tudo com
+  Docker Compose."

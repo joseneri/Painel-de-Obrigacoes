@@ -59,6 +59,51 @@ Banco:
 - Database: `painel_obrigacoes`
 - Usuário/senha: `postgres/postgres`
 
+## Desenvolvimento Local
+Para desenvolver e debugar no Visual Studio, use o Compose de desenvolvimento
+apenas com PostgreSQL e rode a API localmente. Ele usa a mesma porta `5432` do
+`appsettings.json`, então pare o Compose completo antes de subir o banco dev.
+
+```bash
+docker compose down
+docker compose -f docker-compose.dev.yml up -d
+dotnet run --project backend/src/Api/PainelObrigacoes.Api.csproj --launch-profile http
+```
+
+No Visual Studio:
+
+- Abra `backend/PainelObrigacoes.sln`.
+- Defina `PainelObrigacoes.Api` como startup project.
+- Escolha o profile `http`.
+- Rode com F5 para debugar.
+
+URLs no modo desenvolvimento local:
+
+- `http://localhost:5179/health`
+- `http://localhost:5179/openapi/v1.json`
+- `http://localhost:5179/scalar`
+
+Comandos úteis:
+
+```bash
+# Parar o banco de desenvolvimento
+docker compose -f docker-compose.dev.yml down
+
+# Resetar os dados de desenvolvimento
+docker compose -f docker-compose.dev.yml down -v
+
+# Voltar para o modo entrega/demo com API + banco em Docker
+docker compose -f docker-compose.dev.yml down
+docker compose up --build -d
+```
+
+No modo entrega/demo, a API volta para `http://localhost:8080`. A imagem da API
+é publicada em `Release` pelo Dockerfile, mas o Compose principal mantém
+`ASPNETCORE_ENVIRONMENT=Development` para expor o Scalar na demonstração. O
+arquivo `docker-compose.dev.yml` é auxiliar para desenvolvimento e pode ser
+removido antes da entrega final se você quiser deixar só o Compose de
+demonstração.
+
 ## Endpoints
 - `GET /api/empresas`
 - `POST /api/empresas`

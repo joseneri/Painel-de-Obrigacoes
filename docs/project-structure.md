@@ -14,10 +14,16 @@ painel-obrigacoes/
   frontend/
   docs/
   docker-compose.yml
+  docker-compose.dev.yml
 ```
 
 Isso permite um `docker compose up --build` subir API, banco e frontend quando a
 SPA estiver implementada.
+
+`docker-compose.dev.yml` é um arquivo auxiliar para desenvolvimento local. Ele
+sobe apenas o PostgreSQL, permitindo rodar e debugar a API pelo Visual Studio ou
+por `dotnet run`. Para a entrega final, o Compose principal continua sendo
+`docker-compose.yml`.
 
 ## Backend
 O backend é uma solution .NET separada:

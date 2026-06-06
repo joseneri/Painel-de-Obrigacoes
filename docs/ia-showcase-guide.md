@@ -330,7 +330,7 @@ Como apresentar esse commit:
   subo só o banco em Docker e rodo a API local; para demonstrar, subo tudo com
   Docker Compose."
 
-### Pendente de hash - `fix: harden backend validation and errors`
+### `5059135` - `fix: harden backend validation and errors`
 
 O que mudou:
 
@@ -387,3 +387,51 @@ Como apresentar esse commit:
 - "A regra continua fora do endpoint; o endpoint so adapta HTTP para use case."
 - "Erros inesperados agora ficam nos logs, nao expostos para o cliente."
 - "Conflito de entrega virou um caso esperado do dominio da aplicacao."
+
+### Pendente de hash - `docs: add agent workflow instructions`
+
+O que mudou:
+
+- Criado `AGENTS.md` como ponto de entrada curto para agentes de IA.
+- `docs/agents.md` foi reforcado com protocolo obrigatorio antes de comandos,
+  respostas, edicoes, testes, stage ou commit.
+- Criados templates de pesquisa, achados, plano e handoff em `docs/`.
+- O fluxo de trabalho passou a exigir pesquisa, achados, plano, aprovacao
+  humana, implementacao, validacao e stage autorizado para tarefas medias ou
+  complexas.
+
+Decisoes tecnicas:
+
+- Separar `AGENTS.md` curto da documentacao completa em `docs/agents.md` aumenta
+  a chance de qualquer ferramenta/agente encontrar as regras antes de agir.
+- Templates reduzem variacao entre agentes e deixam decisoes, riscos, edge
+  cases e validacoes rastreaveis.
+- A regra de stage/commit explicito protege mudancas de usuario e evita misturar
+  frontend, backend e documentacao em commits acidentais.
+
+Como a IA ajudou:
+
+- Transformou as novas instrucoes de desenvolvimento em regras operacionais
+  claras e verificaveis.
+- Organizou o fluxo em templates reutilizaveis para pesquisas, achados, planos e
+  handoffs.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente para commitar as mudancas antigas, sem incluir
+  frontend.
+- `README.md`, `.gitignore` e `frontend/` ficaram fora deste commit porque as
+  mudancas estavam relacionadas ao frontend ou a execucao local dele.
+
+Validacoes executadas:
+
+- `git status --short` para separar staged antigo de alteracoes de frontend.
+- `git diff` dos arquivos candidatos antes do commit.
+- `git diff --check` sera executado nos arquivos deste commit.
+
+Como apresentar esse commit:
+
+- "Transformei o processo de IA em protocolo rastreavel, com aprovacao humana
+  antes de implementacoes relevantes."
+- "Os templates ajudam a mostrar pesquisa, trade-offs, riscos e validacao em vez
+  de apenas codigo final."

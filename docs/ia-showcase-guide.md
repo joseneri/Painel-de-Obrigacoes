@@ -329,3 +329,61 @@ Como apresentar esse commit:
 - "Separei o fluxo de desenvolvimento do fluxo de entrega. Para codar e debugar,
   subo só o banco em Docker e rodo a API local; para demonstrar, subo tudo com
   Docker Compose."
+
+### Pendente de hash - `fix: harden backend validation and errors`
+
+O que mudou:
+
+- Validacao de entrada do cadastro de empresa foi reforcada com limite de
+  `RazaoSocial` e rejeicao de `RegimeTributario` fora do enum.
+- Registro de entrega passou a validar limite de `Observacao`.
+- Criada `ConflictException` para representar conflitos de estado da aplicacao.
+- Entrega duplicada agora retorna conflito previsivel, em vez de erro de
+  validacao generico.
+- `EndpointErrorHandler` passou a tratar validacao, conflito, nao encontrado,
+  valor fora de faixa, conflito de banco e erro inesperado com Problem Details.
+- Erros inesperados agora sao registrados em log e nao vazam `exception.Message`
+  para o cliente.
+
+Decisoes tecnicas:
+
+- Manter endpoints finos: eles continuam chamando use cases e delegando regra de
+  negocio para Application/Domain.
+- Usar 409 para conflito de entrega e possivel conflito de persistencia, porque
+  esses casos representam estado concorrente ou duplicado, nao payload
+  simplesmente malformado.
+- Manter testes automatizados apenas no Domain por enquanto, por decisao humana,
+  e validar esta etapa com build, suite existente e checagens de constraints.
+- Preservar Problem Details como contrato padrao de erro da API.
+
+Como a IA ajudou:
+
+- Revisou o backend contra as novas instrucoes de desenvolvimento, arquitetura e
+  riscos registrados em `tmp/`.
+- Identificou lacunas de hardening em validacao, conflitos e vazamento de
+  detalhes internos.
+- Aplicou a Fase 1 aprovada pelo usuario de forma limitada ao backend.
+
+Correcao e decisao humana:
+
+- O usuario aprovou apenas a Fase 1 do plano de backend.
+- O usuario decidiu manter testes fora de Application/API/Infrastructure como
+  evolucao futura.
+- O usuario esclareceu que `docker-compose.dev.yml` e arquivo de desenvolvimento
+  e que o fluxo de release/entrega sera ajustado depois.
+
+Validacoes executadas:
+
+- `dotnet build backend/PainelObrigacoes.sln`: 0 erros e 0 warnings.
+- `dotnet test backend/PainelObrigacoes.sln`: 18 testes passaram.
+- Checagem de arquivos `.cs`: nenhum acima de 250 linhas.
+- `rg` em Domain/Application para imports proibidos: nenhum resultado.
+- `git diff --check`: sem erro de whitespace; apenas aviso normal de CRLF/LF no
+  Windows.
+
+Como apresentar esse commit:
+
+- "Depois da primeira revisao, endureci a API sem mudar a arquitetura."
+- "A regra continua fora do endpoint; o endpoint so adapta HTTP para use case."
+- "Erros inesperados agora ficam nos logs, nao expostos para o cliente."
+- "Conflito de entrega virou um caso esperado do dominio da aplicacao."

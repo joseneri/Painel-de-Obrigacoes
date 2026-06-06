@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PainelObrigacoes.Application.UseCases.Obrigacoes;
 using PainelObrigacoes.Domain.Enums;
 
@@ -13,32 +14,37 @@ public static class ObrigacoesEndpoints
             int? mes,
             StatusObrigacao? status,
             GetCalendarioUseCase useCase,
+            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
                 () => useCase.ExecuteAsync(empresaId, ano, mes, status, cancellationToken),
-                Results.Ok);
+                Results.Ok,
+                loggerFactory);
         });
 
         group.MapGet("/alertas", async (
             GetAlertasUseCase useCase,
+            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
                 () => useCase.ExecuteAsync(cancellationToken),
-                Results.Ok);
+                Results.Ok,
+                loggerFactory);
         });
 
         group.MapGet("/dashboard", async (
             GetDashboardUseCase useCase,
+            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
                 () => useCase.ExecuteAsync(cancellationToken),
-                Results.Ok);
+                Results.Ok,
+                loggerFactory);
         });
 
         return group;
     }
 }
-

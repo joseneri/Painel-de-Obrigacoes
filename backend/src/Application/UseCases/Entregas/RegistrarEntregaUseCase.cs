@@ -9,18 +9,17 @@ namespace PainelObrigacoes.Application.UseCases.Entregas;
 
 public sealed class RegistrarEntregaUseCase(IObrigacaoRepository obrigacaoRepository)
 {
+    private const int MaxObservacaoLength = 500;
+
     public async Task<EntregaDto> ExecuteAsync(RegistrarEntregaDto input, CancellationToken cancellationToken)
     {
         Validate(input);
         var obrigacao = await obrigacaoRepository.GetByIdAsync(input.ObrigacaoId, cancellationToken)
-            ?? throw new NotFoundException("Obrigação não encontrada.");
+            ?? throw new NotFoundException("Obrigacao nao encontrada.");
 
         if (obrigacao.Status == StatusObrigacao.Entregue || obrigacao.Entrega is not null)
         {
-            throw new ValidationException(new Dictionary<string, string[]>
-            {
-                ["obrigacaoId"] = ["Esta obrigação já foi entregue."]
-            });
+            throw new ConflictException("Esta obrigacao ja foi entregue.");
         }
 
         var entrega = new Entrega(Guid.NewGuid(), obrigacao.Id, input.DataConclusao, input.Observacao);
@@ -37,12 +36,17 @@ public sealed class RegistrarEntregaUseCase(IObrigacaoRepository obrigacaoReposi
 
         if (input.ObrigacaoId == Guid.Empty)
         {
-            errors["obrigacaoId"] = ["Obrigação é obrigatória."];
+            errors["obrigacaoId"] = ["Obrigacao e obrigatoria."];
         }
 
         if (input.DataConclusao == default)
         {
-            errors["dataConclusao"] = ["Data de conclusão é obrigatória."];
+            errors["dataConclusao"] = ["Data de conclusao e obrigatoria."];
+        }
+
+        if (input.Observacao?.Length > MaxObservacaoLength)
+        {
+            errors["observacao"] = [$"Observacao deve ter no maximo {MaxObservacaoLength} caracteres."];
         }
 
         if (errors.Count > 0)
@@ -51,4 +55,3 @@ public sealed class RegistrarEntregaUseCase(IObrigacaoRepository obrigacaoReposi
         }
     }
 }
-

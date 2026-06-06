@@ -15,6 +15,8 @@ public sealed class CreateEmpresaUseCase(
     VencimentoCalculator vencimentoCalculator,
     TimeProvider timeProvider)
 {
+    private const int MaxRazaoSocialLength = 180;
+
     public async Task<EmpresaDto> ExecuteAsync(CreateEmpresaDto input, CancellationToken cancellationToken)
     {
         var cnpj = await ValidateAsync(input, cancellationToken);
@@ -34,17 +36,26 @@ public sealed class CreateEmpresaUseCase(
 
         if (string.IsNullOrWhiteSpace(input.RazaoSocial))
         {
-            errors["razaoSocial"] = ["Razão social é obrigatória."];
+            errors["razaoSocial"] = ["Razao social e obrigatoria."];
+        }
+        else if (input.RazaoSocial.Trim().Length > MaxRazaoSocialLength)
+        {
+            errors["razaoSocial"] = [$"Razao social deve ter no maximo {MaxRazaoSocialLength} caracteres."];
         }
 
         var cnpj = CnpjNormalizer.OnlyDigits(input.CNPJ ?? string.Empty);
         if (cnpj.Length != 14)
         {
-            errors["cnpj"] = ["CNPJ deve conter 14 dígitos numéricos."];
+            errors["cnpj"] = ["CNPJ deve conter 14 digitos numericos."];
         }
         else if (await empresaRepository.ExistsByCnpjAsync(cnpj, cancellationToken))
         {
-            errors["cnpj"] = ["Já existe empresa cadastrada com este CNPJ."];
+            errors["cnpj"] = ["Ja existe empresa cadastrada com este CNPJ."];
+        }
+
+        if (!Enum.IsDefined(input.RegimeTributario))
+        {
+            errors["regimeTributario"] = ["Regime tributario invalido."];
         }
 
         if (errors.Count > 0)
@@ -77,4 +88,3 @@ public sealed class CreateEmpresaUseCase(
         }
     }
 }
-

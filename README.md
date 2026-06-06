@@ -1,21 +1,24 @@
-# Painel de Obrigações Acessórias
+# Painel de Obrigacoes Acessorias
 
-Aplicação full-stack para o case técnico da e-Auditoria. O nome do produto é
-**Painel de Obrigações Acessórias**; sua função principal é ser um calendário
-fiscal inteligente. O sistema não calcula impostos: ele gera obrigações
-acessórias por regime tributário, calcula vencimentos e permite registrar
+Aplicacao full-stack para o case tecnico da e-Auditoria. O nome do produto e
+**Painel de Obrigacoes Acessorias**; sua funcao principal e ser um calendario
+fiscal inteligente. O sistema nao calcula impostos: ele gera obrigacoes
+acessorias por regime tributario, calcula vencimentos e permite registrar
 entregas.
 
 ## Stack
+
 - .NET 9 com Minimal APIs
 - Clean Architecture com DDD leve
 - Entity Framework Core 9
 - PostgreSQL 16
-- React + Vite em `frontend/` quando a SPA for implementada
+- React 18 + Vite em `frontend/`
+- TanStack Query + TanStack Router no frontend
 - xUnit + FluentAssertions
 - Docker + Docker Compose
 
 ## Estrutura
+
 ```text
 painel-obrigacoes/
   backend/
@@ -32,37 +35,55 @@ painel-obrigacoes/
       api/
       app/
       features/
-      pages/
+      routes/
       shared/
   docs/
   docker-compose.yml
+  docker-compose.dev.yml
 ```
 
-O repositório é um monorepo: backend, frontend, docs e Docker Compose ficam no
-mesmo Git. A solution .NET fica dentro de `backend/`, então não precisa repetir
-"Backend" no nome. O React/Vite é uma SPA separada que consumirá a API.
+O repositorio e um monorepo: backend, frontend, docs e Docker Compose ficam no
+mesmo Git. A solution .NET fica dentro de `backend/`, entao nao precisa repetir
+"Backend" no nome. O React/Vite e uma SPA separada que consome a API.
 
-## Como Rodar
-Pré-requisitos: Docker e Docker Compose.
+## Como Rodar Demo
+
+Pre-requisitos: Docker e Docker Compose.
+
+O Compose principal sobe API e PostgreSQL:
 
 ```bash
 docker compose up --build
 ```
 
 API:
+
 - `http://localhost:8080/health`
 - `http://localhost:8080/openapi/v1.json`
 - `http://localhost:8080/scalar` em ambiente Development
 
+Frontend local:
+
+- `http://localhost:5173`
+
 Banco:
+
 - Host local: `localhost:5432`
 - Database: `painel_obrigacoes`
-- Usuário/senha: `postgres/postgres`
+- Usuario/senha: `postgres/postgres`
+
+Se o frontend local precisar consumir a API do Compose principal em `8080`,
+configure `frontend/.env.local` com:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8080
+```
 
 ## Desenvolvimento Local
-Para desenvolver e debugar no Visual Studio, use o Compose de desenvolvimento
-apenas com PostgreSQL e rode a API localmente. Ele usa a mesma porta `5432` do
-`appsettings.json`, então pare o Compose completo antes de subir o banco dev.
+
+Para desenvolver e debugar, use o Compose de desenvolvimento apenas com
+PostgreSQL e rode API + frontend localmente. Ele usa a mesma porta `5432` do
+`appsettings.json`, entao pare o Compose completo antes de subir o banco dev.
 
 ```bash
 docker compose down
@@ -83,7 +104,19 @@ URLs no modo desenvolvimento local:
 - `http://localhost:5179/openapi/v1.json`
 - `http://localhost:5179/scalar`
 
-Comandos úteis:
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Por padrao o frontend consome a API local em `http://localhost:5179`, alinhado
+ao `dotnet run --launch-profile http`. O arquivo `frontend/.env.example`
+registra esse valor.
+
+Comandos uteis:
 
 ```bash
 # Parar o banco de desenvolvimento
@@ -98,13 +131,13 @@ docker compose up --build -d
 ```
 
 No modo entrega/demo, a API volta para `http://localhost:8080`. A imagem da API
-é publicada em `Release` pelo Dockerfile, mas o Compose principal mantém
-`ASPNETCORE_ENVIRONMENT=Development` para expor o Scalar na demonstração. O
-arquivo `docker-compose.dev.yml` é auxiliar para desenvolvimento e pode ser
-removido antes da entrega final se você quiser deixar só o Compose de
-demonstração.
+e publicada em `Release` pelo Dockerfile, mas o Compose principal mantem
+`ASPNETCORE_ENVIRONMENT=Development` para expor o Scalar na demonstracao. O
+arquivo `docker-compose.dev.yml` e auxiliar para desenvolvimento: ele sobe o
+banco/infra, enquanto API e frontend rodam localmente.
 
 ## Endpoints
+
 - `GET /api/empresas`
 - `POST /api/empresas`
 - `DELETE /api/empresas/{id}`
@@ -113,37 +146,48 @@ demonstração.
 - `GET /api/obrigacoes/dashboard`
 - `POST /api/entregas`
 
-## Decisões Técnicas
-- Domain é puro, sem dependência de `Microsoft.*`, EF Core ou ASP.NET.
-- A engine tributária (`ObrigacaoRulesEngine`) e o cálculo de vencimentos
-  (`VencimentoCalculator`) são stateless e testáveis sem banco.
-- Obrigações são persistidas no cadastro/seed para facilitar dashboard e alertas.
-- `Competencia` é um value object `struct` imutável no Domain. Para o índice
+## Decisoes Tecnicas
+
+- Domain e puro, sem dependencia de `Microsoft.*`, EF Core ou ASP.NET.
+- A engine tributaria (`ObrigacaoRulesEngine`) e o calculo de vencimentos
+  (`VencimentoCalculator`) sao stateless e testaveis sem banco.
+- Obrigacoes sao persistidas no cadastro/seed para facilitar dashboard e
+  alertas.
+- `Competencia` e um value object `struct` imutavel no Domain. Para o indice
   composto no EF Core, a entidade persiste `CompetenciaAno` e `CompetenciaMes`
-  como colunas escalares e expõe `Competencia` como valor calculado.
+  como colunas escalares e expoe `Competencia` como valor calculado.
 - OpenAPI usa o suporte integrado do .NET 9 com Scalar UI em desenvolvimento.
 - Migrations e seed rodam automaticamente no startup, adequado para demo/case.
+- O frontend usa TanStack Router file-based para deixar `App.tsx` pequeno,
+  separar layout/rotas/features e manter filtros do calendario na URL.
+- TanStack Query continua responsavel por dados da API; TanStack Router cuida
+  de navegacao e estado de URL.
 
-## Limitações Conhecidas
-- Feriados nacionais não foram implementados; apenas fins de semana prorrogam
-  vencimentos para a próxima segunda-feira.
-- Regime Imune/Isento não gera obrigações nesta versão.
-- O Compose atual sobe backend e PostgreSQL. O serviço frontend será adicionado
-  quando a etapa React/Vite/Ant Design for implementada.
+## Limitacoes Conhecidas
+
+- Feriados nacionais nao foram implementados; apenas fins de semana prorrogam
+  vencimentos para a proxima segunda-feira.
+- Regime Imune/Isento nao gera obrigacoes nesta versao.
+- O Compose principal atual sobe backend e PostgreSQL. O frontend roda
+  localmente via Vite nesta etapa.
 
 ## Testes
+
 ```bash
 dotnet test backend/PainelObrigacoes.sln --configuration Release
 ```
 
-Cobertura atual: engine de regras, cálculo de vencimentos e value object de
-competência.
+Cobertura atual: engine de regras, calculo de vencimentos e value object de
+competencia.
 
 ## Uso de IA
-Usei Codex para acelerar pesquisa oficial, implementação guiada por fases e
-validação de constraints. A principal correção humana/arquitetural foi ajustar
-o mapeamento de `Competencia`: o plano inicial tentou usar membro aninhado de
-complex property no índice EF, mas a migration validou que colunas escalares
-eram a opção mais segura para manter o Domain imutável.
 
-Para preparar a defesa técnica e o showcase, veja `docs/ia-showcase-guide.md`.
+Usei Codex para acelerar pesquisa oficial, implementacao guiada por fases e
+validacao de constraints. A principal correcao humana/arquitetural foi ajustar
+o mapeamento de `Competencia`: o plano inicial tentou usar membro aninhado de
+complex property no indice EF, mas a migration validou que colunas escalares
+eram a opcao mais segura para manter o Domain imutavel.
+
+Para preparar a defesa tecnica e o showcase, veja `docs/ia-showcase-guide.md`.
+Para um inventario detalhado do que ja foi implementado em backend, frontend,
+Docker, validacoes e proximas fases, veja `docs/implementation-summary.md`.

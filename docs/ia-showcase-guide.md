@@ -114,7 +114,163 @@ O vencimento base é calculado por tipo de obrigação. Se cair sábado, soma 2 
 se cair domingo, soma 1 dia. Feriados nacionais ficaram documentados como fora do
 escopo.
 
+### Por que TanStack Router no frontend?
+Resposta curta para demo:
+
+> Eu escolhi TanStack Router porque o app ja usava TanStack Query. Query ficou
+> responsavel por server state; Router ficou responsavel por navegacao, layout e
+> estado de URL. Isso deixou o `App.tsx` pequeno, as rotas explicitas e filtros
+> como ano, mes e status compartilhaveis por link.
+
+Como justificar tecnicamente:
+
+- O projeto e uma SPA React/Vite, nao Next.js. Entao nao fazia sentido criar
+  estrutura de `routes` de Next se o runtime real continua sendo client-side.
+- "Ter rota" nao transforma a SPA em SSR. A rota so mapeia URL para tela dentro
+  do navegador. Para refresh em `/calendario`, o servidor de producao ainda
+  precisa fallback para `index.html`.
+- TanStack Router complementa TanStack Query: Router nao busca dados por
+  obrigacao; ele guarda navegacao e URL state. Query continua buscando API,
+  cacheando e invalidando dados.
+- File-based routing mostra uma arquitetura reconhecivel de frontend: `app`
+  para shell/providers/router, `routes` para entrada de telas, `features` para
+  UI de dominio e `api` para contratos HTTP.
+- Search params tipados no calendario evitam estado escondido em `useState`.
+  A URL `/calendario?ano=2026&mes=6&status=2` reabre a mesma visao.
+
+Exemplos de codigo para mostrar:
+
+```tsx
+// frontend/src/app/App.tsx
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./router";
+
+export function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+Esse trecho mostra que `App.tsx` deixou de ser um arquivo grande. Ele so monta o
+router. Layout, navegacao e paginas foram para arquivos com responsabilidade
+propria.
+
+```tsx
+// frontend/src/app/router.tsx
+export const router = createRouter({
+  routeTree,
+  context: {
+    queryClient
+  },
+  defaultPreload: "intent"
+});
+```
+
+Esse trecho mostra a integracao arquitetural: o router conhece o `queryClient`
+por contexto, mas os dados continuam sendo tratados pelos hooks do TanStack
+Query.
+
+```tsx
+// frontend/src/routes/calendario.tsx
+export const Route = createFileRoute("/calendario")({
+  validateSearch: validateCalendarioSearch,
+  component: CalendarioRoute
+});
+```
+
+Esse trecho mostra o ganho sobre um simples `useState`: a rota declara que seus
+search params sao parte do contrato de navegacao.
+
+```tsx
+// frontend/src/features/obrigacoes/CalendarioPage.tsx
+<DatePicker
+  picker="month"
+  allowClear={false}
+  value={selectedMonth}
+  format="MM/YYYY"
+  onChange={(value) =>
+    value && onFiltersChange({ ano: value.year(), mes: value.month() + 1 })
+  }
+/>
+```
+
+Esse trecho mostra a separacao: a feature so emite mudanca de filtro. Quem
+decide que isso vira URL e a rota, nao o componente visual.
+
+Se perguntarem "por que nao React Router?":
+
+> React Router resolveria a navegacao basica. Eu escolhi TanStack Router porque
+> ele entrega type-safety de rotas/search params e combina melhor com o ecossistema
+> TanStack que o projeto ja usa. Para o case, isso tambem mostra uma escolha
+> arquitetural moderna sem migrar para Next.js.
+
+Se perguntarem "por que nao Next.js?":
+
+> O requisito e React 18 e Vite SPA separada consumindo uma API .NET. Next.js
+> mudaria o modelo de execucao para framework full-stack/SSR, sem necessidade
+> para este case. Mantive SPA porque a regra fiscal e o backend sao o centro do
+> produto.
+
 ## Diário Por Commit
+
+### Pendente de hash - `feat: add React frontend with TanStack Router`
+
+O que mudou:
+
+- Implementado frontend React 18 + Vite + TypeScript.
+- Adicionados Ant Design, TanStack Query, TanStack Router e Day.js.
+- Criado app shell com sidebar/header e rotas file-based.
+- `App.tsx` foi reduzido para `RouterProvider`.
+- Criadas rotas `/`, `/dashboard`, `/calendario`, `/empresas` e not found.
+- Filtros do calendario foram movidos para search params tipados.
+- Implementadas telas de relatorio, calendario, empresas, entrega e CSV.
+- Removidos usos de Ant Design deprecados encontrados na validacao visual.
+
+Decisoes tecnicas:
+
+- TanStack Query ficou como server state; TanStack Router ficou como URL state,
+  navegacao e layout.
+- File-based routing foi escolhido para deixar a arquitetura do frontend
+  explicita, parecida com a organizacao que se espera em apps maiores, sem
+  migrar para Next.js.
+- Search params do calendario viraram contrato de navegacao para permitir link,
+  refresh e reproducao de filtros.
+- O frontend nao replica a engine fiscal; ele consome os contratos HTTP da API.
+
+Como a IA ajudou:
+
+- Pesquisou alternativas de rotas para React 18/Vite.
+- Comparou React Router e TanStack Router no contexto do case.
+- Ajudou a refatorar o `App.tsx` em shell, router, routes e features.
+- Validou rotas no browser e identificou o problema de cache do Vite apos troca
+  de dependencias.
+
+Correcao e decisao humana:
+
+- O usuario questionou o tamanho do `App.tsx` e a falta de divisao por rotas.
+- O usuario decidiu usar TanStack Router por coerencia com TanStack Query e pela
+  expectativa de uma arquitetura mais demonstravel no desafio.
+- O cache `frontend/node_modules/.vite` foi limpo quando o dev server mostrou
+  `Invalid hook call` depois da troca de dependencias.
+
+Validacoes executadas:
+
+- `npm run build`.
+- `npm audit --audit-level=moderate`.
+- Browser local em `/dashboard`, `/calendario?ano=2026&mes=6&status=2` e
+  `/empresas`.
+- Checagem de tamanho em `frontend/src`: maior fonte com 219 linhas.
+- `npm ls react-router`: pacote legado ausente; apenas `@tanstack/react-router`
+  permanece.
+
+Como apresentar esse commit:
+
+- "A refatoracao nao foi so chamar outro arquivo. Eu separei responsabilidades:
+  `App.tsx` monta o router, `AppShell` cuida do layout, `routes` cuidam de URL e
+  `features` cuidam das telas."
+- "A URL do calendario agora representa estado real: posso mandar um link com
+  ano, mes e status e a tela abre igual."
+- "TanStack Router nao substitui TanStack Query. Um controla navegacao; o outro
+  controla dados do servidor."
 
 ### `8865e90` - `feat: implement .NET backend obligations engine`
 

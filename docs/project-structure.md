@@ -1,12 +1,13 @@
 # Estrutura do Projeto
 
-Nome oficial: **Painel de Obrigações Acessórias**.
+Nome oficial: **Painel de Obrigacoes Acessorias**.
 
-Descrição curta: calendário fiscal inteligente para controle de obrigações
-acessórias brasileiras.
+Descricao curta: calendario fiscal inteligente para controle de obrigacoes
+acessorias brasileiras.
 
 ## Monorepo
-O repositório é único para facilitar a entrega do case:
+
+O repositorio e unico para facilitar a entrega do case:
 
 ```text
 painel-obrigacoes/
@@ -17,16 +18,14 @@ painel-obrigacoes/
   docker-compose.dev.yml
 ```
 
-Isso permite um `docker compose up --build` subir API, banco e frontend quando a
-SPA estiver implementada.
-
-`docker-compose.dev.yml` é um arquivo auxiliar para desenvolvimento local. Ele
+`docker-compose.dev.yml` e um arquivo auxiliar para desenvolvimento local. Ele
 sobe apenas o PostgreSQL, permitindo rodar e debugar a API pelo Visual Studio ou
-por `dotnet run`. Para a entrega final, o Compose principal continua sendo
+por `dotnet run`. Para a entrega/demo, o Compose principal continua sendo
 `docker-compose.yml`.
 
 ## Backend
-O backend é uma solution .NET separada:
+
+O backend e uma solution .NET separada:
 
 ```text
 backend/
@@ -43,31 +42,37 @@ backend/
 Projetos atuais:
 
 - `PainelObrigacoes.Domain`: entidades, enums, value objects e regras fiscais.
-- `PainelObrigacoes.Application`: use cases, DTOs e validações de fluxo.
+- `PainelObrigacoes.Application`: use cases, DTOs e validacoes de fluxo.
 - `PainelObrigacoes.Infrastructure`: EF Core, PostgreSQL, repositories, seed e
   migrations.
 - `PainelObrigacoes.Api`: Minimal API, DI, OpenAPI, CORS e startup.
-- `PainelObrigacoes.Domain.Tests`: testes unitários da engine.
+- `PainelObrigacoes.Domain.Tests`: testes unitarios da engine.
 
 ## Frontend
-O frontend será uma SPA React/Vite separada:
+
+O frontend e uma SPA React/Vite separada:
 
 ```text
 frontend/
-  public/
   src/
     api/
     app/
+    routes/
     features/
       dashboard/
       empresas/
       obrigacoes/
-    pages/
     shared/
 ```
 
-Responsabilidade: interface do usuário, rotas client-side, TanStack Query,
-componentes Ant Design e chamadas HTTP para a API.
+Responsabilidades:
 
-O frontend não entra no Domain do backend. Ele consome contratos HTTP expostos
-por `backend/src/Api`.
+- Interface do usuario.
+- Rotas client-side com TanStack Router.
+- Search params tipados para filtros navegaveis, como o calendario.
+- TanStack Query para cache, loading, erros, mutations e invalidacao de dados.
+- Componentes Ant Design.
+- Chamadas HTTP para a API.
+
+O frontend nao entra no Domain do backend e nao replica a engine fiscal. Ele
+consome contratos HTTP expostos por `backend/src/Api`.

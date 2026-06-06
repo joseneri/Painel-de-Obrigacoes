@@ -1,0 +1,96 @@
+import { App as AntApp, Button, Popconfirm, Table, Tag, Typography } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { DeleteOutlined } from "@ant-design/icons";
+import type { EmpresaDto } from "../../../api/types";
+import { useDeleteEmpresa } from "../../../api/hooks";
+import { labelRegime } from "../../../shared/utils/domain";
+import { getErrorMessage } from "../../../shared/utils/errors";
+import { formatCnpj, formatDate } from "../../../shared/utils/formatters";
+
+interface EmpresasTableProps {
+  data: EmpresaDto[];
+  loading: boolean;
+}
+
+export function EmpresasTable({ data, loading }: EmpresasTableProps) {
+  const { message } = AntApp.useApp();
+  const deleteEmpresa = useDeleteEmpresa();
+
+  function handleDelete(id: string) {
+    deleteEmpresa.mutate(id, {
+      onSuccess: () => message.success("Empresa removida."),
+      onError: (error) => message.error(getErrorMessage(error))
+    });
+  }
+
+  const columns: ColumnsType<EmpresaDto> = [
+    {
+      title: "Razão social",
+      dataIndex: "razaoSocial",
+      minWidth: 260,
+      render: (value, row) => (
+        <div>
+          <Typography.Text strong>{value}</Typography.Text>
+          <div className="muted-row">{row.id}</div>
+        </div>
+      )
+    },
+    {
+      title: "CNPJ",
+      dataIndex: "cnpj",
+      width: 190,
+      render: formatCnpj
+    },
+    {
+      title: "Regime",
+      dataIndex: "regimeTributario",
+      width: 190,
+      render: (regime) => <Tag color="blue">{labelRegime(regime)}</Tag>
+    },
+    {
+      title: "Pendentes",
+      dataIndex: "pendentes",
+      width: 120,
+      sorter: (a, b) => a.pendentes - b.pendentes,
+      render: (value) => <Tag color={value > 0 ? "orange" : "green"}>{value}</Tag>
+    },
+    {
+      title: "Criada em",
+      dataIndex: "criadaEm",
+      width: 140,
+      render: formatDate
+    },
+    {
+      title: "",
+      key: "actions",
+      fixed: "right",
+      width: 70,
+      render: (_, row) => (
+        <Popconfirm
+          title="Remover empresa"
+          description="As obrigações vinculadas também serão removidas."
+          okText="Remover"
+          cancelText="Cancelar"
+          okButtonProps={{ danger: true, loading: deleteEmpresa.isPending }}
+          onConfirm={() => handleDelete(row.id)}
+        >
+          <Button danger type="text" icon={<DeleteOutlined />} />
+        </Popconfirm>
+      )
+    }
+  ];
+
+  return (
+    <section className="panel">
+      <Table
+        rowKey="id"
+        size="middle"
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        scroll={{ x: 980 }}
+        pagination={{ pageSize: 8, showSizeChanger: true }}
+      />
+    </section>
+  );
+}

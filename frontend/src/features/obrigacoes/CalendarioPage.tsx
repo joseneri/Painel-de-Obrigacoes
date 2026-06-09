@@ -99,7 +99,7 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
       )}
 
       <section className="min-w-0 overflow-hidden rounded-lg border border-[#dbe5ef] bg-white p-0">
-        <div className="relative flex items-start justify-between gap-5 border-b border-[#edf1f5] bg-white px-8 pb-6 pt-7 before:absolute before:inset-y-0 before:left-0 before:w-[5px] before:bg-[#1677ff] before:content-[''] max-[720px]:flex-col max-[720px]:items-stretch max-[720px]:px-4">
+        <div className="flex items-start justify-between gap-5 border-b border-[#edf1f5] bg-white px-8 pb-6 pt-7 max-[720px]:flex-col max-[720px]:items-stretch max-[720px]:px-4">
           <div>
             <Typography.Title
               className="!mb-2 !mt-0 !text-[30px] !font-extrabold !leading-[1.12] !tracking-normal !text-[#0f172a] max-[720px]:!text-[25px]"

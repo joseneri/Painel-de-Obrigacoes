@@ -42,9 +42,9 @@ const monthNames = [
 ];
 
 const fieldClassName = "grid min-w-0 grid-rows-[18px_48px] items-start gap-[9px]";
-const labelClassName = "text-xs font-extrabold leading-[18px] tracking-normal text-[#344054]";
+const labelClassName = "text-xs font-extrabold leading-[18px] tracking-normal text-[#111827]";
 const selectClassName =
-  "h-12 min-h-12 w-full [&_.ant-select-content]:flex [&_.ant-select-content]:h-12 [&_.ant-select-content]:min-h-12 [&_.ant-select-content]:items-center [&_.ant-select-content]:rounded-lg [&_.ant-select-content]:border [&_.ant-select-content]:border-[#dbe5ef] [&_.ant-select-content]:bg-white [&_.ant-select-content]:px-[11px] [&_.ant-select-placeholder]:font-semibold [&_.ant-select-placeholder]:text-[#667085]";
+  "!h-12 !min-h-12 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
 const actionButtonClassName = "h-12 w-[82px] justify-center rounded-lg px-2 text-[13px] max-[720px]:w-full";
 
 export function CalendarioControls({
@@ -108,7 +108,7 @@ export function CalendarioControls({
           <span className={labelClassName}>Competência</span>
           <DatePicker
             allowClear={false}
-            className="h-12 min-h-12 w-full border-[#dbe5ef] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
+            className="h-12 min-h-12 w-full border-[#e5e7eb] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-center [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
             open={calendarOpen}
             value={selectedDate}
             pickerValue={pickerValue}

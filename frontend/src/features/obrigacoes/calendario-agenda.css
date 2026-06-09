@@ -1,0 +1,225 @@
+.calendario-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr)) minmax(260px, 1.2fr);
+  gap: 16px;
+}
+
+.calendario-summary__item {
+  display: grid;
+  align-content: center;
+  min-height: 112px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.calendario-summary__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.calendario-summary__icon.info {
+  background: #e8f2ff;
+  color: #1565c0;
+}
+
+.calendario-summary__icon.danger {
+  background: #fde8e8;
+  color: #c62828;
+}
+
+.calendario-summary__icon.warning {
+  background: #fff4e1;
+  color: #f57f17;
+}
+
+.calendario-summary__icon.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.calendario-summary__next {
+  gap: 6px;
+}
+
+.calendario-summary__next .ant-tag {
+  width: fit-content;
+  margin-inline-end: 0;
+}
+
+.calendario-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.calendario-section-header h4.ant-typography {
+  margin: 0 0 4px;
+}
+
+.calendario-agenda {
+  display: grid;
+  gap: 4px;
+}
+
+.agenda-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.agenda-group {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  background: #f8fbfe;
+}
+
+.agenda-group__date {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.agenda-group__date strong {
+  color: #172033;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.agenda-group__date span {
+  color: #667085;
+  font-size: 12px;
+}
+
+.agenda-group__items {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.agenda-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "main action"
+    "meta meta";
+  gap: 14px;
+  align-items: center;
+  min-width: 0;
+  padding: 14px 14px 14px 12px;
+  border: 1px solid #dbe5ef;
+  border-left: 4px solid #1565c0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.agenda-item[data-status="1"] {
+  border-left-color: #f57f17;
+}
+
+.agenda-item[data-status="2"] {
+  border-left-color: #c62828;
+}
+
+.agenda-item[data-status="3"] {
+  border-left-color: #2e7d32;
+}
+
+.agenda-item[data-status="4"] {
+  border-left-color: #8a94a6;
+}
+
+.agenda-item__main {
+  display: grid;
+  grid-area: main;
+  gap: 4px;
+  min-width: 0;
+}
+
+.agenda-item__meta {
+  display: flex;
+  grid-area: meta;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.agenda-item__meta .ant-tag {
+  margin-inline-end: 0;
+}
+
+.agenda-item__action.ant-btn {
+  grid-area: action;
+  min-width: 112px;
+  width: fit-content;
+}
+
+.agenda-item--more {
+  display: block;
+  padding: 12px 14px;
+  border-left-color: #8a94a6;
+  color: #667085;
+  font-size: 13px;
+}
+
+.calendario-table-panel {
+  display: grid;
+}
+
+.calendario-table-panel .ant-table-wrapper {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .calendario-summary {
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
+  }
+
+  .calendario-summary__next {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .calendario-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .agenda-groups {
+    grid-template-columns: 1fr;
+  }
+
+  .agenda-group {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .agenda-item {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "meta"
+      "action";
+    padding: 12px;
+  }
+
+  .agenda-item__action.ant-btn {
+    width: 100%;
+  }
+}

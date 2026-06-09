@@ -1,0 +1,230 @@
+.calendar-command-panel,
+.calendar-workspace,
+.competencia-workspace,
+.detailed-table-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.calendar-command-row,
+.calendar-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.calendar-command-copy h3.ant-typography,
+.calendar-section-header h4.ant-typography {
+  margin: 0 0 4px;
+}
+
+.calendar-filters {
+  display: grid;
+  grid-template-columns: 230px minmax(260px, 1fr) 160px 180px;
+  gap: 12px;
+}
+
+.calendar-mode-toggle {
+  width: 100%;
+}
+
+.calendar-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.calendar-summary-item {
+  display: grid;
+  gap: 2px;
+  min-height: 78px;
+  padding: 14px 16px;
+  border: 1px solid #dbe5ef;
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.calendar-summary-value {
+  color: #0d1b2a;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.calendar-summary-label {
+  color: #667085;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.summary-info { border-left-color: #1565c0; }
+.summary-overdue { border-left-color: #c62828; }
+.summary-today { border-left-color: #1e88e5; }
+.summary-soon { border-left-color: #f57f17; }
+.summary-done { border-left-color: #2e7d32; }
+.summary-annual { border-left-color: #00acc1; }
+
+.calendar-workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.38fr);
+  align-items: start;
+}
+
+.calendar-month-area {
+  min-width: 0;
+}
+
+.calendar-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.calendar-weekday {
+  padding: 10px;
+  border-bottom: 1px solid #dbe5ef;
+  background: #f5f7fa;
+  color: #0d1b2a;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.calendar-day {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 112px;
+  padding: 10px;
+  border: 0;
+  border-right: 1px solid #e6edf5;
+  border-bottom: 1px solid #e6edf5;
+  background: #ffffff;
+  color: #172033;
+  cursor: pointer;
+  text-align: left;
+}
+
+.calendar-day:nth-child(7n + 7) {
+  border-right: 0;
+}
+
+.calendar-day:hover,
+.calendar-day:focus-visible {
+  outline: 2px solid #1e88e5;
+  outline-offset: -2px;
+  background: #f5faff;
+}
+
+.calendar-day.is-selected {
+  background: #eef7ff;
+  box-shadow: inset 0 0 0 2px #1565c0;
+}
+
+.calendar-day.is-outside {
+  background: #f8fafc;
+  color: #98a2b3;
+}
+
+.calendar-day.has-items {
+  border-top: 3px solid #1e88e5;
+}
+
+.calendar-day.has-items.tone-overdue { border-top-color: #c62828; }
+.calendar-day.has-items.tone-today { border-top-color: #1e88e5; }
+.calendar-day.has-items.tone-soon { border-top-color: #f57f17; }
+.calendar-day.has-items.tone-done { border-top-color: #2e7d32; }
+
+.calendar-day-number {
+  font-weight: 800;
+}
+
+.calendar-day-items,
+.calendar-agenda-list,
+.competencia-timeline {
+  display: grid;
+  gap: 8px;
+}
+
+.calendar-event-chip,
+.calendar-more-chip {
+  overflow: hidden;
+  max-width: 100%;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-more-chip {
+  background: #f5f7fa;
+  color: #475467;
+}
+
+.urgency-chip,
+.calendar-event-chip {
+  border: 0;
+  background: #e8f2ff;
+  color: #1565c0;
+}
+
+.tone-overdue.urgency-chip,
+.tone-overdue.calendar-event-chip {
+  background: #fde8e8;
+  color: #c62828;
+}
+
+.tone-today.urgency-chip,
+.tone-today.calendar-event-chip {
+  background: #e8f2ff;
+  color: #1565c0;
+}
+
+.tone-soon.urgency-chip,
+.tone-soon.calendar-event-chip {
+  background: #fff4e1;
+  color: #f57f17;
+}
+
+.tone-done.urgency-chip,
+.tone-done.calendar-event-chip {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+@media (max-width: 1180px) {
+  .calendar-summary-strip {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+  }
+
+  .calendar-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .calendar-command-row,
+  .calendar-section-header {
+    display: grid;
+  }
+
+  .calendar-filters,
+  .calendar-summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-day {
+    min-height: 74px;
+    padding: 7px;
+  }
+
+  .calendar-event-chip {
+    display: none;
+  }
+}

@@ -216,7 +216,76 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
-### Pendente de hash - `feat: align frontend screens with tailwind UI`
+### Pendente de hash - `feat: refine operational frontend flows`
+
+O que mudou:
+
+- O Painel de Alertas foi reorganizado em resumo clicavel, tabela paginada e
+  arquivo de apresentacao para filtros, tons e textos vazios.
+- Alertas agora permitem abrir a obrigacao correspondente no Calendario em modo
+  `vencimento`, preservando empresa, status, ano e mes derivados do prazo.
+- Acoes de alerta passaram para menu compacto, com dispensa local de itens para
+  limpar a fila operacional durante a demo.
+- O Dashboard teve o header simplificado com remocao dos botoes `Alertas` e
+  `Calendario`, mantendo o acesso ao painel pela secao de prazos criticos.
+- Empresas, Dashboard e Calendario receberam ajustes finos de alinhamento,
+  densidade, controles, badges e cards para uma leitura mais consistente.
+- O Calendario removeu a faixa azul do header, enxugou os KPIs para quatro
+  indicadores principais e melhorou select, date picker, badges de urgencia e
+  celulas agrupadas.
+- Componentes preparatorios de visualizacao de calendario/agenda foram mantidos
+  em `frontend/src/features/obrigacoes` como parte do worktree autorizado.
+
+Decisoes tecnicas:
+
+- O alerta continua vindo do backend; o frontend apenas filtra, pagina e navega
+  com os contratos HTTP existentes.
+- A dispensa de alerta e local e nao altera persistencia, evitando criar API
+  nova fora do escopo do case.
+- A navegacao para o Calendario usa TanStack Router e search params tipados,
+  reforcando que URL state fica na rota, nao escondido em componente visual.
+- O Dashboard perdeu os atalhos duplicados no header, mas preservou o acesso ao
+  Painel de Alertas onde ele tem contexto operacional.
+- A regra fiscal segue fora do frontend; todos os ajustes sao apresentacionais
+  ou de navegacao.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, guia de IA, resumo de implementacao e registros
+  em `tmp/` antes do commit.
+- Revisou o worktree atual para separar alteracoes de alertas, calendario,
+  empresas e dashboard.
+- Checou encoding real das fontes para evitar commitar textos com mojibake.
+- Validou build, tamanho de arquivos e whitespace antes de preparar o stage.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente `commita tudo`, autorizando stage e commit de
+  todo o worktree atual.
+- Ajustes pontuais pedidos pelo usuario foram incorporados sem reverter
+  alteracoes visuais acumuladas.
+- Arquivos preparatorios nao rastreados foram incluidos porque faziam parte do
+  worktree atual e o pedido foi commitar tudo.
+
+Validacoes executadas:
+
+- `npm run build` em `frontend/`: passou.
+- Checagem de tamanho em `frontend/src`: nenhum `.ts`/`.tsx` acima de 250
+  linhas.
+- `rg -n "Ã|Â|�" frontend/src`: sem ocorrencias reais de mojibake.
+- `git diff --check`: sem erro bloqueante, apenas avisos esperados LF/CRLF no
+  Windows.
+
+Como apresentar esse commit:
+
+- "O Painel de Alertas virou uma tela operacional de trabalho: resumo, filtros,
+  tabela, acoes e ponte direta para o Calendario."
+- "A navegacao usa a URL para levar o usuario ao mesmo contexto de vencimento,
+  empresa e status no Calendario."
+- "Os polimentos reduzem ruido visual sem mexer em regra fiscal nem contratos da
+  API."
+
+### `b074455` - `feat: align frontend screens with tailwind UI`
 
 O que mudou:
 

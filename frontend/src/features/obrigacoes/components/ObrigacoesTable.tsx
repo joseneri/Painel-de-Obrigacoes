@@ -20,7 +20,7 @@ const tablePanelClassName = classNames(
   "[&_.ant-table-thead>tr>th]:!bg-[#f8fafc] [&_.ant-table-thead>tr>th]:text-[11px]",
   "[&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:uppercase",
   "[&_.ant-table-thead>tr>th]:tracking-normal [&_.ant-table-thead>tr>th]:text-[#334155]",
-  "[&_.ant-table-tbody>tr>td]:!py-3 [&_.ant-table-tbody>tr>td]:text-[14px]",
+  "[&_.ant-table-tbody>tr>td]:!py-2 [&_.ant-table-tbody>tr>td]:align-top [&_.ant-table-tbody>tr>td]:text-[14px]",
   "[&_.ant-table-tbody>tr.obrigacoes-row-odd>td]:bg-[#fbfdff] [&_.ant-table-tbody>tr:hover>td]:!bg-[#f1f7ff]",
   "[&_.ant-table-pagination.ant-pagination]:mx-0 [&_.ant-table-pagination.ant-pagination]:mb-1",
   "[&_.ant-table-pagination.ant-pagination]:mt-5 [&_.ant-table-pagination.ant-pagination]:flex",
@@ -58,6 +58,8 @@ const statusBadgeClassNames: Record<string, string> = {
   "nao-aplicavel": "border-[#e2e8f0] bg-[#f8fafc] text-[#64748b]"
 };
 const badgeClassName = "inline-flex h-7 items-center whitespace-nowrap rounded-md border px-2.5 text-xs font-semibold";
+const urgencyBadgeClassName = `${badgeClassName} min-w-[106px] justify-center`;
+const groupedCellClassName = "!align-middle";
 const deliveredButtonClassName =
   "[&.ant-btn[disabled]]:!border-[#a7f3d0] [&.ant-btn[disabled]]:!bg-[#ecfdf5] [&.ant-btn[disabled]]:!text-[#047857]";
 
@@ -77,7 +79,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       title: "Obrigação",
       dataIndex: "tipo",
       width: 160,
-      onCell: (_, index) => ({ rowSpan: spanAt(obligationSpans, index) }),
+      onCell: (_, index) => ({ rowSpan: spanAt(obligationSpans, index), className: groupedCellClassName }),
       render: (tipo) => (
         <Typography.Text className="!font-semibold !text-[#1d4ed8]">
           {labelTipo(tipo)}
@@ -95,7 +97,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       title: "Vencimento",
       dataIndex: "dataVencimento",
       width: 130,
-      onCell: (_, index) => ({ rowSpan: spanAt(dueDateSpans, index) }),
+      onCell: (_, index) => ({ rowSpan: spanAt(dueDateSpans, index), className: groupedCellClassName }),
       render: (value, row) => {
         const level = urgencyLevel(row.diasParaVencer);
 
@@ -114,7 +116,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
         const { label, level } = urgencyPresentation(row.status, days);
 
         return (
-          <span className={`${badgeClassName} ${urgencyClassNames[level]}`}>
+          <span className={`${urgencyBadgeClassName} ${urgencyClassNames[level]}`}>
             {label}
           </span>
         );

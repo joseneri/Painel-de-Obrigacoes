@@ -1,10 +1,4 @@
-import {
-  AlertOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  PercentageOutlined,
-  UnorderedListOutlined
-} from "@ant-design/icons";
+import { AlertOutlined, CheckCircleOutlined, ClockCircleOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import type { ReactNode } from "react";
 import type { CalendarioSummaryData } from "./calendarioPresentation";
 
@@ -44,24 +38,17 @@ export function CalendarioSummary({ summary }: CalendarioSummaryProps) {
     { key: "total", label: "Total", value: summary.total, tone: "total", icon: <UnorderedListOutlined /> },
     { key: "pendentes", label: "Pendentes", value: summary.pendentes, tone: "pendente", icon: <ClockCircleOutlined /> },
     { key: "entregues", label: "Entregues", value: summary.entregues, tone: "entregue", icon: <CheckCircleOutlined /> },
-    { key: "atrasadas", label: "Atrasadas", value: summary.atrasadas, tone: "atrasada", icon: <AlertOutlined /> },
-    {
-      key: "pct",
-      label: "Concluídas",
-      value: `${summary.pctConcluidas}%`,
-      tone: "entregue",
-      icon: <PercentageOutlined />
-    }
+    { key: "atrasadas", label: "Atrasadas", value: summary.atrasadas, tone: "atrasada", icon: <AlertOutlined /> }
   ];
 
   return (
     <div
-      className="grid grid-cols-[repeat(5,minmax(160px,1fr))] gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-6 pt-5 max-[980px]:grid-cols-2 max-[720px]:grid-cols-1"
+      className="grid grid-cols-[repeat(4,minmax(170px,1fr))] gap-3 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-[18px] pt-3 max-[980px]:grid-cols-2 max-[720px]:grid-cols-1"
       aria-label="Resumo do calendário"
     >
       {tiles.map((tile) => (
         <div
-          className="flex min-h-[124px] min-w-0 items-center gap-4 rounded-lg border border-[#f1f5f9] bg-white px-6 py-[22px] shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:min-h-[104px]"
+          className="flex min-h-[112px] min-w-0 items-center gap-4 rounded-lg border border-[#f1f5f9] bg-white px-6 py-[18px] shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:min-h-[104px]"
           key={tile.key}
         >
           <span

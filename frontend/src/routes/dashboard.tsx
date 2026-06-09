@@ -11,7 +11,6 @@ function DashboardRoute() {
   return (
     <DashboardPage
       onOpenAlertas={() => navigate({ to: "/alertas" })}
-      onOpenCalendario={() => navigate({ to: "/calendario" })}
     />
   );
 }

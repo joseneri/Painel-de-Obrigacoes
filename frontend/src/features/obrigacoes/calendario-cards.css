@@ -1,0 +1,92 @@
+.calendar-day-panel {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.calendar-day-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #0d1b2a;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.obrigacao-agenda-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #dbe5ef;
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.obrigacao-agenda-card.tone-overdue { border-left-color: #c62828; }
+.obrigacao-agenda-card.tone-today { border-left-color: #1e88e5; }
+.obrigacao-agenda-card.tone-soon { border-left-color: #f57f17; }
+.obrigacao-agenda-card.tone-done { border-left-color: #2e7d32; }
+.obrigacao-agenda-card.tone-future { border-left-color: #00acc1; }
+
+.obrigacao-card-main,
+.competencia-group {
+  display: grid;
+  gap: 8px;
+}
+
+.obrigacao-card-title-row,
+.obrigacao-card-tags,
+.obrigacao-card-meta,
+.competencia-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.obrigacao-card-company {
+  color: #0d1b2a;
+}
+
+.obrigacao-card-meta {
+  color: #667085;
+  font-size: 12px;
+}
+
+.obrigacao-card-action {
+  width: 36px;
+  align-self: start;
+}
+
+.competencia-group {
+  padding-top: 14px;
+  border-top: 1px solid #e6edf5;
+}
+
+.competencia-date-marker {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detailed-table-panel {
+  overflow: hidden;
+}
+
+.detailed-table-panel .ant-table-wrapper,
+.detailed-table-panel .ant-spin-nested-loading,
+.detailed-table-panel .ant-spin-container,
+.detailed-table-panel .ant-table {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.detailed-table-panel .ant-table-content {
+  overflow-x: auto;
+}

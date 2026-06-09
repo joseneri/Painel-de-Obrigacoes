@@ -19,7 +19,6 @@ type MetricTone = "default" | "success" | "warning" | "danger";
 interface MetricProps {
   title: string;
   value?: number;
-  caption?: string;
   loading: boolean;
   icon: ReactNode;
   tone?: MetricTone;
@@ -48,7 +47,7 @@ const currentMonthName = new Intl.DateTimeFormat("pt-BR", { month: "long" }).for
 
 export function MetricCards({ data, loading }: MetricCardsProps) {
   return (
-    <div className="grid grid-cols-[repeat(5,minmax(160px,1fr))] gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-6 pt-5 max-[1180px]:grid-cols-2 max-[720px]:grid-cols-1">
+    <div className="grid grid-cols-2 gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-6 pt-5 max-[720px]:grid-cols-1">
       <Metric title="Empresas" value={data?.totalEmpresas} loading={loading} icon={<ApartmentOutlined />} />
       <Metric
         title={`Obrigações do mês de ${currentMonthName}`}
@@ -56,35 +55,39 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
         loading={loading}
         icon={<FileDoneOutlined />}
       />
-      <Metric
-        title="Pendentes"
-        caption="Total geral"
-        value={data?.pendentes}
-        loading={loading}
-        icon={<ClockCircleOutlined />}
-        tone="warning"
-      />
-      <Metric
-        title="Entregues"
-        caption="Total geral"
-        value={data?.entregues}
-        loading={loading}
-        icon={<CheckCircleOutlined />}
-        tone="success"
-      />
-      <Metric
-        title="Atrasadas"
-        caption="Total geral"
-        value={data?.atrasadas}
-        loading={loading}
-        icon={<ExclamationCircleOutlined />}
-        tone="danger"
-      />
+      <div className="col-span-2 grid min-w-0 gap-2.5 max-[720px]:col-span-1">
+        <span className="text-xs font-extrabold uppercase leading-none tracking-normal text-[#475569]">
+          Obrigações totais
+        </span>
+        <div className="grid grid-cols-3 gap-3.5 max-[980px]:grid-cols-1">
+          <Metric
+            title="Pendentes"
+            value={data?.pendentes}
+            loading={loading}
+            icon={<ClockCircleOutlined />}
+            tone="warning"
+          />
+          <Metric
+            title="Entregues"
+            value={data?.entregues}
+            loading={loading}
+            icon={<CheckCircleOutlined />}
+            tone="success"
+          />
+          <Metric
+            title="Atrasadas"
+            value={data?.atrasadas}
+            loading={loading}
+            icon={<ExclamationCircleOutlined />}
+            tone="danger"
+          />
+        </div>
+      </div>
     </div>
   );
 }
 
-function Metric({ title, value, caption, loading, icon, tone = "default" }: MetricProps) {
+function Metric({ title, value, loading, icon, tone = "default" }: MetricProps) {
   const classes = toneClassNames[tone];
 
   return (
@@ -99,7 +102,6 @@ function Metric({ title, value, caption, loading, icon, tone = "default" }: Metr
           <strong className={`block text-[34px] leading-none ${classes.value}`}>{value ?? 0}</strong>
         )}
         <span className="mt-2 block text-[13px] font-bold uppercase text-[#667085]">{title}</span>
-        {caption && <span className="mt-1 block text-xs text-[#94a3b8]">{caption}</span>}
       </span>
     </div>
   );

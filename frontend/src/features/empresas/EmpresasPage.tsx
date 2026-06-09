@@ -14,10 +14,15 @@ interface EmpresaFormValues {
 }
 
 const formGridClassName =
-  "grid min-w-0 grid-cols-[minmax(220px,1.4fr)_minmax(180px,0.9fr)_minmax(180px,0.9fr)_auto] items-end gap-3 max-[1100px]:grid-cols-2 max-[720px]:grid-cols-1";
-const inputClassName = "h-12 min-w-0 rounded-lg border-[#dbe5ef]";
+  "grid min-w-0 grid-cols-[minmax(220px,1.4fr)_minmax(180px,0.9fr)_minmax(180px,0.9fr)_auto] items-end gap-3 max-[1100px]:grid-cols-2 max-[720px]:grid-cols-1 [&_.ant-form-item-label>label]:!h-[18px] [&_.ant-form-item-label>label]:!text-xs [&_.ant-form-item-label>label]:!font-extrabold [&_.ant-form-item-label>label]:!tracking-normal [&_.ant-form-item-label>label]:!text-[#1f2937]";
+const inputClassName =
+  "h-12 min-w-0 rounded-lg border-[#aebdcc] bg-[#f8fafc] font-semibold text-[#0f172a] shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] placeholder:font-semibold placeholder:text-[#64748b] [&_.ant-input-prefix]:text-[#475569]";
 const selectClassName =
-  "h-12 min-w-0 w-full [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#dbe5ef] [&_.ant-select-selection-placeholder]:!leading-[46px] [&_.ant-select-selection-item]:!leading-[46px]";
+  "h-12 min-w-0 w-full [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#aebdcc] [&_.ant-select-selector]:!bg-[#f8fafc] [&_.ant-select-selector]:!shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] [&_.ant-select-selection-placeholder]:!font-semibold [&_.ant-select-selection-placeholder]:!leading-[46px] [&_.ant-select-selection-placeholder]:!text-[#64748b] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!leading-[46px] [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-arrow]:!text-[#475569] [&_.ant-select-suffix]:!text-[#475569]";
+const filterFieldClassName = "grid min-w-0 grid-rows-[18px_48px] items-start gap-[9px]";
+const filterLabelClassName = "text-xs font-extrabold leading-[18px] tracking-normal text-[#111827]";
+const filterSelectClassName =
+  "!h-12 !min-h-12 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
 
 export function EmpresasPage() {
   const { message } = AntApp.useApp();
@@ -117,7 +122,7 @@ export function EmpresasPage() {
 
               <Form.Item className="!mb-0 min-w-0" label=" ">
                 <Button
-                  className="h-12 rounded-lg font-bold"
+                  className="!h-12 !min-h-12 rounded-lg font-bold"
                   type="primary"
                   htmlType="submit"
                   icon={<PlusOutlined />}
@@ -137,7 +142,7 @@ export function EmpresasPage() {
         loading={isLoading || isFetching}
         summary={summary}
         toolbar={
-          <div className="grid min-w-0 w-[min(560px,100%)] grid-cols-[minmax(220px,320px)_minmax(180px,220px)] gap-3 max-[720px]:w-full max-[720px]:grid-cols-1">
+          <div className="grid min-w-0 w-[min(560px,100%)] grid-cols-[minmax(220px,320px)_minmax(180px,220px)] items-end gap-3 max-[720px]:w-full max-[720px]:grid-cols-1">
             <Input
               allowClear
               aria-label="Buscar empresa por razão social"
@@ -147,16 +152,19 @@ export function EmpresasPage() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
             />
-            <Select<number>
-              allowClear
-              aria-label="Filtrar empresas por regime"
-              className={selectClassName}
-              placeholder="Todos os regimes"
-              value={selectedRegime}
-              onChange={setSelectedRegime}
-              optionFilterProp="label"
-              options={regimeOptions}
-            />
+            <div className={filterFieldClassName}>
+              <span className={filterLabelClassName}>Regime tributário</span>
+              <Select<number>
+                allowClear
+                aria-label="Filtrar empresas por regime"
+                className={filterSelectClassName}
+                placeholder="Todos os regimes"
+                value={selectedRegime}
+                onChange={setSelectedRegime}
+                optionFilterProp="label"
+                options={regimeOptions}
+              />
+            </div>
           </div>
         }
       />

@@ -1,21 +1,20 @@
 import { Alert, Button, Skeleton, Typography } from "antd";
-import { AlertOutlined, CalendarOutlined } from "@ant-design/icons";
+import { AlertOutlined } from "@ant-design/icons";
 import { useDashboard } from "../../api/hooks";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { MetricCards } from "./components/MetricCards";
 import { StatusOverview } from "./components/StatusOverview";
 
 interface DashboardPageProps {
-  onOpenCalendario: () => void;
   onOpenAlertas: () => void;
 }
 
 const dashboardPanelClassName =
-  "min-w-0 rounded-lg border border-[#f1f5f9] bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:p-4";
+  "flex h-full min-w-0 flex-col rounded-lg border border-[#f1f5f9] bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:p-4";
 
 const currentMonthName = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(new Date());
 
-export function DashboardPage({ onOpenCalendario, onOpenAlertas }: DashboardPageProps) {
+export function DashboardPage({ onOpenAlertas }: DashboardPageProps) {
   const {
     data: dashboardData,
     isLoading: isDashboardLoading,
@@ -47,26 +46,12 @@ export function DashboardPage({ onOpenCalendario, onOpenAlertas }: DashboardPage
               Obrigações do mês de {currentMonthName} e saldo operacional consolidado.
             </Typography.Text>
           </div>
-
-          <div className="flex flex-wrap justify-end gap-2.5 max-[720px]:justify-start">
-            <Button className="h-10 rounded-lg font-bold" icon={<AlertOutlined />} onClick={onOpenAlertas}>
-              Alertas
-            </Button>
-            <Button
-              className="h-10 rounded-lg font-bold"
-              type="primary"
-              icon={<CalendarOutlined />}
-              onClick={onOpenCalendario}
-            >
-              Calendário
-            </Button>
-          </div>
         </div>
 
         <MetricCards data={dashboardData} loading={isDashboardLoading} />
       </section>
 
-      <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] items-start gap-5 max-[1100px]:grid-cols-1">
+      <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] items-stretch gap-5 max-[1100px]:grid-cols-1">
         <section className={dashboardPanelClassName}>
           {isDashboardLoading ? <Skeleton active paragraph={{ rows: 5 }} /> : <StatusOverview data={dashboardData} />}
         </section>
@@ -83,7 +68,7 @@ export function DashboardPage({ onOpenCalendario, onOpenAlertas }: DashboardPage
             </div>
           </div>
 
-          <div className="grid min-h-[174px] content-start gap-5 rounded-lg border border-[#dbe5ef] bg-[#f8fafc] p-5">
+          <div className="flex min-h-[174px] flex-1 flex-col justify-between gap-5 rounded-lg border border-[#dbe5ef] bg-[#f8fafc] p-5">
             <div className="grid gap-2">
               <span className="inline-grid h-11 w-11 place-items-center rounded-[10px] bg-[#ffebee] text-[20px] text-[#c62828]">
                 <AlertOutlined />

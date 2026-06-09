@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Empty, Skeleton, Typography } from "antd";
-import type { AlertaDto } from "../../../api/types";
+import type { AlertaDto, EnumValue } from "../../../api/types";
+import { labelTipo } from "../../../shared/utils/domain";
+import { AlertasFilters } from "./AlertasFilters";
 import { AlertasList } from "./AlertasList";
 import { AlertasSummary } from "./AlertasSummary";
 import {
@@ -21,22 +23,38 @@ interface AlertasPanelProps {
 
 export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelProps) {
   const [filter, setFilter] = useState<AlertFilter>("todos");
+  const [empresaId, setEmpresaId] = useState<string>();
+  const [tipoKey, setTipoKey] = useState<string>();
   const [currentPage, setCurrentPage] = useState(1);
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => new Set());
-  const visibleAlerts = useMemo(
-    () => data.filter((item) => !dismissedIds.has(item.obrigacaoId)),
-    [data, dismissedIds]
+  const [pageSize, setPageSize] = useState(alertasPageSize);
+  const empresaOptions = useMemo(
+    () => uniqueOptions(data, (item) => item.empresaId, (item) => item.empresaRazaoSocial),
+    [data]
   );
-  const upcomingAlerts = useMemo(() => sortAlerts(visibleAlerts.filter(isUpcomingAlert)), [visibleAlerts]);
-  const overdueAlerts = useMemo(() => sortAlerts(visibleAlerts.filter(isOverdueAlert)), [visibleAlerts]);
+  const tipoOptions = useMemo(
+    () => uniqueOptions(data, (item) => enumKey(item.tipo), (item) => labelTipo(item.tipo)),
+    [data]
+  );
+  const scopedAlerts = useMemo(
+    () =>
+      data.filter(
+        (item) =>
+          (!empresaId || item.empresaId === empresaId) &&
+          (!tipoKey || enumKey(item.tipo) === tipoKey)
+      ),
+    [data, empresaId, tipoKey]
+  );
+  const upcomingAlerts = useMemo(() => sortAlerts(scopedAlerts.filter(isUpcomingAlert)), [scopedAlerts]);
+  const overdueAlerts = useMemo(() => sortAlerts(scopedAlerts.filter(isOverdueAlert)), [scopedAlerts]);
   const filteredAlerts = useMemo(
     () => getFilteredAlerts(filter, overdueAlerts, upcomingAlerts),
     [filter, overdueAlerts, upcomingAlerts]
   );
-  const maxPage = Math.max(1, Math.ceil(filteredAlerts.length / alertasPageSize));
+  const maxPage = Math.max(1, Math.ceil(filteredAlerts.length / pageSize));
   const safePage = Math.min(currentPage, maxPage);
   const hasAlerts = overdueAlerts.length > 0 || upcomingAlerts.length > 0;
   const hasFilteredAlerts = filteredAlerts.length > 0;
+  const hasOperationalFilters = Boolean(empresaId || tipoKey);
 
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, maxPage));
@@ -47,12 +65,20 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
     setCurrentPage(1);
   }
 
-  function handleDismissAlert(obrigacaoId: string) {
-    setDismissedIds((current) => {
-      const next = new Set(current);
-      next.add(obrigacaoId);
-      return next;
-    });
+  function handlePageChange(nextPage: number, nextPageSize: number) {
+    if (nextPageSize !== pageSize) {
+      setPageSize(nextPageSize);
+      setCurrentPage(1);
+      return;
+    }
+
+    setCurrentPage(nextPage);
+  }
+
+  function handleResetOperationalFilters() {
+    setEmpresaId(undefined);
+    setTipoKey(undefined);
+    setCurrentPage(1);
   }
 
   return (
@@ -78,7 +104,24 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
         onFilterChange={handleFilterChange}
       />
 
-      <div className="p-6 max-[720px]:p-4">
+      <div className="grid gap-4 p-6 max-[720px]:p-4">
+        <AlertasFilters
+          empresaId={empresaId}
+          tipoKey={tipoKey}
+          empresaOptions={empresaOptions}
+          tipoOptions={tipoOptions}
+          hasFilters={hasOperationalFilters}
+          onEmpresaChange={(value) => {
+            setEmpresaId(value);
+            setCurrentPage(1);
+          }}
+          onTipoChange={(value) => {
+            setTipoKey(value);
+            setCurrentPage(1);
+          }}
+          onReset={handleResetOperationalFilters}
+        />
+
         {loading ? (
           <Skeleton active paragraph={{ rows: 6 }} />
         ) : !hasAlerts ? (
@@ -93,12 +136,32 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
           <AlertasList
             alerts={filteredAlerts}
             currentPage={safePage}
-            onPageChange={setCurrentPage}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
             onOpenObrigacao={onOpenObrigacao}
-            onDismissAlert={handleDismissAlert}
           />
         )}
       </div>
     </>
   );
+}
+
+function enumKey(value: EnumValue) {
+  return String(value);
+}
+
+function uniqueOptions<T>(
+  items: T[],
+  getValue: (item: T) => string,
+  getLabel: (item: T) => string
+) {
+  const options = new Map<string, string>();
+
+  for (const item of items) {
+    options.set(getValue(item), getLabel(item));
+  }
+
+  return [...options.entries()]
+    .map(([value, label]) => ({ value, label }))
+    .sort((first, second) => first.label.localeCompare(second.label, "pt-BR"));
 }

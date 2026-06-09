@@ -15,15 +15,19 @@ interface CalendarioControlsProps {
   today: Dayjs;
   empresaId?: string;
   status?: number;
+  tipoKey?: string;
   empresaOptions: SelectOption<string>[];
   statusOptions: SelectOption<number>[];
+  tipoOptions: SelectOption<string>[];
   empresasLoading: boolean;
   canExport: boolean;
   onMonthChange: (value: Dayjs | null) => void;
   onReset: () => void;
   onEmpresaChange: (empresaId?: string) => void;
   onStatusChange: (status?: number) => void;
+  onTipoChange: (tipoKey?: string) => void;
   onExportCsv: () => void;
+  onExportPdf: () => void;
 }
 
 const monthNames = [
@@ -52,15 +56,19 @@ export function CalendarioControls({
   today,
   empresaId,
   status,
+  tipoKey,
   empresaOptions,
   statusOptions,
+  tipoOptions,
   empresasLoading,
   canExport,
   onMonthChange,
   onReset,
   onEmpresaChange,
   onStatusChange,
-  onExportCsv
+  onTipoChange,
+  onExportCsv,
+  onExportPdf
 }: CalendarioControlsProps) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarMode, setCalendarMode] = useState<CalendarPanelMode>("month");
@@ -103,64 +111,82 @@ export function CalendarioControls({
 
   return (
     <div className="border-b border-[#edf1f5] bg-[#f8fafc] px-7 pb-[22px] pt-5 max-[720px]:p-4">
-      <div className="grid grid-cols-[minmax(180px,0.9fr)_minmax(216px,1.25fr)_minmax(170px,0.9fr)_minmax(calc((82px*3)+20px),auto)] items-start gap-3.5 rounded-lg border border-[#e5edf6] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] max-[1180px]:grid-cols-2 max-[720px]:grid-cols-1 max-[720px]:p-3.5">
-        <div className={fieldClassName}>
-          <span className={labelClassName}>Competência</span>
-          <DatePicker
-            allowClear={false}
-            className="h-12 min-h-12 w-full border-[#e5e7eb] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-center [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
-            open={calendarOpen}
-            value={selectedDate}
-            pickerValue={pickerValue}
-            mode={calendarMode}
-            format={() => formatDisplayDate(selectedDate)}
-            suffixIcon={<CalendarOutlined />}
-            onChange={handleDateChange}
-            onOpenChange={handleCalendarOpenChange}
-            onPanelChange={handlePanelChange}
-            onPickerValueChange={(value) => setPickerValue(value)}
-          />
+      <div className="grid gap-3.5 rounded-lg border border-[#e5edf6] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] max-[720px]:p-3.5">
+        <div className="grid grid-cols-[minmax(170px,0.8fr)_minmax(240px,1.4fr)_minmax(170px,0.8fr)] items-start gap-3.5 max-[980px]:grid-cols-1">
+          <div className={fieldClassName}>
+            <span className={labelClassName}>Competência</span>
+            <DatePicker
+              allowClear={false}
+              className="h-12 min-h-12 w-full border-[#e5e7eb] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-center [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
+              open={calendarOpen}
+              value={selectedDate}
+              pickerValue={pickerValue}
+              mode={calendarMode}
+              format={() => formatDisplayDate(selectedDate)}
+              suffixIcon={<CalendarOutlined />}
+              onChange={handleDateChange}
+              onOpenChange={handleCalendarOpenChange}
+              onPanelChange={handlePanelChange}
+              onPickerValueChange={(value) => setPickerValue(value)}
+            />
+          </div>
+
+          <div className={fieldClassName}>
+            <span className={labelClassName}>Empresa</span>
+            <Select
+              allowClear
+              showSearch
+              className={selectClassName}
+              placeholder="Todas as empresas"
+              value={empresaId}
+              loading={empresasLoading}
+              optionFilterProp="label"
+              options={empresaOptions}
+              onChange={(value?: string) => onEmpresaChange(value)}
+            />
+          </div>
+
+          <div className={fieldClassName}>
+            <span className={labelClassName}>Status</span>
+            <Select
+              allowClear
+              className={selectClassName}
+              placeholder="Todos os status"
+              value={status}
+              options={statusOptions}
+              onChange={(value?: number) => onStatusChange(value)}
+            />
+          </div>
         </div>
 
-        <div className={fieldClassName}>
-          <span className={labelClassName}>Empresa</span>
-          <Select
-            allowClear
-            showSearch
-            className={selectClassName}
-            placeholder="Todas as empresas"
-            value={empresaId}
-            loading={empresasLoading}
-            optionFilterProp="label"
-            options={empresaOptions}
-            onChange={(value?: string) => onEmpresaChange(value)}
-          />
-        </div>
+        <div className="grid grid-cols-[minmax(220px,1fr)_minmax(calc((82px*3)+20px),auto)] items-start gap-3.5 max-[900px]:grid-cols-1">
+          <div className={fieldClassName}>
+            <span className={labelClassName}>Obrigação</span>
+            <Select
+              allowClear
+              showSearch
+              className={selectClassName}
+              placeholder="Todas"
+              value={tipoKey}
+              optionFilterProp="label"
+              options={tipoOptions}
+              onChange={(value?: string) => onTipoChange(value)}
+            />
+          </div>
 
-        <div className={fieldClassName}>
-          <span className={labelClassName}>Status</span>
-          <Select
-            allowClear
-            className={selectClassName}
-            placeholder="Todos os status"
-            value={status}
-            options={statusOptions}
-            onChange={(value?: number) => onStatusChange(value)}
-          />
-        </div>
-
-        <div className={fieldClassName}>
-          <span className={labelClassName}>Ações</span>
-          <div className="grid w-full grid-cols-[repeat(3,82px)] justify-end gap-2.5 max-[1180px]:justify-start max-[720px]:grid-cols-1">
-            <Button className={actionButtonClassName} icon={<CloseCircleOutlined />} onClick={onReset}>
-              Limpar
-            </Button>
-            <Button className={actionButtonClassName} icon={<FilePdfOutlined />}>
-              PDF
-            </Button>
-            <Button className={actionButtonClassName} icon={<DownloadOutlined />} disabled={!canExport} onClick={onExportCsv}>
-              CSV
-            </Button>
+          <div className={fieldClassName}>
+            <span className={labelClassName}>Ações</span>
+            <div className="grid w-full grid-cols-[repeat(3,82px)] justify-end gap-2.5 max-[900px]:justify-start max-[720px]:grid-cols-1">
+              <Button className={actionButtonClassName} icon={<CloseCircleOutlined />} onClick={onReset}>
+                Limpar
+              </Button>
+              <Button className={actionButtonClassName} icon={<FilePdfOutlined />} disabled={!canExport} onClick={onExportPdf}>
+                PDF
+              </Button>
+              <Button className={actionButtonClassName} icon={<DownloadOutlined />} disabled={!canExport} onClick={onExportCsv}>
+                CSV
+              </Button>
+            </div>
           </div>
         </div>
       </div>

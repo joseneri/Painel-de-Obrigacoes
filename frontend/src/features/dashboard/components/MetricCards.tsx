@@ -1,9 +1,9 @@
 import { Skeleton } from "antd";
 import {
   ApartmentOutlined,
+  AlertOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
-  ExclamationCircleOutlined,
   FileDoneOutlined
 } from "@ant-design/icons";
 import type { ReactNode } from "react";
@@ -78,7 +78,7 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
             title="Atrasadas"
             value={data?.atrasadas}
             loading={loading}
-            icon={<ExclamationCircleOutlined />}
+            icon={<AlertOutlined />}
             tone="danger"
           />
         </div>

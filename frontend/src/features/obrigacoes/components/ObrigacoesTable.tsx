@@ -1,20 +1,22 @@
 import { useMemo, useState } from "react";
-import { Button, Space, Table, Tooltip, Typography } from "antd";
+import { Button, Table, Tooltip, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { CheckCircleOutlined, MoreOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined } from "@ant-design/icons";
 import type { ObrigacaoDto } from "../../../api/types";
 import { labelStatus, labelTipo, normalizeStatus, StatusObrigacao } from "../../../shared/utils/domain";
-import { formatDate } from "../../../shared/utils/formatters";
+import { formatCompetencia, formatDate } from "../../../shared/utils/formatters";
 import { classNames } from "../../../shared/utils/classNames";
+import { pageSizeChangerProps, pageSizeOptions, tablePaginationSizeClassName } from "../../../shared/utils/pagination";
 import { statusClassName, urgencyLevel, urgencyPresentation } from "./calendarioPresentation";
 
 interface ObrigacoesTableProps {
   data: ObrigacaoDto[];
   loading: boolean;
+  showCompetencia?: boolean;
   onRegistrarEntrega: (obrigacao: ObrigacaoDto) => void;
 }
 
-const pageSize = 10;
+const defaultPageSize = 10;
 const tablePanelClassName = classNames(
   "min-w-0 rounded-lg border border-[#e5edf5] bg-white px-6 pb-[18px] pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.05)] max-[720px]:px-3",
   "[&_.ant-table-thead>tr>th]:!bg-[#f8fafc] [&_.ant-table-thead>tr>th]:text-[11px]",
@@ -37,7 +39,8 @@ const tablePanelClassName = classNames(
   "[&_.ant-pagination-next]:leading-9 [&_.ant-pagination-prev_.ant-pagination-item-link]:rounded-[10px]",
   "[&_.ant-pagination-next_.ant-pagination-item-link]:rounded-[10px]",
   "[&_.ant-pagination-item-active]:!border-[#1677ff] [&_.ant-pagination-item-active]:!bg-[#1677ff]",
-  "[&_.ant-pagination-item-active_a]:font-extrabold [&_.ant-pagination-item-active_a]:!text-white"
+  "[&_.ant-pagination-item-active_a]:font-extrabold [&_.ant-pagination-item-active_a]:!text-white",
+  tablePaginationSizeClassName
 );
 const dueDateClassNames = {
   ok: "text-[#047857]",
@@ -63,16 +66,32 @@ const groupedCellClassName = "!align-middle";
 const deliveredButtonClassName =
   "[&.ant-btn[disabled]]:!border-[#a7f3d0] [&.ant-btn[disabled]]:!bg-[#ecfdf5] [&.ant-btn[disabled]]:!text-[#047857]";
 
-export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: ObrigacoesTableProps) {
+export function ObrigacoesTable({
+  data,
+  loading,
+  showCompetencia = false,
+  onRegistrarEntrega
+}: ObrigacoesTableProps) {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
   const lastPage = Math.max(1, Math.ceil(data.length / pageSize));
   const currentPage = Math.min(page, lastPage);
   const visibleRows = useMemo(
     () => data.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [currentPage, data]
+    [currentPage, data, pageSize]
   );
   const obligationSpans = useMemo(() => buildRowSpans(visibleRows, (row) => String(row.tipo)), [visibleRows]);
   const dueDateSpans = useMemo(() => buildRowSpans(visibleRows, (row) => row.dataVencimento), [visibleRows]);
+  const competenciaColumn: ColumnsType<ObrigacaoDto>[number] = {
+    title: "Competência",
+    dataIndex: "competencia",
+    width: 128,
+    render: (value, row) => (
+      <span className="inline-flex items-center whitespace-nowrap text-[13px] font-semibold text-[#1d4ed8]">
+        {formatCompetencia(value, row.ano, row.mes)}
+      </span>
+    )
+  };
 
   const columns: ColumnsType<ObrigacaoDto> = [
     {
@@ -93,6 +112,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       ellipsis: true,
       render: (value) => <Typography.Text className="!font-medium !text-[#172033]">{value}</Typography.Text>
     },
+    ...(showCompetencia ? [competenciaColumn] : []),
     {
       title: "Vencimento",
       dataIndex: "dataVencimento",
@@ -141,7 +161,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       title: "Ações",
       key: "actions",
       fixed: "right",
-      width: 170,
+      width: 126,
       render: (_, row) => {
         const status = normalizeStatus(row.status);
         const delivered = status === StatusObrigacao.Entregue;
@@ -153,27 +173,22 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
             : "Marcar como entregue";
 
         return (
-          <Space className="min-w-[132px]" size={4}>
-            <Tooltip title={tooltip}>
-              <Button
-                className={classNames(
-                  "!h-7 !min-w-[92px] !rounded-md !font-semibold",
-                  "[&.ant-btn-primary]:!border-[#2563eb] [&.ant-btn-primary]:!bg-[#2563eb]",
-                  delivered && deliveredButtonClassName
-                )}
-                type={delivered ? "default" : "primary"}
-                size="small"
-                icon={<CheckCircleOutlined />}
-                disabled={disabled}
-                onClick={() => onRegistrarEntrega(row)}
-              >
-                {delivered ? "Entregue" : "Entregar"}
-              </Button>
-            </Tooltip>
-            <Tooltip title="Mais opções">
-              <Button aria-label="Mais opções" className="!h-7 !w-7 !rounded-md" type="text" icon={<MoreOutlined />} />
-            </Tooltip>
-          </Space>
+          <Tooltip title={tooltip}>
+            <Button
+              className={classNames(
+                "!h-7 !min-w-[92px] !rounded-md !font-semibold",
+                "[&.ant-btn-primary]:!border-[#2563eb] [&.ant-btn-primary]:!bg-[#2563eb]",
+                delivered && deliveredButtonClassName
+              )}
+              type={delivered ? "default" : "primary"}
+              size="small"
+              icon={<CheckCircleOutlined />}
+              disabled={disabled}
+              onClick={() => onRegistrarEntrega(row)}
+            >
+              {delivered ? "Entregue" : "Entregar"}
+            </Button>
+          </Tooltip>
         );
       }
     }
@@ -188,14 +203,15 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
         dataSource={data}
         loading={loading}
         rowClassName={(_, index) => (index % 2 === 0 ? "obrigacoes-row-even" : "obrigacoes-row-odd")}
-        scroll={{ x: 980 }}
+        scroll={{ x: showCompetencia ? 1080 : 980 }}
         pagination={{
           current: currentPage,
           pageSize,
+          pageSizeOptions,
           placement: ["bottomCenter"],
-          showSizeChanger: false,
+          showSizeChanger: pageSizeChangerProps,
           showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} obrigações`,
-          onChange: setPage
+          onChange: (nextPage, nextPageSize) => { setPageSize(nextPageSize); setPage(nextPageSize === pageSize ? nextPage : 1); }
         }}
       />
     </section>

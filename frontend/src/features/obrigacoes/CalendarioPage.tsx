@@ -3,13 +3,13 @@ import { App as AntApp, Alert, Segmented, Typography } from "antd";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useEmpresas, useObrigacoes, useRegistrarEntrega } from "../../api/hooks";
-import type { ObrigacaoDto } from "../../api/types";
+import type { EnumValue, ObrigacaoDto } from "../../api/types";
 import { getErrorMessage } from "../../shared/utils/errors";
-import { labelRegime, statusOptions } from "../../shared/utils/domain";
+import { labelRegime, labelTipo, statusOptions } from "../../shared/utils/domain";
 import { CalendarioControls } from "./components/CalendarioControls";
-import { CalendarioSummary } from "./components/CalendarioSummary";
-import { calcCalendarioSummary, modeDescription, type CalendarioModo } from "./components/calendarioPresentation";
+import { modeDescription, type CalendarioModo } from "./components/calendarioPresentation";
 import { exportObrigacoesCsv } from "./components/exportCsv";
+import { exportObrigacoesPdf } from "./components/exportPdf";
 import { EntregaModal, type EntregaFormValues } from "./components/EntregaModal";
 import { ObrigacoesTable } from "./components/ObrigacoesTable";
 
@@ -29,6 +29,7 @@ interface CalendarioPageProps {
 export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps) {
   const { message } = AntApp.useApp();
   const [selectedObrigacao, setSelectedObrigacao] = useState<ObrigacaoDto | null>(null);
+  const [tipoKey, setTipoKey] = useState<string>();
   const today = useMemo(() => dayjs(), []);
 
   const selectedMonth = useMemo(
@@ -45,8 +46,11 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
   const registrarEntrega = useRegistrarEntrega();
   const empresas = empresasQuery.data ?? [];
   const obrigacoes = obrigacoesQuery.data ?? [];
+  const filteredObrigacoes = useMemo(
+    () => (tipoKey ? obrigacoes.filter((item) => enumKey(item.tipo) === tipoKey) : obrigacoes),
+    [obrigacoes, tipoKey]
+  );
   const error = empresasQuery.isError ? empresasQuery.error : obrigacoesQuery.isError ? obrigacoesQuery.error : null;
-  const summary = useMemo(() => calcCalendarioSummary(obrigacoes), [obrigacoes]);
   const empresaOptions = useMemo(
     () =>
       empresas.map((empresa) => ({
@@ -54,6 +58,10 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
         label: `${empresa.razaoSocial} - ${labelRegime(empresa.regimeTributario)}`
       })),
     [empresas]
+  );
+  const tipoOptions = useMemo(
+    () => uniqueOptions(obrigacoes, (item) => enumKey(item.tipo), (item) => labelTipo(item.tipo)),
+    [obrigacoes]
   );
 
   function handleRegistrarEntrega(values: EntregaFormValues) {
@@ -84,6 +92,7 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
   }
 
   function handleResetFilters() {
+    setTipoKey(undefined);
     onFiltersChange({ empresaId: undefined, status: undefined });
   }
 
@@ -143,24 +152,27 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
           selectedMonth={selectedMonth}
           empresaId={filters.empresaId}
           status={filters.status}
+          tipoKey={tipoKey}
           empresaOptions={empresaOptions}
           statusOptions={statusOptions}
+          tipoOptions={tipoOptions}
           empresasLoading={empresasQuery.isLoading || empresasQuery.isFetching}
-          canExport={Boolean(obrigacoes.length)}
+          canExport={Boolean(filteredObrigacoes.length)}
           today={today}
           onMonthChange={handleMonthChange}
           onReset={handleResetFilters}
           onEmpresaChange={(empresaId) => onFiltersChange({ empresaId })}
           onStatusChange={(status) => onFiltersChange({ status })}
-          onExportCsv={() => exportObrigacoesCsv(obrigacoes)}
+          onTipoChange={setTipoKey}
+          onExportCsv={() => exportObrigacoesCsv(filteredObrigacoes)}
+          onExportPdf={() => exportObrigacoesPdf(filteredObrigacoes)}
         />
-
-        <CalendarioSummary summary={summary} />
       </section>
 
       <ObrigacoesTable
-        data={obrigacoes}
+        data={filteredObrigacoes}
         loading={obrigacoesQuery.isLoading || obrigacoesQuery.isFetching}
+        showCompetencia={filters.modo === "vencimento"}
         onRegistrarEntrega={setSelectedObrigacao}
       />
 
@@ -173,4 +185,24 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
       />
     </div>
   );
+}
+
+function enumKey(value: EnumValue) {
+  return String(value);
+}
+
+function uniqueOptions<T>(
+  items: T[],
+  getValue: (item: T) => string,
+  getLabel: (item: T) => string
+) {
+  const options = new Map<string, string>();
+
+  for (const item of items) {
+    options.set(getValue(item), getLabel(item));
+  }
+
+  return [...options.entries()]
+    .map(([value, label]) => ({ value, label }))
+    .sort((first, second) => first.label.localeCompare(second.label, "pt-BR"));
 }

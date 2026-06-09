@@ -1,13 +1,13 @@
 import { Button, Dropdown, Table, Typography } from "antd";
 import type { MenuProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { CalendarOutlined, CloseCircleOutlined, MoreOutlined } from "@ant-design/icons";
+import { CalendarOutlined, MoreOutlined } from "@ant-design/icons";
 import type { AlertaDto } from "../../../api/types";
 import { labelStatus, labelTipo } from "../../../shared/utils/domain";
 import { formatDate, urgencyText } from "../../../shared/utils/formatters";
 import { classNames } from "../../../shared/utils/classNames";
+import { pageSizeChangerProps, tablePaginationSizeClassName } from "../../../shared/utils/pagination";
 import {
-  alertasPageSize,
   alertBadgeClassName,
   alertStatusClassNames,
   alertUrgencyBadgeClassName,
@@ -19,9 +19,9 @@ import {
 interface AlertasListProps {
   alerts: AlertaDto[];
   currentPage: number;
-  onPageChange: (page: number) => void;
+  pageSize: number;
+  onPageChange: (page: number, pageSize: number) => void;
   onOpenObrigacao: (alerta: AlertaDto) => void;
-  onDismissAlert: (obrigacaoId: string) => void;
 }
 
 const tablePanelClassName = classNames(
@@ -46,7 +46,8 @@ const tablePanelClassName = classNames(
   "[&_.ant-pagination-next]:leading-9 [&_.ant-pagination-prev_.ant-pagination-item-link]:rounded-[10px]",
   "[&_.ant-pagination-next_.ant-pagination-item-link]:rounded-[10px]",
   "[&_.ant-pagination-item-active]:!border-[#1677ff] [&_.ant-pagination-item-active]:!bg-[#1677ff]",
-  "[&_.ant-pagination-item-active_a]:font-extrabold [&_.ant-pagination-item-active_a]:!text-white"
+  "[&_.ant-pagination-item-active_a]:font-extrabold [&_.ant-pagination-item-active_a]:!text-white",
+  tablePaginationSizeClassName
 );
 
 const dueDateClassNames = {
@@ -54,14 +55,9 @@ const dueDateClassNames = {
   atencao: "text-[#b45309]",
   urgente: "text-[#b91c1c]"
 };
+const alertasPageSizeOptions = [7, 10, 15, 20];
 
-export function AlertasList({
-  alerts,
-  currentPage,
-  onPageChange,
-  onOpenObrigacao,
-  onDismissAlert
-}: AlertasListProps) {
+export function AlertasList({ alerts, currentPage, pageSize, onPageChange, onOpenObrigacao }: AlertasListProps) {
   const columns: ColumnsType<AlertaDto> = [
     {
       title: "Obrigação",
@@ -128,7 +124,7 @@ export function AlertasList({
       key: "actions",
       fixed: "right",
       width: 84,
-      render: (_, row) => <AlertActions item={row} onOpenObrigacao={onOpenObrigacao} onDismissAlert={onDismissAlert} />
+      render: (_, row) => <AlertActions item={row} onOpenObrigacao={onOpenObrigacao} />
     }
   ];
 
@@ -143,9 +139,10 @@ export function AlertasList({
         scroll={{ x: 1040 }}
         pagination={{
           current: currentPage,
-          pageSize: alertasPageSize,
+          pageSize,
+          pageSizeOptions: alertasPageSizeOptions,
           placement: ["bottomCenter"],
-          showSizeChanger: false,
+          showSizeChanger: pageSizeChangerProps,
           showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} alertas`,
           onChange: onPageChange
         }}
@@ -157,27 +154,18 @@ export function AlertasList({
 interface AlertActionsProps {
   item: AlertaDto;
   onOpenObrigacao: (alerta: AlertaDto) => void;
-  onDismissAlert: (obrigacaoId: string) => void;
 }
 
-function AlertActions({ item, onOpenObrigacao, onDismissAlert }: AlertActionsProps) {
+function AlertActions({ item, onOpenObrigacao }: AlertActionsProps) {
   const actionItems: MenuProps["items"] = [
-    { key: "go", label: "Ir para Obrigação", icon: <CalendarOutlined /> },
-    { key: "dismiss", label: "Dispensar Alerta", icon: <CloseCircleOutlined />, danger: true }
+    { key: "open", label: "Abrir obrigação", icon: <CalendarOutlined /> }
   ];
 
   return (
     <Dropdown
       menu={{
         items: actionItems,
-        onClick: ({ key }) => {
-          if (key === "go") {
-            onOpenObrigacao(item);
-            return;
-          }
-
-          onDismissAlert(item.obrigacaoId);
-        }
+        onClick: () => onOpenObrigacao(item)
       }}
       placement="bottomRight"
       trigger={["click"]}

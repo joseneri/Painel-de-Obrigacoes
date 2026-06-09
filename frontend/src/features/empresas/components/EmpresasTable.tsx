@@ -8,6 +8,7 @@ import { labelRegime } from "../../../shared/utils/domain";
 import { getErrorMessage } from "../../../shared/utils/errors";
 import { formatCnpj } from "../../../shared/utils/formatters";
 import { classNames } from "../../../shared/utils/classNames";
+import { pageSizeChangerProps, pageSizeOptions, tablePaginationSizeClassName } from "../../../shared/utils/pagination";
 
 interface EmpresasTableProps {
   data: EmpresaDto[];
@@ -16,7 +17,7 @@ interface EmpresasTableProps {
   toolbar: ReactNode;
 }
 
-const pageSize = 8;
+const defaultPageSize = 8;
 const tablePanelClassName = classNames(
   "min-w-0 max-w-full overflow-hidden rounded-lg border border-[#e5edf5] bg-white px-6 pb-[18px] pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.05)] max-[720px]:w-[calc(100%-24px)] max-[720px]:px-3",
   "[&_.ant-table-thead>tr>th]:!bg-[#f8fafc] [&_.ant-table-thead>tr>th]:text-[11px]",
@@ -40,7 +41,8 @@ const tablePanelClassName = classNames(
   "[&_.ant-pagination-next_.ant-pagination-item-link]:rounded-[10px]",
   "[&_.ant-pagination-item-active]:!rounded-full [&_.ant-pagination-item-active]:!border-[#1677ff]",
   "[&_.ant-pagination-item-active]:!bg-[#1677ff] [&_.ant-pagination-item-active_a]:font-extrabold",
-  "[&_.ant-pagination-item-active_a]:!text-white"
+  "[&_.ant-pagination-item-active_a]:!text-white",
+  tablePaginationSizeClassName
 );
 const actionsMenuClassName = classNames(
   "min-w-[174px] rounded-lg border border-[#e5edf5] p-1 shadow-[0_12px_24px_rgba(15,23,42,0.12)]",
@@ -152,9 +154,10 @@ export function EmpresasTable({ data, loading, summary, toolbar }: EmpresasTable
           rowClassName={(_, index) => (index % 2 === 0 ? "empresas-row-even" : "empresas-row-odd")}
           scroll={{ x: 720 }}
           pagination={{
-            pageSize,
+            defaultPageSize,
+            pageSizeOptions,
             placement: ["bottomCenter"],
-            showSizeChanger: false,
+            showSizeChanger: pageSizeChangerProps,
             showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} empresas`
           }}
         />

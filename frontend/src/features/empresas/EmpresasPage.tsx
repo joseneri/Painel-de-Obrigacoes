@@ -106,7 +106,10 @@ export function EmpresasPage() {
                 name="cnpj"
                 label="CNPJ"
                 normalize={(value) => formatCnpj(value ?? "")}
-                rules={[{ required: true, message: "Informe o CNPJ." }]}
+                rules={[
+                  { required: true, message: "Informe o CNPJ." },
+                  { validator: validateCnpjLength }
+                ]}
               >
                 <Input className={inputClassName} placeholder="00.000.000/0000-00" maxLength={18} />
               </Form.Item>
@@ -178,4 +181,10 @@ function getEmpresasSummary(filteredCount: number, totalCount: number) {
   }
 
   return `${filteredCount} de ${totalCount} empresas`;
+}
+
+function validateCnpjLength(_: unknown, value?: string) {
+  return onlyDigits(value ?? "").length === 14
+    ? Promise.resolve()
+    : Promise.reject(new Error("CNPJ deve conter 14 dígitos."));
 }

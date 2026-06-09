@@ -216,7 +216,85 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
-### Pendente de hash - `feat: refine operational frontend flows`
+### Pendente de hash - `feat: add operational filters and exports`
+
+O que mudou:
+
+- O Painel de Alertas ganhou filtros operacionais por empresa e tipo de
+  obrigacao, alem de seletor de tamanho de pagina.
+- A lista de alertas removeu a dispensa local e manteve acao de abertura da
+  obrigacao no Calendario, preservando o fluxo de analise sem alterar
+  persistencia.
+- O Calendario ganhou filtro por tipo de obrigacao, exportacao PDF simples no
+  navegador e exportacao CSV/PDF baseada no conjunto filtrado.
+- A area de controles do Calendario foi reorganizada em duas linhas para manter
+  densidade e evitar aperto quando o novo filtro entra.
+- A tabela do Calendario passou a mostrar a competencia quando a tela esta em
+  modo `vencimento`, evitando perder contexto entre competencia e prazo.
+- Empresas passou a validar no frontend se o CNPJ possui 14 digitos antes de
+  enviar o cadastro.
+- Tabelas de Empresas, Alertas e Calendario passaram a compartilhar estilo de
+  seletor de tamanho de pagina.
+- O Dashboard trocou o icone de atrasadas para um alerta mais direto.
+- Foi adicionado teste de Application cobrindo rejeicao de CNPJ incompleto e
+  normalizacao de CNPJ mascarado no cadastro de empresa.
+
+Decisoes tecnicas:
+
+- Os filtros novos continuam no frontend sobre dados ja retornados pela API; a
+  engine fiscal e as regras de obrigacoes seguem no backend/Domain.
+- A exportacao PDF e client-side e simples, adequada para demo, sem criar novo
+  endpoint fora do escopo.
+- CSV e PDF usam a mesma lista filtrada que o usuario esta vendo, deixando a
+  exportacao coerente com a tela.
+- O utilitario compartilhado de paginacao evita duplicar classes longas de Ant
+  Design sem criar um design system novo.
+- A validacao de CNPJ no frontend melhora feedback imediato, mas o backend
+  segue como camada autoritativa com teste em Application.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, guia de IA, resumo de implementacao e registros
+  em `tmp/` antes de preparar o commit.
+- Revisou o diff atual depois que o worktree mudou durante a validacao, sem
+  sobrescrever alteracoes externas.
+- Checou riscos de frontend, encoding, tamanho de arquivos, whitespace e
+  contratos de camada.
+- Usou Browser em segundo plano para smoke das rotas afetadas.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente `commita tudo`, autorizando stage e commit de
+  todo o worktree atual.
+- As alteracoes visuais e operacionais foram mantidas no escopo de frontend e
+  testes de Application, sem mover regra fiscal para a UI.
+- O aviso conhecido de Ant Design sobre `overlayClassName` em Empresas foi
+  identificado como warning existente de UI, nao erro bloqueante deste commit.
+
+Validacoes executadas:
+
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 34 testes
+  passaram.
+- `npm run build` em `frontend/`: passou.
+- Checagem de tamanho em `backend/src`, `backend/tests` e `frontend/src`: nenhum
+  `.cs`, `.ts` ou `.tsx` acima de 250 linhas.
+- `rg -n "Ã|Â|�" frontend/src backend/tests`: sem ocorrencias de mojibake em
+  codigo.
+- `git diff --check`: sem erro bloqueante, apenas avisos LF/CRLF esperados no
+  Windows.
+- Browser local em `/calendario`, `/alertas` e `/empresas`: rotas renderizadas,
+  novos filtros visiveis e sem overflow horizontal detectado.
+
+Como apresentar esse commit:
+
+- "A demo agora permite filtrar alertas e calendario pelo tipo de obrigacao, e
+  exportar exatamente o recorte visualizado."
+- "O frontend ficou mais operacional sem recalcular regra fiscal; tudo continua
+  consumindo contratos HTTP do backend."
+- "A validacao de CNPJ aparece primeiro na tela, mas o backend continua
+  protegido por teste de Application."
+
+### `9172b90` - `feat: refine operational frontend flows`
 
 O que mudou:
 

@@ -16,7 +16,7 @@ function NotFoundPage() {
       subTitle="A rota solicitada nao existe neste painel."
       extra={
         <Link to="/dashboard">
-          <Button type="primary">Voltar ao relatorio</Button>
+          <Button type="primary">Voltar ao dashboard</Button>
         </Link>
       }
     />

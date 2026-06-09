@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { ApartmentOutlined, CalendarOutlined, DashboardOutlined } from "@ant-design/icons";
+import { AlertOutlined, ApartmentOutlined, CalendarOutlined, DashboardOutlined } from "@ant-design/icons";
 
-export type AppRouteKey = "dashboard" | "calendario" | "empresas";
-export type AppRoutePath = "/dashboard" | "/calendario" | "/empresas";
+export type AppRouteKey = "dashboard" | "calendario" | "alertas" | "empresas";
+export type AppRoutePath = "/dashboard" | "/calendario" | "/alertas" | "/empresas";
 
 export interface NavigationItem {
   key: AppRouteKey;
@@ -16,8 +16,8 @@ export const navigationItems: NavigationItem[] = [
   {
     key: "dashboard",
     path: "/dashboard",
-    label: "Relatorio",
-    title: "Relatorio fiscal",
+    label: "Dashboard",
+    title: "Dashboard",
     icon: <DashboardOutlined />
   },
   {
@@ -26,6 +26,13 @@ export const navigationItems: NavigationItem[] = [
     label: "Calendario",
     title: "Calendario de obrigacoes",
     icon: <CalendarOutlined />
+  },
+  {
+    key: "alertas",
+    path: "/alertas",
+    label: "Painel de Alertas",
+    title: "Painel de Alertas",
+    icon: <AlertOutlined />
   },
   {
     key: "empresas",

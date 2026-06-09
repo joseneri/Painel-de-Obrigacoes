@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as EmpresasRouteImport } from './routes/empresas'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarioRouteImport } from './routes/calendario'
+import { Route as AlertasRouteImport } from './routes/alertas'
 import { Route as IndexRouteImport } from './routes/index'
 
 const EmpresasRoute = EmpresasRouteImport.update({
@@ -29,6 +30,11 @@ const CalendarioRoute = CalendarioRouteImport.update({
   path: '/calendario',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlertasRoute = AlertasRouteImport.update({
+  id: '/alertas',
+  path: '/alertas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alertas': typeof AlertasRoute
   '/calendario': typeof CalendarioRoute
   '/dashboard': typeof DashboardRoute
   '/empresas': typeof EmpresasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alertas': typeof AlertasRoute
   '/calendario': typeof CalendarioRoute
   '/dashboard': typeof DashboardRoute
   '/empresas': typeof EmpresasRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alertas': typeof AlertasRoute
   '/calendario': typeof CalendarioRoute
   '/dashboard': typeof DashboardRoute
   '/empresas': typeof EmpresasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/calendario' | '/dashboard' | '/empresas'
+  fullPaths: '/' | '/alertas' | '/calendario' | '/dashboard' | '/empresas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/calendario' | '/dashboard' | '/empresas'
-  id: '__root__' | '/' | '/calendario' | '/dashboard' | '/empresas'
+  to: '/' | '/alertas' | '/calendario' | '/dashboard' | '/empresas'
+  id: '__root__' | '/' | '/alertas' | '/calendario' | '/dashboard' | '/empresas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlertasRoute: typeof AlertasRoute
   CalendarioRoute: typeof CalendarioRoute
   DashboardRoute: typeof DashboardRoute
   EmpresasRoute: typeof EmpresasRoute
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alertas': {
+      id: '/alertas'
+      path: '/alertas'
+      fullPath: '/alertas'
+      preLoaderRoute: typeof AlertasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlertasRoute: AlertasRoute,
   CalendarioRoute: CalendarioRoute,
   DashboardRoute: DashboardRoute,
   EmpresasRoute: EmpresasRoute,

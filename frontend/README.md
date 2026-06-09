@@ -29,11 +29,11 @@ npm run dev
 
 Por padrao o Vite sobe em:
 
-- `http://localhost:5173`
+- `http://localhost:5241`
 
 A API esperada por padrao no desenvolvimento local e:
 
-- `http://localhost:5179`
+- `http://localhost:5280`
 
 O arquivo `.env.example` registra essa URL. Para apontar temporariamente para a
 API do Compose principal em `8080`, crie um `.env.local`:

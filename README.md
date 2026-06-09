@@ -56,15 +56,19 @@ O Compose principal sobe API e PostgreSQL:
 docker compose up --build
 ```
 
-API:
+API no Compose principal (Docker/demo):
 
 - `http://localhost:8080/health`
 - `http://localhost:8080/openapi/v1.json`
 - `http://localhost:8080/scalar` em ambiente Development
 
+Essas URLs em `8080` so respondem quando a API estiver rodando pelo
+`docker compose up --build`. No desenvolvimento local com `dotnet run` ou
+Visual Studio, use as URLs em `5280` da secao "Desenvolvimento Local".
+
 Frontend local:
 
-- `http://localhost:5173`
+- `http://localhost:5241`
 
 Banco:
 
@@ -100,9 +104,10 @@ No Visual Studio:
 
 URLs no modo desenvolvimento local:
 
-- `http://localhost:5179/health`
-- `http://localhost:5179/openapi/v1.json`
-- `http://localhost:5179/scalar`
+- `http://localhost:5280/health`
+- `http://localhost:5280/openapi/v1.json`
+- `http://localhost:5280/scalar`
+- `http://localhost:5280/scalar/#tag/painelobrigacoesapi`
 
 Frontend:
 
@@ -112,7 +117,7 @@ npm install
 npm run dev
 ```
 
-Por padrao o frontend consome a API local em `http://localhost:5179`, alinhado
+Por padrao o frontend consome a API local em `http://localhost:5280`, alinhado
 ao `dotnet run --launch-profile http`. O arquivo `frontend/.env.example`
 registra esse valor.
 

@@ -11,7 +11,7 @@ export class ApiError extends Error {
 }
 
 export const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:5179";
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:5280";
 
 interface RequestOptions {
   method?: "GET" | "POST" | "DELETE";

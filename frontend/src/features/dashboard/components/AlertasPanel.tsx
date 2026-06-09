@@ -45,7 +45,7 @@ export function AlertasPanel({ data, loading }: AlertasPanelProps) {
         </div>
         <div className="alerts-summary" role="group" aria-label="Filtros de alertas">
           {renderFilterTag("atrasadas", `${overdueAlerts.length} atrasadas`, "red", filter, setFilter, setCurrentPage)}
-          {renderFilterTag("vencendo", `${upcomingAlerts.length} vencendo`, "blue", filter, setFilter, setCurrentPage)}
+          {renderFilterTag("vencendo", `${upcomingAlerts.length} vencendo`, "orange", filter, setFilter, setCurrentPage)}
           {renderFilterTag("todos", `${data.length} itens`, "cyan", filter, setFilter, setCurrentPage)}
         </div>
       </div>
@@ -87,7 +87,7 @@ export function AlertasPanel({ data, loading }: AlertasPanelProps) {
 function renderFilterTag(
   value: AlertFilter,
   label: string,
-  color: "red" | "blue" | "cyan",
+  color: "red" | "orange" | "cyan",
   selected: AlertFilter,
   onFilterChange: (value: AlertFilter) => void,
   onPageChange: (page: number) => void

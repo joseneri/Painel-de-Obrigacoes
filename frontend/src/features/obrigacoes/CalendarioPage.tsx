@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
-import { App as AntApp, Alert, Button, Segmented, Select, Space, Typography } from "antd";
-import { DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
-import dayjs, { type Dayjs } from "dayjs";
+import { App as AntApp, Alert, Segmented, Typography } from "antd";
+import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import { useEmpresas, useObrigacoes, useRegistrarEntrega } from "../../api/hooks";
 import type { ObrigacaoDto } from "../../api/types";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { labelRegime, statusOptions } from "../../shared/utils/domain";
 import "./calendario-competencia.css";
-import { CompetenciaNavigator } from "./components/CompetenciaNavigator";
+import { CalendarioControls } from "./components/CalendarioControls";
+import { CalendarioSummary } from "./components/CalendarioSummary";
+import { calcCalendarioSummary, modeDescription, type CalendarioModo } from "./components/calendarioPresentation";
 import { exportObrigacoesCsv } from "./components/exportCsv";
 import { EntregaModal, type EntregaFormValues } from "./components/EntregaModal";
 import { ObrigacoesTable } from "./components/ObrigacoesTable";
@@ -17,7 +19,7 @@ export interface CalendarioFilterState {
   mes: number;
   empresaId?: string;
   status?: number;
-  modo: "competencia" | "vencimento";
+  modo: CalendarioModo;
 }
 
 interface CalendarioPageProps {
@@ -28,41 +30,32 @@ interface CalendarioPageProps {
 export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps) {
   const { message } = AntApp.useApp();
   const [selectedObrigacao, setSelectedObrigacao] = useState<ObrigacaoDto | null>(null);
+  const today = useMemo(() => dayjs(), []);
 
   const selectedMonth = useMemo(
     () => dayjs(`${filters.ano}-${String(filters.mes).padStart(2, "0")}-01`),
     [filters.ano, filters.mes]
   );
-
   const obrigacoesFilters = useMemo(
-    () => ({
-      empresaId: filters.empresaId,
-      ano: filters.ano,
-      mes: filters.mes,
-      status: filters.status,
-      modo: filters.modo
-    }),
+    () => ({ ...filters }),
     [filters.empresaId, filters.ano, filters.mes, filters.status, filters.modo]
   );
 
-  const {
-    data: empresas = [],
-    isLoading: isEmpresasLoading,
-    isError: isEmpresasError,
-    error: empresasError,
-    isFetching: isEmpresasFetching
-  } = useEmpresas();
-  const {
-    data: obrigacoes = [],
-    isLoading: isObrigacoesLoading,
-    isError: isObrigacoesError,
-    error: obrigacoesError,
-    isFetching: isObrigacoesFetching,
-    refetch: refetchObrigacoes
-  } = useObrigacoes(obrigacoesFilters);
+  const empresasQuery = useEmpresas();
+  const obrigacoesQuery = useObrigacoes(obrigacoesFilters);
   const registrarEntrega = useRegistrarEntrega();
-
-  const error = isEmpresasError ? empresasError : isObrigacoesError ? obrigacoesError : null;
+  const empresas = empresasQuery.data ?? [];
+  const obrigacoes = obrigacoesQuery.data ?? [];
+  const error = empresasQuery.isError ? empresasQuery.error : obrigacoesQuery.isError ? obrigacoesQuery.error : null;
+  const summary = useMemo(() => calcCalendarioSummary(obrigacoes), [obrigacoes]);
+  const empresaOptions = useMemo(
+    () =>
+      empresas.map((empresa) => ({
+        value: empresa.id,
+        label: `${empresa.razaoSocial} - ${labelRegime(empresa.regimeTributario)}`
+      })),
+    [empresas]
+  );
 
   function handleRegistrarEntrega(values: EntregaFormValues) {
     if (!selectedObrigacao) {
@@ -85,33 +78,15 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
     );
   }
 
-  function handleHojeClick() {
-    const today = dayjs();
-    onFiltersChange({ ano: today.year(), mes: today.month() + 1 });
-  }
-
-  function handleMonthChange(value: Dayjs | null) {
+  function handleMonthChange(value: dayjs.Dayjs | null) {
     if (value) {
       onFiltersChange({ ano: value.year(), mes: value.month() + 1 });
     }
   }
 
-  function handleMonthOffset(months: number) {
-    const nextMonth = selectedMonth.add(months, "month");
-    onFiltersChange({ ano: nextMonth.year(), mes: nextMonth.month() + 1 });
+  function handleResetFilters() {
+    onFiltersChange({ empresaId: undefined, status: undefined });
   }
-
-  function handleModeChange(modo: string | number) {
-    if (modo === "competencia" || modo === "vencimento") {
-      onFiltersChange({ modo });
-    }
-  }
-
-  const modeLabel = filters.modo === "vencimento" ? "vencimento" : "competencia";
-  const modeDescription =
-    filters.modo === "vencimento"
-      ? "Obrigacoes com prazo no mes selecionado, com status e conclusao."
-      : "Obrigacoes da competencia selecionada, com prazos e status.";
 
   return (
     <div className="page-stack">
@@ -125,71 +100,61 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
       )}
 
       <section className="panel calendario-panel">
-        <div className="calendario-panel__header">
+        <div className="calendario-topbar">
           <div>
-            <Typography.Title level={3}>Calendario por {modeLabel}</Typography.Title>
-            <Typography.Text type="secondary">{modeDescription}</Typography.Text>
+            <Typography.Title level={2}>Calendario de Obrigacoes</Typography.Title>
+            <Typography.Text type="secondary">{modeDescription(filters.modo)}</Typography.Text>
           </div>
 
-          <Space wrap>
-            <Segmented
-              className="calendario-mode-toggle"
-              value={filters.modo}
-              onChange={handleModeChange}
-              options={[
-                { label: "Competencia", value: "competencia" },
-                { label: "Vencimento", value: "vencimento" }
-              ]}
-            />
-            <Button icon={<ReloadOutlined />} onClick={() => refetchObrigacoes()}>
-              Atualizar
-            </Button>
-            <Button
-              icon={<DownloadOutlined />}
-              disabled={!obrigacoes.length}
-              onClick={() => exportObrigacoesCsv(obrigacoes)}
-            >
-              CSV
-            </Button>
-          </Space>
+          <Segmented
+            className="calendario-mode-toggle"
+            value={filters.modo}
+            onChange={(value) => onFiltersChange({ modo: value as CalendarioModo })}
+            options={[
+              {
+                label: (
+                  <span className="calendario-segmented-label">
+                    <CalendarOutlined />
+                    Competencia
+                  </span>
+                ),
+                value: "competencia"
+              },
+              {
+                label: (
+                  <span className="calendario-segmented-label">
+                    <ClockCircleOutlined />
+                    Vencimento
+                  </span>
+                ),
+                value: "vencimento"
+              }
+            ]}
+          />
         </div>
 
-        <CompetenciaNavigator
+        <CalendarioControls
           selectedMonth={selectedMonth}
-          todayLabel={dayjs().format("DD/MM/YYYY")}
+          empresaId={filters.empresaId}
+          status={filters.status}
+          empresaOptions={empresaOptions}
+          statusOptions={statusOptions}
+          empresasLoading={empresasQuery.isLoading || empresasQuery.isFetching}
+          canExport={Boolean(obrigacoes.length)}
+          today={today}
           onMonthChange={handleMonthChange}
-          onMonthOffset={handleMonthOffset}
-          onToday={handleHojeClick}
+          onReset={handleResetFilters}
+          onEmpresaChange={(empresaId) => onFiltersChange({ empresaId })}
+          onStatusChange={(status) => onFiltersChange({ status })}
+          onExportCsv={() => exportObrigacoesCsv(obrigacoes)}
         />
 
-        <div className="calendario-filter-row">
-          <Select
-            allowClear
-            showSearch
-            placeholder="Empresa"
-            value={filters.empresaId}
-            loading={isEmpresasLoading || isEmpresasFetching}
-            onChange={(empresaId) => onFiltersChange({ empresaId })}
-            optionFilterProp="label"
-            options={empresas.map((empresa) => ({
-              value: empresa.id,
-              label: `${empresa.razaoSocial} - ${labelRegime(empresa.regimeTributario)}`
-            }))}
-          />
-
-          <Select
-            allowClear
-            placeholder="Status"
-            value={filters.status}
-            onChange={(status) => onFiltersChange({ status })}
-            options={statusOptions}
-          />
-        </div>
+        <CalendarioSummary summary={summary} />
       </section>
 
       <ObrigacoesTable
         data={obrigacoes}
-        loading={isObrigacoesLoading || isObrigacoesFetching}
+        loading={obrigacoesQuery.isLoading || obrigacoesQuery.isFetching}
         onRegistrarEntrega={setSelectedObrigacao}
       />
 

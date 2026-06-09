@@ -4,6 +4,7 @@ import { useDashboard } from "../../api/hooks";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { MetricCards } from "./components/MetricCards";
 import { StatusOverview } from "./components/StatusOverview";
+import "./dashboard.css";
 
 interface DashboardPageProps {
   onOpenCalendario: () => void;

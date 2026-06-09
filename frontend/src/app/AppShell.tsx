@@ -9,6 +9,7 @@ const headerSubtitle = "Controle centralizado de prazos, status e entregas acess
 export function AppShell() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const activeItem = getNavigationItem(pathname);
+  const hideHeader = pathname === "/calendario";
 
   return (
     <Layout className="app-shell">
@@ -34,21 +35,23 @@ export function AppShell() {
       </Layout.Sider>
 
       <Layout>
-        <Layout.Header className="app-header">
-          <div>
-            <Typography.Title level={2}>{activeItem?.title ?? "Pagina nao encontrada"}</Typography.Title>
-            <Typography.Text type="secondary">{headerSubtitle}</Typography.Text>
-          </div>
+        {!hideHeader && (
+          <Layout.Header className="app-header">
+            <div>
+              <Typography.Title level={2}>{activeItem?.title ?? "Pagina nao encontrada"}</Typography.Title>
+              <Typography.Text type="secondary">{headerSubtitle}</Typography.Text>
+            </div>
 
-          <Space wrap>
-            <Badge status="processing" text="API local" />
-            <Tag icon={<DatabaseOutlined />} color="blue">
-              {apiBaseUrl}
-            </Tag>
-          </Space>
-        </Layout.Header>
+            <Space wrap>
+              <Badge status="processing" text="API local" />
+              <Tag icon={<DatabaseOutlined />} color="blue">
+                {apiBaseUrl}
+              </Tag>
+            </Space>
+          </Layout.Header>
+        )}
 
-        <Layout.Content className="app-content">
+        <Layout.Content className={`app-content${hideHeader ? " app-content--calendar" : ""}`}>
           <Outlet />
         </Layout.Content>
       </Layout>

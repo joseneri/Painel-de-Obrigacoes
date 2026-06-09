@@ -1,0 +1,174 @@
+.calendario-table-panel {
+  --brand-primary: #1677ff;
+  --status-success: #2e7d32;
+  --status-warning: #f57f17;
+  --status-danger: #c62828;
+  --surface-default: #f8fafc;
+  --badge-entregue-bg: #ecfdf5;
+  --badge-entregue-txt: #047857;
+  --badge-entregue-border: #a7f3d0;
+  --badge-pendente-bg: #fffbeb;
+  --badge-pendente-txt: #b45309;
+  --badge-pendente-border: #fde68a;
+  --badge-atrasado-bg: #fef2f2;
+  --badge-atrasado-txt: #b91c1c;
+  --badge-atrasado-border: #fecaca;
+  padding: 0 24px 18px;
+  border-color: #f1f5f9;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.calendario-table-panel .ant-table-thead > tr > th {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.calendario-table-panel .ant-table-tbody > tr.obrigacoes-row-odd > td {
+  background: var(--surface-default);
+}
+
+.calendario-table-panel .ant-table-tbody > tr:hover > td {
+  background: #eff6ff !important;
+}
+
+.obrigacao-name {
+  color: var(--brand-primary);
+}
+
+.tag-venc,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tag-venc {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tag-venc--ok { color: var(--status-success); }
+.tag-venc--atencao { color: var(--status-warning); }
+.tag-venc--urgente { color: var(--status-danger); }
+
+.urgency-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.urgency-badge--ok { background: #e8f5e9; color: var(--status-success); }
+.urgency-badge--atencao { background: #fff3e0; color: var(--status-warning); }
+.urgency-badge--urgente { background: #ffebee; color: var(--status-danger); }
+
+.status-badge {
+  gap: 7px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.status-badge--pendente {
+  border-color: var(--badge-pendente-border);
+  background: var(--badge-pendente-bg);
+  color: var(--badge-pendente-txt);
+}
+
+.status-badge--entregue {
+  border-color: var(--badge-entregue-border);
+  background: var(--badge-entregue-bg);
+  color: var(--badge-entregue-txt);
+}
+
+.status-badge--atrasada {
+  border-color: var(--badge-atrasado-border);
+  background: var(--badge-atrasado-bg);
+  color: var(--badge-atrasado-txt);
+}
+
+.status-badge--nao-aplicavel {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.row-actions {
+  min-width: 132px;
+}
+
+.obligation-action.ant-btn {
+  min-width: 92px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.obligation-action--done.ant-btn[disabled],
+.obligation-action--done.ant-btn[disabled]:hover {
+  border-color: var(--badge-entregue-border);
+  background: var(--badge-entregue-bg);
+  color: var(--badge-entregue-txt);
+}
+
+.calendario-table-panel .ant-table-pagination.ant-pagination {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 20px 0 4px;
+  gap: 8px;
+}
+
+.calendario-table-panel .ant-pagination-total-text {
+  height: 38px;
+  margin-inline-end: 8px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 38px;
+}
+
+.calendario-table-panel .ant-pagination-item,
+.calendario-table-panel .ant-pagination-prev,
+.calendario-table-panel .ant-pagination-next {
+  min-width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  line-height: 36px;
+}
+
+.calendario-table-panel .ant-pagination-prev .ant-pagination-item-link,
+.calendario-table-panel .ant-pagination-next .ant-pagination-item-link {
+  border-radius: 10px;
+}
+
+.calendario-table-panel .ant-pagination-item-active {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary);
+}
+
+.calendario-table-panel .ant-pagination-item-active a {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+@media (max-width: 720px) {
+  .calendario-table-panel {
+    padding-inline: 12px;
+  }
+}

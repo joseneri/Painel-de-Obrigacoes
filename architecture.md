@@ -37,7 +37,8 @@
 ## Constraints
 
 1. Domain nao pode referenciar `Microsoft.*`, `System.Data.*` nem EF Core.
-2. Arquivos com maximo de 250 linhas.
+2. Arquivos de codigo com maximo de 250 linhas; arquivos CSS ficam fora desse
+   limite.
 3. Engine de regras stateless, sem construtor com dependencias.
 4. Endpoints so chamam application services; zero logica de negocio.
 5. Migrations versionadas, aplicadas automaticamente no startup.

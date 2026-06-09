@@ -101,7 +101,8 @@ conferido em caso de duvida, divergencia ou pergunta especifica.
 ## Regras de Ouro
 
 - Domain layer: zero imports de `Microsoft.*`, `System.Data.*` ou EF Core.
-- Nenhum arquivo fonte deve passar de 250 linhas.
+- Nenhum arquivo fonte de codigo deve passar de 250 linhas. Arquivos CSS ficam
+  fora desse limite.
 - Evite god files; modularize por responsabilidade.
 - Engine de regras: stateless, sem injecao de infraestrutura.
 - Endpoints chamam application services; zero logica de negocio no endpoint.
@@ -131,7 +132,8 @@ Antes de codificar e antes de finalizar, confira:
 - Regras fiscais: a logica tributaria continua no Domain/backend?
 - Contratos: DTOs, endpoints e enums usados pelo frontend batem com a API?
 - Persistencia: migrations, UTC, CNPJ normalizado e seed continuam coerentes?
-- Limite de arquivo: nenhum fonte passa de 250 linhas?
+- Limite de arquivo: nenhum fonte de codigo passa de 250 linhas? CSS esta fora
+  desse limite.
 - Validacao: build/teste adequado foi rodado ou a impossibilidade foi anotada?
 - Docker/local: portas, CORS e `VITE_API_BASE_URL` estao coerentes?
 - Documentacao: README, `tmp/` e guia de IA foram atualizados quando aplicavel?

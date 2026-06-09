@@ -33,7 +33,9 @@ export function DashboardPage({ onOpenCalendario, onOpenAlertas }: DashboardPage
       <div className="panel-header">
         <div>
           <Typography.Title level={3}>Visão consolidada</Typography.Title>
-          <Typography.Text type="secondary">Indicadores do mês corrente e saldo operacional.</Typography.Text>
+          <Typography.Text type="secondary">
+            Obrigações do mês e saldo operacional consolidado.
+          </Typography.Text>
         </div>
 
         <Button type="primary" icon={<CalendarOutlined />} onClick={onOpenCalendario}>
@@ -62,7 +64,7 @@ export function DashboardPage({ onOpenCalendario, onOpenAlertas }: DashboardPage
             <div className="dashboard-action-copy">
               <Typography.Text strong>{dashboardData?.atrasadas ?? 0} obrigação(ões) atrasada(s)</Typography.Text>
               <Typography.Text type="secondary">
-                Consulte atrasadas e vencimentos dos próximos 30 dias na tela dedicada.
+                Consulte atrasadas consolidadas e vencimentos dos próximos 30 dias na tela dedicada.
               </Typography.Text>
             </div>
 

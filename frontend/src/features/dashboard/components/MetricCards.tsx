@@ -31,6 +31,7 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
       />
       <Metric
         title="Pendentes"
+        caption="Total geral"
         value={data?.pendentes}
         loading={loading}
         icon={<ClockCircleOutlined />}
@@ -38,6 +39,7 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
       />
       <Metric
         title="Entregues"
+        caption="Total geral"
         value={data?.entregues}
         loading={loading}
         icon={<CheckCircleOutlined />}
@@ -45,6 +47,7 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
       />
       <Metric
         title="Atrasadas"
+        caption="Total geral"
         value={data?.atrasadas}
         loading={loading}
         icon={<ExclamationCircleOutlined />}
@@ -57,16 +60,18 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
 interface MetricProps {
   title: string;
   value?: number;
+  caption?: string;
   loading: boolean;
   icon: ReactNode;
   tone?: "success" | "warning" | "danger";
 }
 
-function Metric({ title, value, loading, icon, tone }: MetricProps) {
+function Metric({ title, value, caption, loading, icon, tone }: MetricProps) {
   return (
     <Card className="metric-card">
       <span className={`metric-icon ${tone ?? ""}`}>{icon}</span>
       <Statistic title={title} value={value ?? 0} loading={loading} />
+      {caption && <span className="metric-caption">{caption}</span>}
     </Card>
   );
 }

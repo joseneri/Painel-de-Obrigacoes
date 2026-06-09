@@ -6,6 +6,12 @@
 
 .metric-card { min-height: 132px; }
 .metric-card .ant-statistic-title { min-height: 22px; }
+.metric-caption {
+  display: inline-block;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 12px;
+}
 
 .metric-icon {
   display: inline-grid;

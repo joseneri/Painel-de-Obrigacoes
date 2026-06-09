@@ -6,7 +6,6 @@ import { useEmpresas, useObrigacoes, useRegistrarEntrega } from "../../api/hooks
 import type { ObrigacaoDto } from "../../api/types";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { labelRegime, statusOptions } from "../../shared/utils/domain";
-import "./calendario-competencia.css";
 import { CalendarioControls } from "./components/CalendarioControls";
 import { CalendarioSummary } from "./components/CalendarioSummary";
 import { calcCalendarioSummary, modeDescription, type CalendarioModo } from "./components/calendarioPresentation";
@@ -99,21 +98,28 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
         />
       )}
 
-      <section className="panel calendario-panel">
-        <div className="calendario-topbar">
+      <section className="min-w-0 overflow-hidden rounded-lg border border-[#dbe5ef] bg-white p-0">
+        <div className="relative flex items-start justify-between gap-5 border-b border-[#edf1f5] bg-white px-8 pb-6 pt-7 before:absolute before:inset-y-0 before:left-0 before:w-[5px] before:bg-[#1677ff] before:content-[''] max-[720px]:flex-col max-[720px]:items-stretch max-[720px]:px-4">
           <div>
-            <Typography.Title level={2}>Calendario de Obrigacoes</Typography.Title>
-            <Typography.Text type="secondary">{modeDescription(filters.modo)}</Typography.Text>
+            <Typography.Title
+              className="!mb-2 !mt-0 !text-[30px] !font-extrabold !leading-[1.12] !tracking-normal !text-[#0f172a] max-[720px]:!text-[25px]"
+              level={2}
+            >
+              Calendario de Obrigacoes
+            </Typography.Title>
+            <Typography.Text className="!text-[15px] !text-[#526173]" type="secondary">
+              {modeDescription(filters.modo)}
+            </Typography.Text>
           </div>
 
           <Segmented
-            className="calendario-mode-toggle"
+            className="border border-[#edf1f5] !bg-[#f3f6fa] p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
             value={filters.modo}
             onChange={(value) => onFiltersChange({ modo: value as CalendarioModo })}
             options={[
               {
                 label: (
-                  <span className="calendario-segmented-label">
+                  <span className="inline-flex items-center gap-2">
                     <CalendarOutlined />
                     Competencia
                   </span>
@@ -122,7 +128,7 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
               },
               {
                 label: (
-                  <span className="calendario-segmented-label">
+                  <span className="inline-flex items-center gap-2">
                     <ClockCircleOutlined />
                     Vencimento
                   </span>

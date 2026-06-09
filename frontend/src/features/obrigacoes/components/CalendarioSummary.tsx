@@ -20,6 +20,25 @@ interface CalendarioSummaryProps {
   summary: CalendarioSummaryData;
 }
 
+const tileToneClassNames = {
+  total: {
+    icon: "bg-[#e6f1fb] text-[#1677ff]",
+    value: "text-[#0f172a]"
+  },
+  pendente: {
+    icon: "bg-[#fff3e0] text-[#e65100]",
+    value: "text-[#e65100]"
+  },
+  entregue: {
+    icon: "bg-[#e8f5e9] text-[#2e7d32]",
+    value: "text-[#2e7d32]"
+  },
+  atrasada: {
+    icon: "bg-[#ffebee] text-[#c62828]",
+    value: "text-[#c62828]"
+  }
+} satisfies Record<SummaryTile["tone"], { icon: string; value: string }>;
+
 export function CalendarioSummary({ summary }: CalendarioSummaryProps) {
   const tiles: SummaryTile[] = [
     { key: "total", label: "Total", value: summary.total, tone: "total", icon: <UnorderedListOutlined /> },
@@ -36,15 +55,25 @@ export function CalendarioSummary({ summary }: CalendarioSummaryProps) {
   ];
 
   return (
-    <div className="calendario-summary" aria-label="Resumo do calendario">
+    <div
+      className="grid grid-cols-[repeat(5,minmax(160px,1fr))] gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-6 pt-5 max-[980px]:grid-cols-2 max-[720px]:grid-cols-1"
+      aria-label="Resumo do calendario"
+    >
       {tiles.map((tile) => (
-        <div className="calendario-summary__tile" key={tile.key}>
-          <span className={`calendario-summary__icon calendario-summary__icon--${tile.tone}`}>{tile.icon}</span>
+        <div
+          className="flex min-h-[124px] min-w-0 items-center gap-4 rounded-lg border border-[#f1f5f9] bg-white px-6 py-[22px] shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:min-h-[104px]"
+          key={tile.key}
+        >
+          <span
+            className={`inline-grid h-12 w-12 flex-none place-items-center rounded-[10px] text-[21px] ${tileToneClassNames[tile.tone].icon}`}
+          >
+            {tile.icon}
+          </span>
           <span>
-            <strong className={`calendario-summary__value calendario-summary__value--${tile.tone}`}>
+            <strong className={`block text-[34px] leading-none ${tileToneClassNames[tile.tone].value}`}>
               {tile.value}
             </strong>
-            <span className="calendario-summary__label">{tile.label}</span>
+            <span className="mt-2 block text-[13px] font-bold uppercase text-[#667085]">{tile.label}</span>
           </span>
         </div>
       ))}

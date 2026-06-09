@@ -16,9 +16,10 @@ public sealed class GetDashboardService(
         var totalEmpresas = await empresaRepository.CountAsync(cancellationToken);
         var obrigacoes = await obrigacaoRepository.GetByVencimentoAsync(
             empresaId: null,
-            inicio: inicioMes,
-            fimExclusivo: inicioMes.AddMonths(1),
+            inicio: null,
+            fimExclusivo: null,
             cancellationToken: cancellationToken);
+        var fimMes = inicioMes.AddMonths(1);
 
         foreach (var obrigacao in obrigacoes)
         {
@@ -27,7 +28,7 @@ public sealed class GetDashboardService(
 
         return new DashboardDto(
             totalEmpresas,
-            obrigacoes.Count,
+            obrigacoes.Count(o => o.DataVencimento >= inicioMes && o.DataVencimento < fimMes),
             obrigacoes.Count(o => o.Status == StatusObrigacao.Pendente),
             obrigacoes.Count(o => o.Status == StatusObrigacao.Entregue),
             obrigacoes.Count(o => o.Status == StatusObrigacao.Atrasada));

@@ -10,15 +10,25 @@ export function AppShell() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const activeItem = getNavigationItem(pathname);
   const hideHeader = pathname === "/calendario";
+  const contentClassName = hideHeader
+    ? "w-full max-w-none px-5 pb-8 pt-[18px] max-[720px]:p-3"
+    : "w-full max-w-none px-7 pb-8 pt-6 max-[720px]:p-4";
 
   return (
-    <Layout className="app-shell">
-      <Layout.Sider width={264} breakpoint="lg" collapsedWidth={0} className="app-sidebar">
-        <div className="brand">
-          <div className="brand-mark">PA</div>
+    <Layout className="min-h-screen max-[720px]:flex-col">
+      <Layout.Sider
+        width={264}
+        className="sticky top-0 h-screen overflow-auto max-[720px]:!relative max-[720px]:!h-auto max-[720px]:!w-full max-[720px]:!min-w-0 max-[720px]:!max-w-none max-[720px]:!flex-none max-[720px]:[&_.ant-layout-sider-children]:grid max-[720px]:[&_.ant-menu]:flex max-[720px]:[&_.ant-menu]:flex-wrap max-[720px]:[&_.ant-menu]:overflow-visible max-[720px]:[&_.ant-menu]:px-2 max-[720px]:[&_.ant-menu]:pb-2.5 max-[720px]:[&_.ant-menu-item]:!w-auto max-[720px]:[&_.ant-menu-item]:mx-1 max-[720px]:[&_.ant-menu-item]:shrink-0"
+      >
+        <div className="flex min-h-[76px] items-center gap-3 px-5 py-[18px] text-white max-[720px]:min-h-16 max-[720px]:px-4 max-[720px]:py-3">
+          <div className="grid h-10 w-10 place-items-center rounded-lg bg-[#00acc1] font-extrabold text-white">PA</div>
           <div>
-            <Typography.Text className="brand-title">Painel de Obrigacoes</Typography.Text>
-            <Typography.Text className="brand-subtitle">Calendario fiscal</Typography.Text>
+            <Typography.Text className="block !font-bold !leading-[1.2] !text-white">
+              Painel de Obrigacoes
+            </Typography.Text>
+            <Typography.Text className="block !text-xs !leading-[1.2] !text-white opacity-70">
+              Calendario fiscal
+            </Typography.Text>
           </div>
         </div>
 
@@ -34,9 +44,9 @@ export function AppShell() {
         />
       </Layout.Sider>
 
-      <Layout>
+      <Layout className="max-[720px]:w-full max-[720px]:flex-none">
         {!hideHeader && (
-          <Layout.Header className="app-header">
+          <Layout.Header className="flex h-auto min-h-[88px] items-center justify-between gap-4 border-b border-[#dbe5ef] px-7 py-[18px] max-[720px]:flex-col max-[720px]:items-start max-[720px]:p-4 [&_h2.ant-typography]:!mb-1 [&_h2.ant-typography]:!mt-0">
             <div>
               <Typography.Title level={2}>{activeItem?.title ?? "Pagina nao encontrada"}</Typography.Title>
               <Typography.Text type="secondary">{headerSubtitle}</Typography.Text>
@@ -51,7 +61,7 @@ export function AppShell() {
           </Layout.Header>
         )}
 
-        <Layout.Content className={`app-content${hideHeader ? " app-content--calendar" : ""}`}>
+        <Layout.Content className={contentClassName}>
           <Outlet />
         </Layout.Content>
       </Layout>

@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { App as AntApp, Alert, Button, DatePicker, Segmented, Select, Space, Typography } from "antd";
-import { CalendarOutlined, DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
+import { App as AntApp, Alert, Button, Segmented, Select, Space, Typography } from "antd";
+import { DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
+import dayjs, { type Dayjs } from "dayjs";
 import { useEmpresas, useObrigacoes, useRegistrarEntrega } from "../../api/hooks";
 import type { ObrigacaoDto } from "../../api/types";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { labelRegime, statusOptions } from "../../shared/utils/domain";
+import "./calendario-competencia.css";
+import { CompetenciaNavigator } from "./components/CompetenciaNavigator";
 import { exportObrigacoesCsv } from "./components/exportCsv";
 import { EntregaModal, type EntregaFormValues } from "./components/EntregaModal";
 import { ObrigacoesTable } from "./components/ObrigacoesTable";
@@ -88,6 +90,29 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
     onFiltersChange({ ano: today.year(), mes: today.month() + 1 });
   }
 
+  function handleMonthChange(value: Dayjs | null) {
+    if (value) {
+      onFiltersChange({ ano: value.year(), mes: value.month() + 1 });
+    }
+  }
+
+  function handleMonthOffset(months: number) {
+    const nextMonth = selectedMonth.add(months, "month");
+    onFiltersChange({ ano: nextMonth.year(), mes: nextMonth.month() + 1 });
+  }
+
+  function handleModeChange(modo: string | number) {
+    if (modo === "competencia" || modo === "vencimento") {
+      onFiltersChange({ modo });
+    }
+  }
+
+  const modeLabel = filters.modo === "vencimento" ? "vencimento" : "competencia";
+  const modeDescription =
+    filters.modo === "vencimento"
+      ? "Obrigacoes com prazo no mes selecionado, com status e conclusao."
+      : "Obrigacoes da competencia selecionada, com prazos e status.";
+
   return (
     <div className="page-stack">
       {error && (
@@ -99,21 +124,23 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
         />
       )}
 
-      <section className="panel">
-        <div className="toolbar">
+      <section className="panel calendario-panel">
+        <div className="calendario-panel__header">
           <div>
-            <Typography.Title level={3}>
-              Calendario por {filters.modo === "vencimento" ? "vencimento" : "competencia"}
-            </Typography.Title>
-            <Typography.Text type="secondary">
-              Obrigacoes geradas pela API conforme regime tributario e vencimento calculado.
-            </Typography.Text>
+            <Typography.Title level={3}>Calendario por {modeLabel}</Typography.Title>
+            <Typography.Text type="secondary">{modeDescription}</Typography.Text>
           </div>
 
           <Space wrap>
-            <Button icon={<CalendarOutlined />} onClick={handleHojeClick}>
-              Hoje
-            </Button>
+            <Segmented
+              className="calendario-mode-toggle"
+              value={filters.modo}
+              onChange={handleModeChange}
+              options={[
+                { label: "Competencia", value: "competencia" },
+                { label: "Vencimento", value: "vencimento" }
+              ]}
+            />
             <Button icon={<ReloadOutlined />} onClick={() => refetchObrigacoes()}>
               Atualizar
             </Button>
@@ -127,18 +154,15 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
           </Space>
         </div>
 
-        <div className="filter-grid">
-          <Segmented
-            value={filters.modo}
-            onChange={(modo) =>
-              (modo === "competencia" || modo === "vencimento") && onFiltersChange({ modo })
-            }
-            options={[
-              { label: "Vencimento", value: "vencimento" },
-              { label: "Competencia", value: "competencia" }
-            ]}
-          />
+        <CompetenciaNavigator
+          selectedMonth={selectedMonth}
+          todayLabel={dayjs().format("DD/MM/YYYY")}
+          onMonthChange={handleMonthChange}
+          onMonthOffset={handleMonthOffset}
+          onToday={handleHojeClick}
+        />
 
+        <div className="calendario-filter-row">
           <Select
             allowClear
             showSearch
@@ -151,14 +175,6 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
               value: empresa.id,
               label: `${empresa.razaoSocial} - ${labelRegime(empresa.regimeTributario)}`
             }))}
-          />
-
-          <DatePicker
-            picker="month"
-            allowClear={false}
-            value={selectedMonth}
-            format="MM/YYYY"
-            onChange={(value) => value && onFiltersChange({ ano: value.year(), mes: value.month() + 1 })}
           />
 
           <Select

@@ -9,7 +9,7 @@ namespace PainelObrigacoes.Application.Tests;
 public sealed class GetAlertasServiceTests
 {
     [Fact]
-    public async Task ExecuteAsync_ListaProximasEAtrasadasComProximasPrimeiro()
+    public async Task ExecuteAsync_ListaAtrasadasMaisAntigasAntesDasProximas()
     {
         var empresa = new Empresa(
             Guid.NewGuid(),
@@ -32,10 +32,10 @@ public sealed class GetAlertasServiceTests
         var result = await service.ExecuteAsync(CancellationToken.None);
 
         result.Select(alerta => alerta.ObrigacaoId).Should().Equal(
-            venceEmSeisDias.Id,
-            venceEmTrezeDias.Id,
+            atrasadaAntiga.Id,
             atrasadaRecente.Id,
-            atrasadaAntiga.Id);
+            venceEmSeisDias.Id,
+            venceEmTrezeDias.Id);
         result.Should().NotContain(alerta => alerta.ObrigacaoId == foraDaJanela.Id);
         result.Count(alerta => alerta.DiasParaVencer >= 0).Should().Be(2);
         result.Count(alerta => alerta.DiasParaVencer < 0).Should().Be(2);

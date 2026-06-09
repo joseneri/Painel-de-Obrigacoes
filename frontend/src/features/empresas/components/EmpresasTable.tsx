@@ -28,12 +28,7 @@ export function EmpresasTable({ data, loading }: EmpresasTableProps) {
       title: "Razão social",
       dataIndex: "razaoSocial",
       minWidth: 260,
-      render: (value, row) => (
-        <div>
-          <Typography.Text strong>{value}</Typography.Text>
-          <div className="muted-row">{row.id}</div>
-        </div>
-      )
+      render: (value) => <Typography.Text strong>{value}</Typography.Text>
     },
     {
       title: "CNPJ",

@@ -72,7 +72,7 @@ body {
 
 .app-content {
   width: 100%;
-  max-width: 1440px;
+  max-width: none;
   padding: 24px 28px 32px;
 }
 
@@ -204,6 +204,31 @@ body {
 }
 
 @media (max-width: 720px) {
+  .app-shell.ant-layout-has-sider { flex-direction: column; }
+
+  .app-shell.ant-layout-has-sider > .ant-layout { width: 100%; flex: 0 0 auto; }
+
+  .app-sidebar.ant-layout-sider {
+    position: relative;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto;
+    flex: 0 0 auto !important;
+  }
+
+  .app-sidebar .ant-layout-sider-children { display: grid; }
+
+  .app-sidebar .ant-menu {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 8px 10px;
+  }
+
+  .app-sidebar .ant-menu-item { flex: 0 0 auto; margin-inline: 4px; }
+
+  .brand { min-height: 64px; padding: 12px 16px; }
+
   .app-header {
     align-items: flex-start;
     flex-direction: column;

@@ -24,7 +24,6 @@ public sealed class GetAlertasService(
             })
             .Where(obrigacao => obrigacao.Status is StatusObrigacao.Atrasada or StatusObrigacao.Pendente)
             .OrderBy(obrigacao => AlertPriority(obrigacao, today))
-            .ThenBy(obrigacao => Math.Abs((obrigacao.DataVencimento.Date - today).Days))
             .ThenBy(obrigacao => obrigacao.DataVencimento)
             .Select(obrigacao => DtoMapper.ToAlertaDto(obrigacao, today))
             .ToArray();
@@ -32,6 +31,6 @@ public sealed class GetAlertasService(
 
     private static int AlertPriority(Obrigacao obrigacao, DateTime today)
     {
-        return obrigacao.DataVencimento.Date >= today.Date ? 0 : 1;
+        return obrigacao.DataVencimento.Date < today.Date ? 0 : 1;
     }
 }

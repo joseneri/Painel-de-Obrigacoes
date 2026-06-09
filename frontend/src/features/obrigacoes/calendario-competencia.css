@@ -1,0 +1,141 @@
+.calendario-panel {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.calendario-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.calendario-panel__header h3.ant-typography {
+  margin: 0 0 4px;
+}
+
+.calendario-mode-toggle.ant-segmented {
+  padding: 3px;
+  background: #f5f7fa;
+}
+
+.competencia-navigator {
+  display: grid;
+  grid-template-columns: minmax(520px, 1fr) minmax(340px, auto);
+  gap: 24px;
+  align-items: center;
+  min-height: 124px;
+  padding: 22px 24px;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  background: #f5f7fa;
+}
+
+.competencia-navigator__main,
+.competencia-navigator__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.competencia-navigator__main {
+  min-width: 0;
+}
+
+.competencia-navigator__controls {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  padding-left: 24px;
+  border-left: 1px solid #dbe5ef;
+}
+
+.competencia-navigator__step.ant-btn {
+  width: 48px;
+  height: 48px;
+  border-color: #c9d6e2;
+  color: #1565c0;
+  font-size: 18px;
+}
+
+.competencia-navigator__period {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.competencia-navigator__period span {
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.competencia-navigator__period strong {
+  color: #172033;
+  font-size: 42px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.competencia-navigator__today.ant-btn {
+  min-width: 176px;
+  height: 44px;
+  background: #1565c0;
+  box-shadow: 0 6px 16px rgba(21, 101, 192, 0.18);
+}
+
+.competencia-navigator__picker.ant-picker {
+  width: 168px;
+  height: 44px;
+}
+
+.calendario-filter-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(180px, 240px);
+  gap: 12px;
+}
+
+@media (max-width: 980px) {
+  .competencia-navigator {
+    grid-template-columns: 1fr;
+  }
+
+  .competencia-navigator__controls {
+    justify-content: flex-start;
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .calendario-panel__header {
+    display: grid;
+  }
+
+  .competencia-navigator {
+    padding: 14px;
+  }
+
+  .competencia-navigator__main {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+
+  .competencia-navigator__period strong {
+    font-size: 26px;
+    white-space: normal;
+  }
+
+  .competencia-navigator__controls,
+  .calendario-filter-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .competencia-navigator__today.ant-btn,
+  .competencia-navigator__picker.ant-picker {
+    width: 100%;
+  }
+}

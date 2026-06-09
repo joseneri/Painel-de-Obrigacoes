@@ -5,6 +5,29 @@
   flex-wrap: wrap;
 }
 
+.alert-filter-tag {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  padding: 6px 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alert-filter-tag[aria-pressed="true"] {
+  border-color: currentColor;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.04);
+}
+
+.alert-filter-tag-red { color: #cf1322; background: #fff1f0; }
+
+.alert-filter-tag-blue { color: #1677ff; background: #e6f4ff; }
+
+.alert-filter-tag-cyan { color: #08979c; background: #e6fffb; }
+
+.alerts-content { display: grid; gap: 16px; }
+
 .alerts-groups { display: grid; gap: 22px; }
 
 .alerts-group { display: grid; gap: 10px; }
@@ -39,4 +62,9 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.alerts-pagination {
+  display: flex;
+  justify-content: flex-end;
 }

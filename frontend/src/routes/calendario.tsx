@@ -47,7 +47,7 @@ function withDefaultCalendarioSearch(search: CalendarioSearchState): CalendarioF
     mes: search.mes ?? now.getMonth() + 1,
     empresaId: parseOptionalString(search.empresaId),
     status: parseStatus(search.status),
-    modo: parseModo(search.modo) ?? "vencimento"
+    modo: parseModo(search.modo) ?? "competencia"
   };
 }
 
@@ -57,7 +57,7 @@ function normalizeCalendarioSearch(search: CalendarioFilterState): CalendarioSea
     mes: parseOptionalMonth(search.mes),
     empresaId: parseOptionalString(search.empresaId),
     status: parseStatus(search.status),
-    modo: parseModo(search.modo)
+    modo: parseModo(search.modo) === "vencimento" ? "vencimento" : undefined
   };
 }
 

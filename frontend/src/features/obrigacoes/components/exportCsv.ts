@@ -1,6 +1,6 @@
 import type { ObrigacaoDto } from "../../../api/types";
 import { labelPeriodicidade, labelStatus, labelTipo } from "../../../shared/utils/domain";
-import { formatCompetencia, formatDate } from "../../../shared/utils/formatters";
+import { formatCompetencia, formatDate, urgencyText } from "../../../shared/utils/formatters";
 
 export function exportObrigacoesCsv(rows: ObrigacaoDto[]) {
   const header = [
@@ -8,6 +8,7 @@ export function exportObrigacoesCsv(rows: ObrigacaoDto[]) {
     "Obrigação",
     "Competência",
     "Vencimento",
+    "Urgencia",
     "Periodicidade",
     "Status",
     "Conclusão"
@@ -18,6 +19,7 @@ export function exportObrigacoesCsv(rows: ObrigacaoDto[]) {
     labelTipo(row.tipo),
     formatCompetencia(row.competencia, row.ano, row.mes),
     formatDate(row.dataVencimento),
+    urgencyText(row.diasParaVencer),
     labelPeriodicidade(row.periodicidade),
     labelStatus(row.status),
     formatDate(row.dataConclusao)

@@ -26,6 +26,7 @@ export interface ObrigacaoDto {
   competencia: string;
   dataVencimento: string;
   status: EnumValue;
+  diasParaVencer: number;
   periodicidade: EnumValue;
   dataConclusao: string | null;
 }
@@ -65,4 +66,5 @@ export interface ObrigacoesFilters {
   ano?: number;
   mes?: number;
   status?: number;
+  modo?: "competencia" | "vencimento";
 }

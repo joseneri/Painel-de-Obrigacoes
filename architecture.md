@@ -51,9 +51,21 @@
 | --- | --- | --- |
 | Obrigacoes | Persistidas ao criar empresa | Queries de alerta e dashboard ficam simples e eficientes. |
 | Regras tributarias | Hardcoded no Domain | O case pede engine explicita; mudancas exigem deploy. |
-| Feriados | Apenas fins de semana | Feriados nacionais estao fora do escopo do case. |
+| Dia util fiscal | Fins de semana e feriados nacionais prorrogam para o proximo dia util | Generaliza a regra explicita do DAS para manter o calendario consistente no perfil do case. |
 | Imune/Isento | Zero obrigacoes | A especificacao diz dispensa da maioria; para esta versao a decisao e gerar nenhuma. |
 | OpenAPI | `Microsoft.AspNetCore.OpenApi` + Scalar UI | Em .NET 9 o template nao inclui Swashbuckle por padrao. |
 | `Competencia` | Struct imutavel calculada a partir de colunas escalares | EF Core nao indexa membro aninhado de complex property; `CompetenciaAno`/`CompetenciaMes` mantem o value object puro e o indice composto. |
 | Rotas frontend | TanStack Router file-based | Mantem a SPA React/Vite, reduz `App.tsx`, separa layout/rotas/features e deixa filtros do calendario na URL. |
 | Estado frontend | TanStack Query + TanStack Router | Query trata dados da API; Router trata navegacao, layout e URL state. |
+
+## Decisoes Para Edge Cases Fiscais
+
+Estas decisoes foram registradas porque o case avalia explicitamente edge cases
+de regime e vencimento:
+
+| Decisao | Escolha | Motivo |
+| --- | --- | --- |
+| Competencia vs vencimento | Competencia gera/explica a obrigacao; vencimento determina status, alertas e urgencia | Evita confundir obrigacoes anuais que aparecem em janeiro com seus prazos reais em fevereiro, marco, maio ou julho. |
+| Anuais | SPED ECD, SPED ECF, DEFIS, DIRF e RAIS aparecem apenas em janeiro por competencia | Atende a nota da secao 3.2 do case. |
+| Dia util do case | Sabado, domingo e feriado nacional prorrogam para o proximo dia util em todos os vencimentos do perfil do case | A especificacao explicita a regra no DAS; a generalizacao torna a agenda previsivel e documentada. |
+| Fora do escopo fiscal | Feriados locais, pontos facultativos, regras por UF e divergencias da legislacao atual | Mantem a entrega aderente ao PDF sem transformar o case em motor fiscal completo. |

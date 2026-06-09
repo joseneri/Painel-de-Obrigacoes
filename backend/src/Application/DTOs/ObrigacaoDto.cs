@@ -12,6 +12,6 @@ public sealed record ObrigacaoDto(
     string Competencia,
     DateTime DataVencimento,
     StatusObrigacao Status,
+    int DiasParaVencer,
     PeriodicidadeObrigacao Periodicidade,
     DateTime? DataConclusao);
-

@@ -16,7 +16,7 @@ internal static class DtoMapper
             empresa.CriadaEm);
     }
 
-    public static ObrigacaoDto ToDto(Obrigacao obrigacao)
+    public static ObrigacaoDto ToDto(Obrigacao obrigacao, DateTime hoje)
     {
         return new ObrigacaoDto(
             obrigacao.Id,
@@ -28,6 +28,7 @@ internal static class DtoMapper
             obrigacao.Competencia.ToString(),
             obrigacao.DataVencimento,
             obrigacao.Status,
+            (obrigacao.DataVencimento.Date - hoje.Date).Days,
             obrigacao.Periodicidade,
             obrigacao.Entrega?.DataConclusao);
     }

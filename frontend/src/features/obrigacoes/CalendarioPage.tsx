@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { App as AntApp, Alert, Button, DatePicker, Select, Space, Typography } from "antd";
-import { DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
+import { App as AntApp, Alert, Button, DatePicker, Segmented, Select, Space, Typography } from "antd";
+import { CalendarOutlined, DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useEmpresas, useObrigacoes, useRegistrarEntrega } from "../../api/hooks";
 import type { ObrigacaoDto } from "../../api/types";
@@ -15,6 +15,7 @@ export interface CalendarioFilterState {
   mes: number;
   empresaId?: string;
   status?: number;
+  modo: "competencia" | "vencimento";
 }
 
 interface CalendarioPageProps {
@@ -36,9 +37,10 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
       empresaId: filters.empresaId,
       ano: filters.ano,
       mes: filters.mes,
-      status: filters.status
+      status: filters.status,
+      modo: filters.modo
     }),
-    [filters.empresaId, filters.ano, filters.mes, filters.status]
+    [filters.empresaId, filters.ano, filters.mes, filters.status, filters.modo]
   );
 
   const {
@@ -81,6 +83,11 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
     );
   }
 
+  function handleHojeClick() {
+    const today = dayjs();
+    onFiltersChange({ ano: today.year(), mes: today.month() + 1 });
+  }
+
   return (
     <div className="page-stack">
       {error && (
@@ -95,13 +102,18 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
       <section className="panel">
         <div className="toolbar">
           <div>
-            <Typography.Title level={3}>Calendario por competencia</Typography.Title>
+            <Typography.Title level={3}>
+              Calendario por {filters.modo === "vencimento" ? "vencimento" : "competencia"}
+            </Typography.Title>
             <Typography.Text type="secondary">
               Obrigacoes geradas pela API conforme regime tributario e vencimento calculado.
             </Typography.Text>
           </div>
 
           <Space wrap>
+            <Button icon={<CalendarOutlined />} onClick={handleHojeClick}>
+              Hoje
+            </Button>
             <Button icon={<ReloadOutlined />} onClick={() => refetchObrigacoes()}>
               Atualizar
             </Button>
@@ -116,6 +128,17 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
         </div>
 
         <div className="filter-grid">
+          <Segmented
+            value={filters.modo}
+            onChange={(modo) =>
+              (modo === "competencia" || modo === "vencimento") && onFiltersChange({ modo })
+            }
+            options={[
+              { label: "Vencimento", value: "vencimento" },
+              { label: "Competencia", value: "competencia" }
+            ]}
+          />
+
           <Select
             allowClear
             showSearch

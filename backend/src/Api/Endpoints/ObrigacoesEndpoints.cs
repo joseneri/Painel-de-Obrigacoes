@@ -13,12 +13,13 @@ public static class ObrigacoesEndpoints
             int? ano,
             int? mes,
             StatusObrigacao? status,
+            string? modo,
             GetCalendarioService service,
             ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(empresaId, ano, mes, status, cancellationToken),
+                () => service.ExecuteAsync(empresaId, ano, mes, status, modo, cancellationToken),
                 Results.Ok,
                 loggerFactory);
         });

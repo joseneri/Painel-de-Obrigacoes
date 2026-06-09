@@ -39,6 +39,20 @@ internal sealed class FakeObrigacaoRepository : IObrigacaoRepository
         return Task.FromResult<IReadOnlyCollection<Obrigacao>>(_obrigacoes);
     }
 
+    public Task<IReadOnlyCollection<Obrigacao>> GetByVencimentoAsync(
+        Guid? empresaId,
+        DateTime? inicio,
+        DateTime? fimExclusivo,
+        CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IReadOnlyCollection<Obrigacao>>(
+            _obrigacoes
+                .Where(o => empresaId is null || o.EmpresaId == empresaId.Value)
+                .Where(o => inicio is null || o.DataVencimento >= inicio.Value)
+                .Where(o => fimExclusivo is null || o.DataVencimento < fimExclusivo.Value)
+                .ToArray());
+    }
+
     public Task<IReadOnlyCollection<Obrigacao>> GetByCompetenciaAsync(
         Competencia competencia,
         CancellationToken cancellationToken)

@@ -7,6 +7,7 @@ interface CalendarioSearchState {
   mes?: number;
   empresaId?: string;
   status?: number;
+  modo?: "competencia" | "vencimento";
 }
 
 export const Route = createFileRoute("/calendario")({
@@ -33,7 +34,8 @@ function validateCalendarioSearch(search: Record<string, unknown>): CalendarioSe
     ano: parseOptionalYear(search.ano),
     mes: parseOptionalMonth(search.mes),
     empresaId: parseOptionalString(search.empresaId),
-    status: parseStatus(search.status)
+    status: parseStatus(search.status),
+    modo: parseModo(search.modo)
   };
 }
 
@@ -44,7 +46,8 @@ function withDefaultCalendarioSearch(search: CalendarioSearchState): CalendarioF
     ano: search.ano ?? now.getFullYear(),
     mes: search.mes ?? now.getMonth() + 1,
     empresaId: parseOptionalString(search.empresaId),
-    status: parseStatus(search.status)
+    status: parseStatus(search.status),
+    modo: parseModo(search.modo) ?? "vencimento"
   };
 }
 
@@ -53,7 +56,8 @@ function normalizeCalendarioSearch(search: CalendarioFilterState): CalendarioSea
     ano: parseOptionalYear(search.ano),
     mes: parseOptionalMonth(search.mes),
     empresaId: parseOptionalString(search.empresaId),
-    status: parseStatus(search.status)
+    status: parseStatus(search.status),
+    modo: parseModo(search.modo)
   };
 }
 
@@ -75,4 +79,8 @@ function parseStatus(value: unknown) {
   const status = Number(value);
   const validStatuses = new Set<number>(Object.values(StatusObrigacao));
   return validStatuses.has(status) ? status : undefined;
+}
+
+function parseModo(value: unknown) {
+  return value === "competencia" || value === "vencimento" ? value : undefined;
 }

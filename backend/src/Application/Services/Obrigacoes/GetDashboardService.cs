@@ -1,7 +1,6 @@
 using PainelObrigacoes.Application.DTOs;
 using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
-using PainelObrigacoes.Domain.ValueObjects;
 
 namespace PainelObrigacoes.Application.Services.Obrigacoes;
 
@@ -13,9 +12,13 @@ public sealed class GetDashboardService(
     public async Task<DashboardDto> ExecuteAsync(CancellationToken cancellationToken)
     {
         var today = timeProvider.GetUtcNow().UtcDateTime;
-        var competencia = new Competencia(today.Year, today.Month);
+        var inicioMes = new DateTime(today.Year, today.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var totalEmpresas = await empresaRepository.CountAsync(cancellationToken);
-        var obrigacoes = await obrigacaoRepository.GetByCompetenciaAsync(competencia, cancellationToken);
+        var obrigacoes = await obrigacaoRepository.GetByVencimentoAsync(
+            empresaId: null,
+            inicio: inicioMes,
+            fimExclusivo: inicioMes.AddMonths(1),
+            cancellationToken: cancellationToken);
 
         foreach (var obrigacao in obrigacoes)
         {

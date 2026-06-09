@@ -30,17 +30,16 @@ public sealed class EnsureObrigacoesFuturasService(
 
     public async Task<int> EnsureForEmpresaAsync(Empresa empresa, CancellationToken cancellationToken)
     {
-        var inicio = CompetenciaAtual();
-        var fim = AddMonths(inicio, HorizonMonths - 1);
+        var competenciaAtual = CompetenciaAtual();
+        var inicio = new Competencia(competenciaAtual.Ano, 1);
+        var fim = AddMonths(competenciaAtual, HorizonMonths - 1);
         var existentes = await obrigacaoRepository.GetByEmpresaEPeriodoAsync(
             empresa.Id,
             inicio,
             fim,
             cancellationToken);
-        var chavesExistentes = existentes
-            .Select(o => (o.Tipo, o.CompetenciaAno, o.CompetenciaMes))
-            .ToHashSet();
-        var novas = GenerateObrigacoes(empresa, inicio, chavesExistentes).ToArray();
+        var existentesPorChave = existentes.ToDictionary(o => (o.Tipo, o.CompetenciaAno, o.CompetenciaMes));
+        var novas = GenerateObrigacoes(empresa, inicio, fim, existentesPorChave).ToArray();
 
         if (novas.Length == 0)
         {
@@ -57,17 +56,22 @@ public sealed class EnsureObrigacoesFuturasService(
     private IEnumerable<Obrigacao> GenerateObrigacoes(
         Empresa empresa,
         Competencia inicio,
-        HashSet<(TipoObrigacao Tipo, int Ano, int Mes)> chavesExistentes)
+        Competencia fim,
+        Dictionary<(TipoObrigacao Tipo, int Ano, int Mes), Obrigacao> existentesPorChave)
     {
         var competencia = inicio;
 
-        for (var index = 0; index < HorizonMonths; index++)
+        while (competencia.CompareTo(fim) <= 0)
         {
             foreach (var tipo in rulesEngine.GetObrigacoesAplicaveis(empresa.RegimeTributario, competencia))
             {
                 var chave = (tipo, competencia.Ano, competencia.Mes);
-                if (chavesExistentes.Contains(chave))
+                var periodicidade = rulesEngine.GetPeriodicidade(tipo);
+                var vencimento = vencimentoCalculator.CalcularVencimento(tipo, competencia);
+
+                if (existentesPorChave.TryGetValue(chave, out var existente))
                 {
+                    existente.AtualizarRegra(vencimento, periodicidade);
                     continue;
                 }
 
@@ -76,8 +80,8 @@ public sealed class EnsureObrigacoesFuturasService(
                     empresa.Id,
                     tipo,
                     competencia,
-                    vencimentoCalculator.CalcularVencimento(tipo, competencia),
-                    rulesEngine.GetPeriodicidade(tipo));
+                    vencimento,
+                    periodicidade);
             }
 
             competencia = competencia.ProximoMes();

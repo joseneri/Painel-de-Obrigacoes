@@ -149,7 +149,7 @@ body {
 
 .filter-grid {
   display: grid;
-  grid-template-columns: minmax(220px, 1.3fr) 160px 180px;
+  grid-template-columns: 180px minmax(220px, 1.3fr) 160px 180px;
   gap: 12px;
   align-items: end;
 }

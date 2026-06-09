@@ -153,6 +153,12 @@ banco/infra, enquanto API e frontend rodam localmente.
 
 ## Decisoes Tecnicas
 
+- As decisoes abertas da secao 4.2 do case foram tratadas de forma explicita:
+  backend em Clean Architecture com Minimal APIs por feature; erros expostos em
+  Problem Details; migrations e seed automatico no startup para demonstracao;
+  Ant Design com tema proprio e layout operacional; monorepo com backend por
+  camadas e frontend organizado por `api`, `app`, `routes`, `features` e
+  `shared`.
 - Domain e puro, sem dependencia de `Microsoft.*`, EF Core ou ASP.NET.
 - A engine tributaria (`ObrigacaoRulesEngine`) e o calculo de vencimentos
   (`VencimentoCalculator`) sao stateless e testaveis sem banco.
@@ -168,10 +174,36 @@ banco/infra, enquanto API e frontend rodam localmente.
 - TanStack Query continua responsavel por dados da API; TanStack Router cuida
   de navegacao e estado de URL.
 
+### Edge Cases Fiscais e Ambiguidades do Case
+
+O case informa que edge cases de regime e vencimento fazem parte da avaliacao.
+Por isso, a regra fiscal implementada separa competencia fiscal de vencimento
+operacional:
+
+- Competencia explica de onde a obrigacao vem.
+- Data de vencimento manda no status, alertas, atraso e urgencia.
+- Obrigacoes anuais aparecem apenas em janeiro por competencia, mas entram nos
+  alertas e status pelo mes real de vencimento.
+- No dia do vencimento a obrigacao continua pendente; ela so fica atrasada a
+  partir do dia seguinte, se nao houver entrega registrada.
+- Entrega registrada prevalece sobre status pendente ou atrasada.
+
+A politica de dia util adotada para o perfil do case e uniforme: se qualquer
+vencimento calculado cair em sabado, domingo ou feriado nacional, o prazo e
+prorrogado para o proximo dia util. A especificacao explicita essa regra apenas
+para DAS, entao a generalizacao fica documentada como decisao tecnica para
+manter o calendario consistente. Feriados estaduais/municipais, pontos
+facultativos, regras por UF e prazos reais que divergem do PDF ficam fora do
+escopo desta versao.
+
+Detalhamento da decisao fiscal: `docs/decisoes-fiscais-case.md`.
+
 ## Limitacoes Conhecidas
 
-- Feriados nacionais nao foram implementados; apenas fins de semana prorrogam
-  vencimentos para a proxima segunda-feira.
+- Feriados estaduais/municipais e pontos facultativos nao entram no calendario
+  de dia util desta versao.
+- Regras fiscais por UF e divergencias atuais da legislacao em relacao ao PDF
+  foram documentadas como fora do escopo do case.
 - Regime Imune/Isento nao gera obrigacoes nesta versao.
 - O Compose principal atual sobe backend e PostgreSQL. O frontend roda
   localmente via Vite nesta etapa.

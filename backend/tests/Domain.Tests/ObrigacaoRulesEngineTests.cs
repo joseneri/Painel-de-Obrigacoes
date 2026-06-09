@@ -36,11 +36,11 @@ public sealed class ObrigacaoRulesEngineTests
     }
 
     [Fact]
-    public void SimplesNacional_fora_de_janeiro_nao_deve_conter_defis()
+    public void SimplesNacional_fora_de_janeiro_nao_deve_conter_obrigacoes_anuais()
     {
         var result = Get(RegimeTributario.SimplesNacional, 2025, 2);
 
-        result.Should().NotContain(TipoObrigacao.DEFIS);
+        result.Should().NotContain([TipoObrigacao.DEFIS, TipoObrigacao.DIRF, TipoObrigacao.RAIS]);
     }
 
     [Fact]
@@ -48,7 +48,27 @@ public sealed class ObrigacaoRulesEngineTests
     {
         var result = Get(RegimeTributario.LucroPresumido, 2025, 3);
 
-        result.Should().Contain([TipoObrigacao.DCTF, TipoObrigacao.EFD_ICMS_IPI, TipoObrigacao.eSocial]);
+        result.Should().Contain([
+            TipoObrigacao.DCTF,
+            TipoObrigacao.EFD_ICMS_IPI,
+            TipoObrigacao.EFD_Contribuicoes,
+            TipoObrigacao.EFD_Reinf,
+            TipoObrigacao.eSocial
+        ]);
+        result.Should().NotContain([TipoObrigacao.DAS, TipoObrigacao.DEFIS]);
+    }
+
+    [Fact]
+    public void LucroPresumido_fora_de_janeiro_nao_deve_conter_obrigacoes_anuais()
+    {
+        var result = Get(RegimeTributario.LucroPresumido, 2025, 2);
+
+        result.Should().NotContain([
+            TipoObrigacao.SPED_ECD,
+            TipoObrigacao.SPED_ECF,
+            TipoObrigacao.DIRF,
+            TipoObrigacao.RAIS
+        ]);
     }
 
     [Fact]
@@ -58,6 +78,20 @@ public sealed class ObrigacaoRulesEngineTests
 
         result.Should().Contain([TipoObrigacao.SPED_ECD, TipoObrigacao.SPED_ECF]);
         result.Should().Contain([TipoObrigacao.DIRF, TipoObrigacao.RAIS]);
+        result.Should().NotContain([TipoObrigacao.DAS, TipoObrigacao.DEFIS]);
+    }
+
+    [Fact]
+    public void LucroReal_fora_de_janeiro_nao_deve_conter_obrigacoes_anuais()
+    {
+        var result = Get(RegimeTributario.LucroReal, 2025, 7);
+
+        result.Should().NotContain([
+            TipoObrigacao.SPED_ECD,
+            TipoObrigacao.SPED_ECF,
+            TipoObrigacao.DIRF,
+            TipoObrigacao.RAIS
+        ]);
     }
 
     [Fact]
@@ -73,4 +107,3 @@ public sealed class ObrigacaoRulesEngineTests
         return _engine.GetObrigacoesAplicaveis(regime, new Competencia(ano, mes)).ToArray();
     }
 }
-

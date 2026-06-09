@@ -24,14 +24,14 @@ public sealed class EnsureObrigacoesFuturasServiceTests
         var criadas = await service.EnsureForEmpresaAsync(empresa, CancellationToken.None);
         var criadasNaSegundaExecucao = await service.EnsureForEmpresaAsync(empresa, CancellationToken.None);
 
-        criadas.Should().Be(27);
+        criadas.Should().Be(40);
         criadasNaSegundaExecucao.Should().Be(0);
-        obrigacoesRepository.Obrigacoes.Should().HaveCount(27);
+        obrigacoesRepository.Obrigacoes.Should().HaveCount(40);
         obrigacoesRepository.Obrigacoes
             .Select(o => new { o.EmpresaId, o.Tipo, o.CompetenciaAno, o.CompetenciaMes })
             .Distinct()
             .Should()
-            .HaveCount(27);
+            .HaveCount(40);
     }
 
     [Fact]
@@ -47,8 +47,57 @@ public sealed class EnsureObrigacoesFuturasServiceTests
 
         var criadas = await service.EnsureForTodasEmpresasAsync(CancellationToken.None);
 
-        criadas.Should().Be(27);
+        criadas.Should().Be(40);
         obrigacoesRepository.Obrigacoes.Should().OnlyContain(o => o.EmpresaId == empresas[0].Id);
+    }
+
+    [Fact]
+    public async Task EnsureForEmpresaAsync_IncluiAnuaisDoAnoCorrenteParaEmpresaCriadaDepoisDeJaneiro()
+    {
+        var empresa = new Empresa(
+            Guid.NewGuid(),
+            "Empresa Lucro Real",
+            "12345678000199",
+            RegimeTributario.LucroReal);
+        var obrigacoesRepository = new FakeObrigacaoRepository();
+        var service = CreateService([empresa], obrigacoesRepository);
+
+        await service.EnsureForEmpresaAsync(empresa, CancellationToken.None);
+
+        obrigacoesRepository.Obrigacoes.Should().Contain(o =>
+            o.Tipo == TipoObrigacao.SPED_ECF &&
+            o.CompetenciaAno == 2026 &&
+            o.CompetenciaMes == 1 &&
+            o.DataVencimento == new DateTime(2026, 7, 31, 0, 0, 0, DateTimeKind.Utc));
+    }
+
+    [Fact]
+    public async Task EnsureForEmpresaAsync_AtualizaVencimentoExistenteQuandoRegraMuda()
+    {
+        var empresa = new Empresa(
+            Guid.NewGuid(),
+            "Empresa Lucro Real",
+            "12345678000199",
+            RegimeTributario.LucroReal);
+        var obrigacoesRepository = new FakeObrigacaoRepository();
+        var obrigacaoAntiga = new Obrigacao(
+            Guid.NewGuid(),
+            empresa.Id,
+            TipoObrigacao.SPED_ECD,
+            new Competencia(2026, 1),
+            new DateTime(2027, 5, 31, 0, 0, 0, DateTimeKind.Utc),
+            PeriodicidadeObrigacao.Anual);
+        await obrigacoesRepository.AddRangeAsync([obrigacaoAntiga], CancellationToken.None);
+        var service = CreateService([empresa], obrigacoesRepository);
+
+        await service.EnsureForEmpresaAsync(empresa, CancellationToken.None);
+
+        obrigacaoAntiga.DataVencimento.Should()
+            .Be(new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc));
+        obrigacoesRepository.Obrigacoes.Count(o =>
+            o.Tipo == TipoObrigacao.SPED_ECD &&
+            o.CompetenciaAno == 2026 &&
+            o.CompetenciaMes == 1).Should().Be(1);
     }
 
     private static EnsureObrigacoesFuturasService CreateService(

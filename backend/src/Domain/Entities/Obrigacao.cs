@@ -65,6 +65,21 @@ public sealed class Obrigacao
             : StatusObrigacao.Pendente;
     }
 
+    public void AtualizarRegra(DateTime dataVencimento, PeriodicidadeObrigacao periodicidade)
+    {
+        var vencimentoUtc = DateTime.SpecifyKind(dataVencimento, DateTimeKind.Utc);
+
+        if (DataVencimento != vencimentoUtc)
+        {
+            DataVencimento = vencimentoUtc;
+        }
+
+        if (Periodicidade != periodicidade)
+        {
+            Periodicidade = periodicidade;
+        }
+    }
+
     public void MarcarComoEntregue()
     {
         Status = StatusObrigacao.Entregue;

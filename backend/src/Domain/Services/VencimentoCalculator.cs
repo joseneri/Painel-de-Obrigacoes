@@ -15,15 +15,15 @@ public sealed class VencimentoCalculator
             TipoObrigacao.EFD_Contribuicoes => DiaMesSeguinte(competencia, 15),
             TipoObrigacao.EFD_Reinf => DiaMesSeguinte(competencia, 15),
             TipoObrigacao.eSocial => DiaMesSeguinte(competencia, 7),
-            TipoObrigacao.SPED_ECD => DataAnual(competencia.Ano + 1, 5, 31),
-            TipoObrigacao.SPED_ECF => DataAnual(competencia.Ano + 1, 7, 31),
-            TipoObrigacao.DIRF => UltimoDiaFevereiro(competencia.Ano + 1),
-            TipoObrigacao.RAIS => DataAnual(competencia.Ano + 1, 3, 31),
-            TipoObrigacao.DEFIS => DataAnual(competencia.Ano + 1, 3, 31),
+            TipoObrigacao.SPED_ECD => DataAnual(competencia.Ano, 5, 31),
+            TipoObrigacao.SPED_ECF => DataAnual(competencia.Ano, 7, 31),
+            TipoObrigacao.DIRF => UltimoDiaFevereiro(competencia.Ano),
+            TipoObrigacao.RAIS => DataAnual(competencia.Ano, 3, 31),
+            TipoObrigacao.DEFIS => DataAnual(competencia.Ano, 3, 31),
             _ => throw new ArgumentOutOfRangeException(nameof(tipo), tipo, "Tipo de obrigação inválido.")
         };
 
-        return ProximoDiaUtil(vencimento);
+        return CalendarioDiaUtil.ProximoDiaUtil(vencimento);
     }
 
     private static DateTime DiaMesSeguinte(Competencia competencia, int dia)
@@ -52,14 +52,4 @@ public sealed class VencimentoCalculator
         return new DateTime(ano, 2, DateTime.DaysInMonth(ano, 2), 0, 0, 0, DateTimeKind.Utc);
     }
 
-    private static DateTime ProximoDiaUtil(DateTime data)
-    {
-        return data.DayOfWeek switch
-        {
-            DayOfWeek.Saturday => data.AddDays(2),
-            DayOfWeek.Sunday => data.AddDays(1),
-            _ => data
-        };
-    }
 }
-

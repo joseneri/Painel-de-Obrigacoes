@@ -11,7 +11,7 @@ import {
   statusColor,
   StatusObrigacao
 } from "../../../shared/utils/domain";
-import { formatCompetencia, formatDate } from "../../../shared/utils/formatters";
+import { formatCompetencia, formatDate, urgencyText } from "../../../shared/utils/formatters";
 
 interface ObrigacoesTableProps {
   data: ObrigacaoDto[];
@@ -45,6 +45,12 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       width: 140,
       sorter: (a, b) => dayjs(a.dataVencimento).valueOf() - dayjs(b.dataVencimento).valueOf(),
       render: formatDate
+    },
+    {
+      title: "Urgencia",
+      dataIndex: "diasParaVencer",
+      width: 150,
+      render: (days) => <Typography.Text>{urgencyText(days)}</Typography.Text>
     },
     {
       title: "Periodicidade",
@@ -98,7 +104,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
         columns={columns}
         dataSource={data}
         loading={loading}
-        scroll={{ x: 1080 }}
+        scroll={{ x: 1220 }}
         pagination={{ pageSize: 10, showSizeChanger: true }}
       />
     </section>

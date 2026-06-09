@@ -16,6 +16,12 @@ public interface IObrigacaoRepository
         StatusObrigacao? status,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyCollection<Obrigacao>> GetByVencimentoAsync(
+        Guid? empresaId,
+        DateTime? inicio,
+        DateTime? fimExclusivo,
+        CancellationToken cancellationToken);
+
     Task<IReadOnlyCollection<Obrigacao>> GetAlertasAsync(
         DateTime dataAtual,
         DateTime dataLimite,

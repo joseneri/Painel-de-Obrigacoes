@@ -59,6 +59,32 @@ public sealed class ObrigacaoRepository(AppDbContext dbContext) : IObrigacaoRepo
             .ToArrayAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyCollection<Obrigacao>> GetByVencimentoAsync(
+        Guid? empresaId,
+        DateTime? inicio,
+        DateTime? fimExclusivo,
+        CancellationToken cancellationToken)
+    {
+        var query = QueryWithIncludes();
+
+        if (empresaId is not null)
+        {
+            query = query.Where(o => o.EmpresaId == empresaId.Value);
+        }
+
+        if (inicio is not null)
+        {
+            query = query.Where(o => o.DataVencimento >= inicio.Value);
+        }
+
+        if (fimExclusivo is not null)
+        {
+            query = query.Where(o => o.DataVencimento < fimExclusivo.Value);
+        }
+
+        return await query.OrderBy(o => o.DataVencimento).ToArrayAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyCollection<Obrigacao>> GetByCompetenciaAsync(
         Competencia competencia,
         CancellationToken cancellationToken)

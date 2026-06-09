@@ -1,7 +1,14 @@
 import dayjs from "dayjs";
 
 export function formatDate(value?: string | null) {
-  return value ? dayjs(value).format("DD/MM/YYYY") : "-";
+  if (!value) {
+    return "-";
+  }
+
+  const [datePart] = value.split("T");
+  const [year, month, day] = datePart.split("-");
+
+  return year && month && day ? `${day}/${month}/${year}` : dayjs(value).format("DD/MM/YYYY");
 }
 
 export function formatCompetencia(value: string, ano?: number, mes?: number) {

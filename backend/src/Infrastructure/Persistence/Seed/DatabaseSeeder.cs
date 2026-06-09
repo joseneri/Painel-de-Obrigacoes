@@ -47,10 +47,11 @@ public sealed class DatabaseSeeder(
 
     private IEnumerable<Obrigacao> GenerateObrigacoes(Empresa empresa, DateTime today)
     {
-        var competencia = new Competencia(today.Year, today.Month);
-        competencia = competencia.MesAnterior().MesAnterior().MesAnterior();
+        var competenciaAtual = new Competencia(today.Year, today.Month);
+        var competencia = new Competencia(today.Year, 1);
+        var fim = AddMonths(competenciaAtual, 11);
 
-        for (var index = 0; index < 16; index++)
+        while (competencia.CompareTo(fim) <= 0)
         {
             foreach (var tipo in rulesEngine.GetObrigacoesAplicaveis(empresa.RegimeTributario, competencia))
             {
@@ -68,6 +69,16 @@ public sealed class DatabaseSeeder(
 
             competencia = competencia.ProximoMes();
         }
+    }
+
+    private static Competencia AddMonths(Competencia competencia, int months)
+    {
+        for (var index = 0; index < months; index++)
+        {
+            competencia = competencia.ProximoMes();
+        }
+
+        return competencia;
     }
 
     private static IReadOnlyCollection<Entrega> CreateEntregas(List<Obrigacao> obrigacoes, DateTime today)
@@ -88,4 +99,3 @@ public sealed class DatabaseSeeder(
         return entregas;
     }
 }
-

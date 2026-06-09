@@ -13,7 +13,6 @@ import { pageSizeChangerProps, pageSizeOptions, tablePaginationSizeClassName } f
 interface EmpresasTableProps {
   data: EmpresaDto[];
   loading: boolean;
-  summary: string;
   toolbar: ReactNode;
 }
 
@@ -52,7 +51,7 @@ const actionsMenuClassName = classNames(
 const actionButtonClassName =
   "!h-7 !w-7 !rounded-md !text-[#475569] hover:!bg-[#eff6ff] hover:!text-[#2563eb]";
 
-export function EmpresasTable({ data, loading, summary, toolbar }: EmpresasTableProps) {
+export function EmpresasTable({ data, loading, toolbar }: EmpresasTableProps) {
   const { message, modal } = AntApp.useApp();
   const deleteEmpresa = useDeleteEmpresa();
 
@@ -136,9 +135,6 @@ export function EmpresasTable({ data, loading, summary, toolbar }: EmpresasTable
           <Typography.Title className="!mb-1 !mt-0 !text-[22px] !font-extrabold !text-[#0f172a]" level={3}>
             Empresas cadastradas
           </Typography.Title>
-          <Typography.Text className="!text-[#667085]" type="secondary">
-            {summary}
-          </Typography.Text>
         </div>
         {toolbar}
       </div>

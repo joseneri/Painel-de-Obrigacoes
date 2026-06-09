@@ -18,15 +18,18 @@ interface ObrigacoesTableProps {
 
 const defaultPageSize = 10;
 const tablePanelClassName = classNames(
-  "min-w-0 rounded-lg border border-[#e5edf5] bg-white px-6 pb-[18px] pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.05)] max-[720px]:px-3",
+  "min-w-0 overflow-hidden rounded-lg border border-[#e5edf5] bg-white pb-1 pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.05)]",
   "[&_.ant-table-thead>tr>th]:!bg-[#f8fafc] [&_.ant-table-thead>tr>th]:text-[11px]",
   "[&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:uppercase",
   "[&_.ant-table-thead>tr>th]:tracking-normal [&_.ant-table-thead>tr>th]:text-[#334155]",
+  "[&_.ant-table-thead>tr>th:first-child]:!pl-8 [&_.ant-table-thead>tr>th:last-child]:!pr-8 [&_.ant-table-tbody>tr>td:last-child]:!pr-8",
   "[&_.ant-table-tbody>tr>td]:!py-2 [&_.ant-table-tbody>tr>td]:align-top [&_.ant-table-tbody>tr>td]:text-[14px]",
-  "[&_.ant-table-tbody>tr.obrigacoes-row-odd>td]:bg-[#fbfdff] [&_.ant-table-tbody>tr:hover>td]:!bg-[#f1f7ff]",
-  "[&_.ant-table-pagination.ant-pagination]:mx-0 [&_.ant-table-pagination.ant-pagination]:mb-1",
-  "[&_.ant-table-pagination.ant-pagination]:mt-5 [&_.ant-table-pagination.ant-pagination]:flex",
-  "[&_.ant-table-pagination.ant-pagination]:w-full [&_.ant-table-pagination.ant-pagination]:justify-center",
+  "[&_.ant-table-tbody>tr.obrigacoes-row-odd>td]:bg-[#fbfdff] [&_.ant-table-tbody>tr:hover>td:not(.obrigacoes-group-cell)]:!bg-[#f8fafc]",
+  "[&_.ant-table-tbody>tr:hover>td.obrigacoes-group-cell]:!bg-[#f8fbff] [&_.ant-table-tbody>tr>td.obrigacoes-group-cell.ant-table-cell-row-hover]:!bg-[#f8fbff]",
+  "[&_.ant-table-tbody>tr:hover>td.obrigacoes-obligation-cell]:!bg-[#f8fbff] [&_.ant-table-tbody>tr>td.obrigacoes-obligation-cell.ant-table-cell-row-hover]:!bg-[#f8fbff]",
+  "[&_.ant-table-pagination.ant-pagination]:!mb-0 [&_.ant-table-pagination.ant-pagination]:!mt-2 [&_.ant-table-pagination.ant-pagination]:mx-0",
+  "[&_.ant-table-pagination.ant-pagination]:flex [&_.ant-table-pagination.ant-pagination]:w-full [&_.ant-table-pagination.ant-pagination]:justify-center",
+  "[&_.ant-table-pagination.ant-pagination]:px-6 max-[720px]:[&_.ant-table-pagination.ant-pagination]:px-3",
   "[&_.ant-table-pagination.ant-pagination]:gap-2 [&_.ant-pagination-total-text]:me-2",
   "[&_.ant-pagination-total-text]:h-[38px] [&_.ant-pagination-total-text]:text-[13px]",
   "[&_.ant-pagination-total-text]:font-semibold [&_.ant-pagination-total-text]:leading-[38px]",
@@ -61,8 +64,10 @@ const statusBadgeClassNames: Record<string, string> = {
   "nao-aplicavel": "border-[#e2e8f0] bg-[#f8fafc] text-[#64748b]"
 };
 const badgeClassName = "inline-flex h-7 items-center whitespace-nowrap rounded-md border px-2.5 text-xs font-semibold";
-const urgencyBadgeClassName = `${badgeClassName} min-w-[106px] justify-center`;
-const groupedCellClassName = "!align-middle";
+const urgencyBadgeClassName = `${badgeClassName} w-[144px] justify-center`;
+const groupedCellClassName = "obrigacoes-group-cell !align-middle";
+const dueDateCellClassName = `${groupedCellClassName} !bg-[#f8fbff]`;
+const obligationCellClassName = `${groupedCellClassName} obrigacoes-obligation-cell !border-r !border-[#e5edf5] !bg-[#f8fbff] !pl-8`;
 const deliveredButtonClassName =
   "[&.ant-btn[disabled]]:!border-[#a7f3d0] [&.ant-btn[disabled]]:!bg-[#ecfdf5] [&.ant-btn[disabled]]:!text-[#047857]";
 
@@ -98,7 +103,7 @@ export function ObrigacoesTable({
       title: "Obrigação",
       dataIndex: "tipo",
       width: 160,
-      onCell: (_, index) => ({ rowSpan: spanAt(obligationSpans, index), className: groupedCellClassName }),
+      onCell: (_, index) => ({ rowSpan: spanAt(obligationSpans, index), className: obligationCellClassName }),
       render: (tipo) => (
         <Typography.Text className="!font-semibold !text-[#1d4ed8]">
           {labelTipo(tipo)}
@@ -117,7 +122,7 @@ export function ObrigacoesTable({
       title: "Vencimento",
       dataIndex: "dataVencimento",
       width: 130,
-      onCell: (_, index) => ({ rowSpan: spanAt(dueDateSpans, index), className: groupedCellClassName }),
+      onCell: (_, index) => ({ rowSpan: spanAt(dueDateSpans, index), className: dueDateCellClassName }),
       render: (value, row) => {
         const level = urgencyLevel(row.diasParaVencer);
 

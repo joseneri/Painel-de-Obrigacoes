@@ -44,8 +44,6 @@ export function EmpresasPage() {
     });
   }, [empresas, searchTerm, selectedRegime]);
 
-  const summary = getEmpresasSummary(filteredEmpresas.length, empresas.length);
-
   function handleSubmit(values: EmpresaFormValues) {
     createEmpresa.mutate(
       {
@@ -143,9 +141,8 @@ export function EmpresasPage() {
       <EmpresasTable
         data={filteredEmpresas}
         loading={isLoading || isFetching}
-        summary={summary}
         toolbar={
-          <div className="grid min-w-0 w-[min(560px,100%)] grid-cols-[minmax(220px,320px)_minmax(180px,220px)] items-end gap-3 max-[720px]:w-full max-[720px]:grid-cols-1">
+          <div className="grid min-w-0 w-[min(760px,100%)] grid-cols-[minmax(360px,1fr)_minmax(180px,220px)] items-end gap-3 max-[1180px]:w-full max-[720px]:grid-cols-1">
             <Input
               allowClear
               aria-label="Buscar empresa por razão social"
@@ -173,14 +170,6 @@ export function EmpresasPage() {
       />
     </div>
   );
-}
-
-function getEmpresasSummary(filteredCount: number, totalCount: number) {
-  if (filteredCount === totalCount) {
-    return `${totalCount} ${totalCount === 1 ? "empresa cadastrada" : "empresas cadastradas"}`;
-  }
-
-  return `${filteredCount} de ${totalCount} empresas`;
 }
 
 function validateCnpjLength(_: unknown, value?: string) {

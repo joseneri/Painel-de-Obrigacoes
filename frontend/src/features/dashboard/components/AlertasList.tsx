@@ -55,7 +55,7 @@ const dueDateClassNames = {
   atencao: "text-[#b45309]",
   urgente: "text-[#b91c1c]"
 };
-const alertasPageSizeOptions = [7, 10, 15, 20];
+const alertasPageSizeOptions = [8, 10, 15, 20];
 
 export function AlertasList({ alerts, currentPage, pageSize, onPageChange, onOpenObrigacao }: AlertasListProps) {
   const columns: ColumnsType<AlertaDto> = [

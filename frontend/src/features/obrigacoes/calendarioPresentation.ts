@@ -6,6 +6,7 @@ import {
   normalizeStatus,
   StatusObrigacao
 } from "../../shared/utils/domain";
+import { urgencyText } from "../../shared/utils/formatters";
 
 export type UrgencyTone = "overdue" | "today" | "soon" | "future" | "done" | "neutral";
 
@@ -126,15 +127,7 @@ export function urgencyTone(row: ObrigacaoDto): UrgencyTone {
 }
 
 export function urgencyLabel(row: ObrigacaoDto) {
-  if (row.diasParaVencer < 0) {
-    return `${Math.abs(row.diasParaVencer)}d atraso`;
-  }
-
-  if (row.diasParaVencer === 0) {
-    return "hoje";
-  }
-
-  return `${row.diasParaVencer}d`;
+  return urgencyText(row.diasParaVencer);
 }
 
 export function isAnual(row: ObrigacaoDto) {

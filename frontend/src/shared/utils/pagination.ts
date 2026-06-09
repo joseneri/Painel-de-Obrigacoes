@@ -1,6 +1,6 @@
 import { classNames } from "./classNames";
 
-export const pageSizeOptions = [8, 10, 20, 50];
+export const pageSizeOptions = [8, 10, 15, 20];
 
 export const pageSizeChangerProps = {
   className: "!min-w-[118px]",

@@ -216,7 +216,77 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
-### Pendente de hash - `feat: add operational filters and exports`
+### Pendente de hash - `feat: refine frontend operational layout`
+
+O que mudou:
+
+- O Dashboard ficou mais direto: removeu o bloco lateral de prazos criticos e
+  deixou a distribuicao de status ocupar a area principal.
+- A distribuicao de status ganhou barra consolidada e cards por status, com
+  percentuais e totais mais faceis de explicar na demo.
+- Os cards de metricas passaram a mostrar entregues antes de pendentes para
+  priorizar resultado operacional.
+- O Calendario removeu o filtro local de tipo de obrigacao e simplificou os
+  controles para competencia, empresa, status e acoes.
+- A tabela do Calendario ganhou ajustes de espaçamento, hover, celulas agrupadas
+  e badges de urgencia com largura fixa.
+- Empresas removeu o contador textual da tabela e ampliou a area dos filtros.
+- Alertas ajustou a largura dos filtros e passou a usar opcoes de paginacao
+  8/10/15/20, alinhadas ao restante das tabelas.
+- Os textos de urgencia passaram a usar singular/plural natural, como
+  "1 dia" e "2 dias".
+
+Decisoes tecnicas:
+
+- A simplificacao remove estado local de filtro por obrigacao no Calendario, sem
+  mudar contratos HTTP nem replicar a engine fiscal no frontend.
+- Exportacao CSV/PDF continua baseada no conjunto retornado pela API e filtrado
+  pelos controles principais da tela.
+- A visao de status no Dashboard permanece derivada do `DashboardDto`; o
+  frontend apenas reorganiza apresentacao e acessibilidade.
+- As opcoes de paginacao foram padronizadas para manter densidade previsivel nas
+  telas operacionais.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, guia de IA, resumo de implementacao e registros
+  recentes em `tmp/` antes de preparar o commit.
+- Revisou o diff atual e separou os ajustes de Dashboard, Alertas, Empresas,
+  Calendario, formatadores e paginacao.
+- Conferiu riscos de frontend, tamanho de arquivos, mojibake em codigo e
+  whitespace antes do stage.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente `commita tudo`, autorizando stage e commit de
+  todo o worktree atual.
+- A mudanca foi mantida no escopo visual/operacional do frontend; regra fiscal,
+  DTOs e endpoints permanecem intactos.
+- Os avisos LF/CRLF do Windows foram considerados nao bloqueantes porque nao
+  representam erro de whitespace.
+
+Validacoes executadas:
+
+- `npm run build` em `frontend/`: passou.
+- `git diff --check`: sem erro bloqueante, apenas avisos LF/CRLF esperados no
+  Windows.
+- Checagem de tamanho em `backend/src`, `backend/tests` e `frontend/src`: nenhum
+  `.cs`, `.ts` ou `.tsx` acima de 250 linhas.
+- `rg -n "Ãƒ|Ã‚|ï¿½" frontend/src backend/tests backend/src`: sem ocorrencias de
+  mojibake em codigo.
+- Registros recentes em `tmp/` indicam smoke visual local do Calendario e do
+  Painel de Alertas durante os ajustes.
+
+Como apresentar esse commit:
+
+- "O Dashboard ficou mais limpo para explicar status consolidados sem competir
+  com o Painel de Alertas."
+- "O Calendario ficou mais denso e previsivel: filtros principais, acoes curtas,
+  tabela agrupada e urgencia legivel."
+- "O frontend segue apenas apresentando e filtrando dados da API; a regra fiscal
+  continua isolada no backend."
+
+### `2c6abba` - `feat: add operational filters and exports`
 
 O que mudou:
 

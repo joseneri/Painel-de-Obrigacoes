@@ -39,12 +39,17 @@ export function onlyDigits(value: string) {
 
 export function urgencyText(days: number) {
   if (days < 0) {
-    return `${Math.abs(days)} dia(s) em atraso`;
+    const overdueDays = Math.abs(days);
+    return `${overdueDays} ${dayUnit(overdueDays)} em atraso`;
   }
 
   if (days === 0) {
     return "vence hoje";
   }
 
-  return `${days} dia(s) para vencer`;
+  return `${days} ${dayUnit(days)} para vencer`;
+}
+
+function dayUnit(days: number) {
+  return days === 1 ? "dia" : "dias";
 }

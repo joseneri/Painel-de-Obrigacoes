@@ -1,5 +1,6 @@
 import type { ObrigacaoDto } from "../../../api/types";
 import { normalizeStatus, StatusObrigacao } from "../../../shared/utils/domain";
+import { urgencyText } from "../../../shared/utils/formatters";
 
 export type CalendarioModo = "competencia" | "vencimento";
 export type DeadlineLevel = "ok" | "atencao" | "urgente";
@@ -35,11 +36,7 @@ export function urgencyLevel(days: number): DeadlineLevel {
 }
 
 export function urgencyLabel(days: number) {
-  if (days < 0) {
-    return `${Math.abs(days)}d atrasado`;
-  }
-
-  return days === 0 ? "Vence hoje" : `${days}d restantes`;
+  return urgencyText(days);
 }
 
 export function urgencyPresentation(statusValue: ObrigacaoDto["status"], days: number) {

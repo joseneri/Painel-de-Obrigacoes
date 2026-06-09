@@ -15,17 +15,14 @@ interface CalendarioControlsProps {
   today: Dayjs;
   empresaId?: string;
   status?: number;
-  tipoKey?: string;
   empresaOptions: SelectOption<string>[];
   statusOptions: SelectOption<number>[];
-  tipoOptions: SelectOption<string>[];
   empresasLoading: boolean;
   canExport: boolean;
   onMonthChange: (value: Dayjs | null) => void;
   onReset: () => void;
   onEmpresaChange: (empresaId?: string) => void;
   onStatusChange: (status?: number) => void;
-  onTipoChange: (tipoKey?: string) => void;
   onExportCsv: () => void;
   onExportPdf: () => void;
 }
@@ -48,25 +45,24 @@ const monthNames = [
 const fieldClassName = "grid min-w-0 grid-rows-[18px_48px] items-start gap-[9px]";
 const labelClassName = "text-xs font-extrabold leading-[18px] tracking-normal text-[#111827]";
 const selectClassName =
-  "!h-12 !min-h-12 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
-const actionButtonClassName = "h-12 w-[82px] justify-center rounded-lg px-2 text-[13px] max-[720px]:w-full";
+  "!h-12 !min-h-12 !min-w-0 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
+const actionButtonClassName = "h-9 min-w-0 justify-center rounded-lg px-2 text-xs";
+const filterRowClassName =
+  "grid grid-cols-[232px_minmax(180px,1fr)_184px_216px] items-start gap-3.5 max-[1040px]:grid-cols-[minmax(170px,0.8fr)_minmax(180px,1fr)] max-[720px]:grid-cols-1";
 
 export function CalendarioControls({
   selectedMonth,
   today,
   empresaId,
   status,
-  tipoKey,
   empresaOptions,
   statusOptions,
-  tipoOptions,
   empresasLoading,
   canExport,
   onMonthChange,
   onReset,
   onEmpresaChange,
   onStatusChange,
-  onTipoChange,
   onExportCsv,
   onExportPdf
 }: CalendarioControlsProps) {
@@ -74,6 +70,7 @@ export function CalendarioControls({
   const [calendarMode, setCalendarMode] = useState<CalendarPanelMode>("month");
   const [selectedDate, setSelectedDate] = useState(() => defaultDateForMonth(selectedMonth, today));
   const [pickerValue, setPickerValue] = useState(selectedDate);
+  const hasResetFilters = Boolean(empresaId) || status !== undefined;
 
   useEffect(() => {
     setSelectedDate((currentDate) =>
@@ -112,12 +109,12 @@ export function CalendarioControls({
   return (
     <div className="border-b border-[#edf1f5] bg-[#f8fafc] px-7 pb-[22px] pt-5 max-[720px]:p-4">
       <div className="grid gap-3.5 rounded-lg border border-[#e5edf6] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] max-[720px]:p-3.5">
-        <div className="grid grid-cols-[minmax(170px,0.8fr)_minmax(240px,1.4fr)_minmax(170px,0.8fr)] items-start gap-3.5 max-[980px]:grid-cols-1">
+        <div className={filterRowClassName}>
           <div className={fieldClassName}>
             <span className={labelClassName}>Competência</span>
             <DatePicker
               allowClear={false}
-              className="h-12 min-h-12 w-full border-[#e5e7eb] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-center [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
+              className="h-12 min-h-12 !min-w-0 w-full border-[#e5e7eb] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-center [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
               open={calendarOpen}
               value={selectedDate}
               pickerValue={pickerValue}
@@ -132,7 +129,7 @@ export function CalendarioControls({
           </div>
 
           <div className={fieldClassName}>
-            <span className={labelClassName}>Empresa</span>
+            <span className={labelClassName}>Empresas</span>
             <Select
               allowClear
               showSearch
@@ -157,27 +154,16 @@ export function CalendarioControls({
               onChange={(value?: number) => onStatusChange(value)}
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-[minmax(220px,1fr)_minmax(calc((82px*3)+20px),auto)] items-start gap-3.5 max-[900px]:grid-cols-1">
-          <div className={fieldClassName}>
-            <span className={labelClassName}>Obrigação</span>
-            <Select
-              allowClear
-              showSearch
-              className={selectClassName}
-              placeholder="Todas"
-              value={tipoKey}
-              optionFilterProp="label"
-              options={tipoOptions}
-              onChange={(value?: string) => onTipoChange(value)}
-            />
-          </div>
 
           <div className={fieldClassName}>
             <span className={labelClassName}>Ações</span>
-            <div className="grid w-full grid-cols-[repeat(3,82px)] justify-end gap-2.5 max-[900px]:justify-start max-[720px]:grid-cols-1">
-              <Button className={actionButtonClassName} icon={<CloseCircleOutlined />} onClick={onReset}>
+            <div className="grid h-12 w-full grid-cols-[72px_64px_64px] items-center gap-2 max-[720px]:h-auto max-[720px]:grid-cols-1">
+              <Button
+                className={actionButtonClassName}
+                disabled={!hasResetFilters}
+                icon={<CloseCircleOutlined />}
+                onClick={onReset}
+              >
                 Limpar
               </Button>
               <Button className={actionButtonClassName} icon={<FilePdfOutlined />} disabled={!canExport} onClick={onExportPdf}>

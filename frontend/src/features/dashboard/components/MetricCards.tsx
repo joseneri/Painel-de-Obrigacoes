@@ -61,18 +61,18 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
         </span>
         <div className="grid grid-cols-3 gap-3.5 max-[980px]:grid-cols-1">
           <Metric
-            title="Pendentes"
-            value={data?.pendentes}
-            loading={loading}
-            icon={<ClockCircleOutlined />}
-            tone="warning"
-          />
-          <Metric
             title="Entregues"
             value={data?.entregues}
             loading={loading}
             icon={<CheckCircleOutlined />}
             tone="success"
+          />
+          <Metric
+            title="Pendentes"
+            value={data?.pendentes}
+            loading={loading}
+            icon={<ClockCircleOutlined />}
+            tone="warning"
           />
           <Metric
             title="Atrasadas"

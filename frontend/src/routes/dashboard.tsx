@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
 
 export const Route = createFileRoute("/dashboard")({
@@ -6,11 +6,5 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardRoute() {
-  const navigate = useNavigate({ from: "/dashboard" });
-
-  return (
-    <DashboardPage
-      onOpenAlertas={() => navigate({ to: "/alertas" })}
-    />
-  );
+  return <DashboardPage />;
 }

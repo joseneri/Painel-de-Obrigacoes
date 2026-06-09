@@ -1,4 +1,4 @@
-import { Empty, Progress, Space, Tag, Typography } from "antd";
+import { Empty, Progress, Tag, Typography } from "antd";
 import type { DashboardDto } from "../../../api/types";
 
 interface StatusOverviewProps {
@@ -14,10 +14,15 @@ const statusItems = [
 export function StatusOverview({ data }: StatusOverviewProps) {
   const items = statusItems.map((item) => ({ ...item, value: data?.[item.key] ?? 0 }));
   const total = items.reduce((sum, item) => sum + item.value, 0);
+  const chartItems = items.map((item) => ({
+    ...item,
+    exactPercent: total > 0 ? (item.value / total) * 100 : 0,
+    percent: total > 0 ? Math.round((item.value / total) * 100) : 0
+  }));
 
   if (!data || total === 0) {
     return (
-      <div className="grid min-h-[220px] place-items-center rounded-lg border border-[#e5edf6] bg-[#f8fafc]">
+      <div className="grid min-h-[300px] place-items-center rounded-lg border border-[#e5edf6] bg-[#f8fafc]">
         <Empty description="Sem obrigações pendentes, entregues ou atrasadas" />
       </div>
     );
@@ -39,26 +44,57 @@ export function StatusOverview({ data }: StatusOverviewProps) {
         </Tag>
       </div>
 
-      <div className="grid gap-4">
-        {items.map((item) => {
-          const percent = Math.round((item.value / total) * 100);
+      <div className="grid gap-5">
+        <div className="rounded-lg border border-[#e5edf6] bg-[#f8fafc] p-5">
+          <div className="mb-4 flex items-end justify-between gap-4 max-[720px]:items-start max-[720px]:flex-col">
+            <div className="grid gap-1">
+              <Typography.Text className="!text-[12px] !font-extrabold !uppercase !text-[#667085]">
+                Visão geral
+              </Typography.Text>
+              <span className="text-[22px] font-extrabold leading-tight text-[#0f172a]">Status das obrigações</span>
+            </div>
+            <Typography.Text className="!text-[13px] !font-bold !text-[#475569]">
+              Base consolidada de {total} registros
+            </Typography.Text>
+          </div>
 
-          return (
-            <div className="grid gap-2 rounded-lg border border-[#edf1f5] bg-[#f8fafc] p-4" key={item.label}>
-              <div className="flex justify-between gap-3">
-                <Space>
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="font-bold text-[#0f172a]">{item.label}</span>
-                  <Typography.Text type="secondary">{item.value}</Typography.Text>
-                </Space>
-                <Typography.Text className="!text-[#0f172a]" strong>
-                  {percent}%
+          <div
+            aria-label={`Distribuição consolidada: ${chartItems
+              .map((item) => `${item.label} ${item.percent}%`)
+              .join(", ")}`}
+            className="flex h-9 w-full overflow-hidden rounded-full bg-[#e2e8f0]"
+            role="img"
+          >
+            {chartItems
+              .filter((item) => item.value > 0)
+              .map((item) => (
+                <span
+                  className="h-full min-w-[8px]"
+                  key={item.label}
+                  style={{ width: `${item.exactPercent}%`, backgroundColor: item.color }}
+                  title={`${item.label}: ${item.value} (${item.percent}%)`}
+                />
+              ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3.5 max-[980px]:grid-cols-1">
+          {chartItems.map((item) => (
+            <div className="grid min-w-0 gap-3 rounded-lg border border-[#edf1f5] bg-[#f8fafc] p-4" key={item.label}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="h-3 w-3 flex-none rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="truncate font-bold text-[#0f172a]">{item.label}</span>
+                </div>
+                <Typography.Text className="!text-[15px] !text-[#0f172a]" strong>
+                  {item.percent}%
                 </Typography.Text>
               </div>
-              <Progress percent={percent} strokeColor={item.color} showInfo={false} />
+              <strong className="text-[30px] leading-none text-[#0f172a]">{item.value}</strong>
+              <Progress percent={item.percent} strokeColor={item.color} showInfo={false} />
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </>
   );

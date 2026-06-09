@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { App as AntApp, Button, Popconfirm, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -10,9 +11,11 @@ import { formatCnpj } from "../../../shared/utils/formatters";
 interface EmpresasTableProps {
   data: EmpresaDto[];
   loading: boolean;
+  summary: string;
+  toolbar: ReactNode;
 }
 
-export function EmpresasTable({ data, loading }: EmpresasTableProps) {
+export function EmpresasTable({ data, loading, summary, toolbar }: EmpresasTableProps) {
   const { message } = AntApp.useApp();
   const deleteEmpresa = useDeleteEmpresa();
 
@@ -64,12 +67,21 @@ export function EmpresasTable({ data, loading }: EmpresasTableProps) {
 
   return (
     <section className="panel">
+      <div className="panel-header empresas-list-header">
+        <div>
+          <Typography.Title level={3}>Empresas cadastradas</Typography.Title>
+          <Typography.Text type="secondary">{summary}</Typography.Text>
+        </div>
+        {toolbar}
+      </div>
+
       <Table
         rowKey="id"
         size="middle"
         columns={columns}
         dataSource={data}
         loading={loading}
+        locale={{ emptyText: "Nenhuma empresa encontrada" }}
         scroll={{ x: 720 }}
         pagination={{ pageSize: 8, showSizeChanger: true }}
       />

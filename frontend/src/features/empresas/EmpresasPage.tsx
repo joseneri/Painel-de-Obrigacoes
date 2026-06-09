@@ -1,10 +1,12 @@
+import { useMemo, useState } from "react";
 import { App as AntApp, Alert, Button, Form, Input, Select, Typography } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useCreateEmpresa, useEmpresas } from "../../api/hooks";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { formatCnpj, onlyDigits } from "../../shared/utils/formatters";
-import { regimeOptions } from "../../shared/utils/domain";
+import { normalizeRegime, regimeOptions } from "../../shared/utils/domain";
 import { EmpresasTable } from "./components/EmpresasTable";
+import "./empresas.css";
 
 interface EmpresaFormValues {
   razaoSocial: string;
@@ -15,8 +17,24 @@ interface EmpresaFormValues {
 export function EmpresasPage() {
   const { message } = AntApp.useApp();
   const [form] = Form.useForm<EmpresaFormValues>();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegime, setSelectedRegime] = useState<number>();
   const { data: empresas = [], isLoading, isError, error, isFetching } = useEmpresas();
   const createEmpresa = useCreateEmpresa();
+
+  const filteredEmpresas = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLocaleLowerCase("pt-BR");
+
+    return empresas.filter((empresa) => {
+      const matchesSearch =
+        !normalizedSearch || empresa.razaoSocial.toLocaleLowerCase("pt-BR").includes(normalizedSearch);
+      const matchesRegime = !selectedRegime || normalizeRegime(empresa.regimeTributario) === selectedRegime;
+
+      return matchesSearch && matchesRegime;
+    });
+  }, [empresas, searchTerm, selectedRegime]);
+
+  const summary = getEmpresasSummary(filteredEmpresas.length, empresas.length);
 
   function handleSubmit(values: EmpresaFormValues) {
     createEmpresa.mutate(
@@ -98,7 +116,40 @@ export function EmpresasPage() {
         </Form>
       </section>
 
-      <EmpresasTable data={empresas} loading={isLoading || isFetching} />
+      <EmpresasTable
+        data={filteredEmpresas}
+        loading={isLoading || isFetching}
+        summary={summary}
+        toolbar={
+          <div className="empresas-filters">
+            <Input
+              allowClear
+              aria-label="Buscar empresa por razão social"
+              prefix={<SearchOutlined />}
+              placeholder="Buscar por razão social"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+            <Select<number>
+              allowClear
+              aria-label="Filtrar empresas por regime"
+              placeholder="Todos os regimes"
+              value={selectedRegime}
+              onChange={setSelectedRegime}
+              optionFilterProp="label"
+              options={regimeOptions}
+            />
+          </div>
+        }
+      />
     </div>
   );
+}
+
+function getEmpresasSummary(filteredCount: number, totalCount: number) {
+  if (filteredCount === totalCount) {
+    return `${totalCount} ${totalCount === 1 ? "empresa cadastrada" : "empresas cadastradas"}`;
+  }
+
+  return `${filteredCount} de ${totalCount} empresas`;
 }

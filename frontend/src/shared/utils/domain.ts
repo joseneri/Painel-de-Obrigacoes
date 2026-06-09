@@ -90,6 +90,15 @@ export function labelRegime(value: EnumValue) {
   return resolveEnumLabel(value, regimeLabels);
 }
 
+export function normalizeRegime(value: EnumValue) {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  const match = Object.entries(regimeLabels).find(([, label]) => label === stringLabels[value] || label === value);
+  return match ? Number(match[0]) : Number(value);
+}
+
 export function normalizeStatus(value: EnumValue) {
   if (typeof value === "number") {
     return value;

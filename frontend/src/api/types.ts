@@ -14,7 +14,6 @@ export interface EmpresaDto {
   cnpj: string;
   regimeTributario: EnumValue;
   criadaEm: string;
-  pendentes: number;
 }
 
 export interface ObrigacaoDto {

@@ -6,15 +6,14 @@ namespace PainelObrigacoes.Application.Mappers;
 
 internal static class DtoMapper
 {
-    public static EmpresaDto ToDto(Empresa empresa, int pendentes)
+    public static EmpresaDto ToDto(Empresa empresa)
     {
         return new EmpresaDto(
             empresa.Id,
             empresa.RazaoSocial,
             empresa.CNPJ,
             empresa.RegimeTributario,
-            empresa.CriadaEm,
-            pendentes);
+            empresa.CriadaEm);
     }
 
     public static ObrigacaoDto ToDto(Obrigacao obrigacao)
@@ -55,4 +54,3 @@ internal static class DtoMapper
             entrega.Observacao);
     }
 }
-

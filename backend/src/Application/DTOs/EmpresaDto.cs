@@ -7,6 +7,4 @@ public sealed record EmpresaDto(
     string RazaoSocial,
     string CNPJ,
     RegimeTributario RegimeTributario,
-    DateTime CriadaEm,
-    int Pendentes);
-
+    DateTime CriadaEm);

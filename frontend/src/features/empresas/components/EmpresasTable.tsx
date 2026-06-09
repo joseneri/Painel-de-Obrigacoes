@@ -5,7 +5,7 @@ import type { EmpresaDto } from "../../../api/types";
 import { useDeleteEmpresa } from "../../../api/hooks";
 import { labelRegime } from "../../../shared/utils/domain";
 import { getErrorMessage } from "../../../shared/utils/errors";
-import { formatCnpj, formatDate } from "../../../shared/utils/formatters";
+import { formatCnpj } from "../../../shared/utils/formatters";
 
 interface EmpresasTableProps {
   data: EmpresaDto[];
@@ -48,19 +48,6 @@ export function EmpresasTable({ data, loading }: EmpresasTableProps) {
       render: (regime) => <Tag color="blue">{labelRegime(regime)}</Tag>
     },
     {
-      title: "Pendentes",
-      dataIndex: "pendentes",
-      width: 120,
-      sorter: (a, b) => a.pendentes - b.pendentes,
-      render: (value) => <Tag color={value > 0 ? "orange" : "green"}>{value}</Tag>
-    },
-    {
-      title: "Criada em",
-      dataIndex: "criadaEm",
-      width: 140,
-      render: formatDate
-    },
-    {
       title: "",
       key: "actions",
       fixed: "right",
@@ -88,7 +75,7 @@ export function EmpresasTable({ data, loading }: EmpresasTableProps) {
         columns={columns}
         dataSource={data}
         loading={loading}
-        scroll={{ x: 980 }}
+        scroll={{ x: 720 }}
         pagination={{ pageSize: 8, showSizeChanger: true }}
       />
     </section>

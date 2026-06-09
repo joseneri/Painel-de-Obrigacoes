@@ -1,31 +1,18 @@
 using PainelObrigacoes.Application.DTOs;
 using PainelObrigacoes.Application.Mappers;
-using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 
 namespace PainelObrigacoes.Application.Services.Empresas;
 
-public sealed class GetEmpresasService(
-    IEmpresaRepository empresaRepository,
-    TimeProvider timeProvider)
+public sealed class GetEmpresasService(IEmpresaRepository empresaRepository)
 {
     public async Task<IReadOnlyCollection<EmpresaDto>> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var today = timeProvider.GetUtcNow().UtcDateTime;
         var empresas = await empresaRepository.GetAllAsync(cancellationToken);
 
         return empresas
             .OrderBy(empresa => empresa.RazaoSocial)
-            .Select(empresa =>
-            {
-                foreach (var obrigacao in empresa.Obrigacoes)
-                {
-                    obrigacao.RecalcularStatus(today);
-                }
-
-                var pendentes = empresa.Obrigacoes.Count(o => o.Status == StatusObrigacao.Pendente);
-                return DtoMapper.ToDto(empresa, pendentes);
-            })
+            .Select(DtoMapper.ToDto)
             .ToArray();
     }
 }

@@ -14,9 +14,6 @@ public sealed class EmpresaRepository(AppDbContext dbContext) : IEmpresaReposito
     public async Task<IReadOnlyCollection<Empresa>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await dbContext.Empresas
-            .AsSplitQuery()
-            .Include(e => e.Obrigacoes)
-            .ThenInclude(o => o.Entrega)
             .OrderBy(e => e.RazaoSocial)
             .ToArrayAsync(cancellationToken);
     }
@@ -49,4 +46,3 @@ public sealed class EmpresaRepository(AppDbContext dbContext) : IEmpresaReposito
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
-

@@ -27,7 +27,7 @@ public sealed class CreateEmpresaService(
         await obrigacaoRepository.AddRangeAsync(obrigacoes, cancellationToken);
         await empresaRepository.SaveChangesAsync(cancellationToken);
 
-        return DtoMapper.ToDto(empresa, pendentes: obrigacoes.Length);
+        return DtoMapper.ToDto(empresa);
     }
 
     private async Task<string> ValidateAsync(CreateEmpresaDto input, CancellationToken cancellationToken)

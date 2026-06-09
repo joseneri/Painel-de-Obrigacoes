@@ -188,6 +188,10 @@ o mapeamento de `Competencia`: o plano inicial tentou usar membro aninhado de
 complex property no indice EF, mas a migration validou que colunas escalares
 eram a opcao mais segura para manter o Domain imutavel.
 
-Para preparar a defesa tecnica e o showcase, veja `docs/ia-showcase-guide.md`.
+Para estudar o projeto inteiro em ordem didatica no rich view do Codex, veja
+`tmp/documentacao-preview-fe-be.md`.
+Para preparar a defesa tecnica e o showcase, veja
+`docs/ia-interna/ia-showcase-guide.md`.
 Para um inventario detalhado do que ja foi implementado em backend, frontend,
-Docker, validacoes e proximas fases, veja `docs/implementation-summary.md`.
+Docker, validacoes e proximas fases, veja
+`docs/ia-interna/implementation-summary.md`.

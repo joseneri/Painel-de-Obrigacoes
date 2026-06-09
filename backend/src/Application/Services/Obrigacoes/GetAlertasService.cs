@@ -3,9 +3,9 @@ using PainelObrigacoes.Application.Mappers;
 using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 
-namespace PainelObrigacoes.Application.UseCases.Obrigacoes;
+namespace PainelObrigacoes.Application.Services.Obrigacoes;
 
-public sealed class GetAlertasUseCase(
+public sealed class GetAlertasService(
     IObrigacaoRepository obrigacaoRepository,
     TimeProvider timeProvider)
 {
@@ -28,4 +28,3 @@ public sealed class GetAlertasUseCase(
             .ToArray();
     }
 }
-

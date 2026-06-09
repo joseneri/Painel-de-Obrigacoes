@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PainelObrigacoes.Api.Endpoints;
-using PainelObrigacoes.Application.UseCases.Empresas;
-using PainelObrigacoes.Application.UseCases.Entregas;
-using PainelObrigacoes.Application.UseCases.Obrigacoes;
+using PainelObrigacoes.Application.Services.Empresas;
+using PainelObrigacoes.Application.Services.Entregas;
+using PainelObrigacoes.Application.Services.Obrigacoes;
 using PainelObrigacoes.Domain.Services;
 using PainelObrigacoes.Infrastructure.Extensions;
 using PainelObrigacoes.Infrastructure.Persistence;
@@ -26,13 +26,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ObrigacaoRulesEngine>();
 builder.Services.AddSingleton<VencimentoCalculator>();
-builder.Services.AddScoped<CreateEmpresaUseCase>();
-builder.Services.AddScoped<GetEmpresasUseCase>();
-builder.Services.AddScoped<DeleteEmpresaUseCase>();
-builder.Services.AddScoped<GetCalendarioUseCase>();
-builder.Services.AddScoped<GetAlertasUseCase>();
-builder.Services.AddScoped<GetDashboardUseCase>();
-builder.Services.AddScoped<RegistrarEntregaUseCase>();
+builder.Services.AddScoped<CreateEmpresaService>();
+builder.Services.AddScoped<GetEmpresasService>();
+builder.Services.AddScoped<DeleteEmpresaService>();
+builder.Services.AddScoped<GetCalendarioService>();
+builder.Services.AddScoped<GetAlertasService>();
+builder.Services.AddScoped<GetDashboardService>();
+builder.Services.AddScoped<RegistrarEntregaService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -61,4 +61,3 @@ static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
     await dbContext.Database.MigrateAsync();
     await seeder.SeedAsync();
 }
-

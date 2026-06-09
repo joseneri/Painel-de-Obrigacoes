@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using PainelObrigacoes.Application.DTOs;
-using PainelObrigacoes.Application.UseCases.Entregas;
+using PainelObrigacoes.Application.Services.Entregas;
 
 namespace PainelObrigacoes.Api.Endpoints;
 
@@ -10,12 +10,12 @@ public static class EntregasEndpoints
     {
         group.MapPost(string.Empty, async (
             RegistrarEntregaDto input,
-            RegistrarEntregaUseCase useCase,
+            RegistrarEntregaService service,
             ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
-                () => useCase.ExecuteAsync(input, cancellationToken),
+                () => service.ExecuteAsync(input, cancellationToken),
                 result => Results.Created($"/api/entregas/{result.Id}", result),
                 loggerFactory);
         });

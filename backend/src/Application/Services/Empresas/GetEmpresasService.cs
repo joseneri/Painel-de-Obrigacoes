@@ -3,9 +3,9 @@ using PainelObrigacoes.Application.Mappers;
 using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 
-namespace PainelObrigacoes.Application.UseCases.Empresas;
+namespace PainelObrigacoes.Application.Services.Empresas;
 
-public sealed class GetEmpresasUseCase(
+public sealed class GetEmpresasService(
     IEmpresaRepository empresaRepository,
     TimeProvider timeProvider)
 {
@@ -29,4 +29,3 @@ public sealed class GetEmpresasUseCase(
             .ToArray();
     }
 }
-

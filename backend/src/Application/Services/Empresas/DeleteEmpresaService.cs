@@ -1,9 +1,9 @@
 using PainelObrigacoes.Application.Common;
 using PainelObrigacoes.Domain.Interfaces;
 
-namespace PainelObrigacoes.Application.UseCases.Empresas;
+namespace PainelObrigacoes.Application.Services.Empresas;
 
-public sealed class DeleteEmpresaUseCase(IEmpresaRepository empresaRepository)
+public sealed class DeleteEmpresaService(IEmpresaRepository empresaRepository)
 {
     public async Task ExecuteAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -14,4 +14,3 @@ public sealed class DeleteEmpresaUseCase(IEmpresaRepository empresaRepository)
         await empresaRepository.SaveChangesAsync(cancellationToken);
     }
 }
-

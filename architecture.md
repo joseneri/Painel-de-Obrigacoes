@@ -16,7 +16,7 @@
 
 - `backend/`: solution .NET exclusiva do backend.
 - `backend/src/Api`: camada HTTP e composition root.
-- `backend/src/Application`: use cases e DTOs.
+- `backend/src/Application`: application services e DTOs.
 - `backend/src/Domain`: regras fiscais puras.
 - `backend/src/Infrastructure`: EF Core, seed, migrations e repositorios.
 - `backend/tests`: testes automatizados do backend.
@@ -32,14 +32,14 @@
 - Persistencia: `Competencia` mapeada em colunas proprias na tabela de
   obrigacoes.
 - Repositorios: interfaces no Domain, implementacao na Infrastructure.
-- Use cases: um arquivo por caso de uso em `Application/UseCases`.
+- Application services: um arquivo por operacao em `Application/Services`.
 
 ## Constraints
 
 1. Domain nao pode referenciar `Microsoft.*`, `System.Data.*` nem EF Core.
 2. Arquivos com maximo de 250 linhas.
 3. Engine de regras stateless, sem construtor com dependencias.
-4. Endpoints so chamam use cases; zero logica de negocio.
+4. Endpoints so chamam application services; zero logica de negocio.
 5. Migrations versionadas, aplicadas automaticamente no startup.
 6. Erros expostos como Problem Details.
 7. CNPJ armazenado como 14 digitos sem formatacao.

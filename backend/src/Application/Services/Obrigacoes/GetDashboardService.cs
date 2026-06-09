@@ -3,9 +3,9 @@ using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 using PainelObrigacoes.Domain.ValueObjects;
 
-namespace PainelObrigacoes.Application.UseCases.Obrigacoes;
+namespace PainelObrigacoes.Application.Services.Obrigacoes;
 
-public sealed class GetDashboardUseCase(
+public sealed class GetDashboardService(
     IEmpresaRepository empresaRepository,
     IObrigacaoRepository obrigacaoRepository,
     TimeProvider timeProvider)
@@ -30,4 +30,3 @@ public sealed class GetDashboardUseCase(
             obrigacoes.Count(o => o.Status == StatusObrigacao.Atrasada));
     }
 }
-

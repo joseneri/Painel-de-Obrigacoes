@@ -29,7 +29,7 @@ Qual decisao ou problema esta pesquisa precisa resolver?
 
 ## Criterios de Avaliacao
 
-- Compatibilidade com `docs/architecture.md`.
+- Compatibilidade com `architecture.md`.
 - Simplicidade e manutencao.
 - Performance e seguranca.
 - Testabilidade.

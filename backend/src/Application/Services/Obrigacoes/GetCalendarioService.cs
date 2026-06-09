@@ -5,9 +5,9 @@ using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 using PainelObrigacoes.Domain.ValueObjects;
 
-namespace PainelObrigacoes.Application.UseCases.Obrigacoes;
+namespace PainelObrigacoes.Application.Services.Obrigacoes;
 
-public sealed class GetCalendarioUseCase(
+public sealed class GetCalendarioService(
     IObrigacaoRepository obrigacaoRepository,
     TimeProvider timeProvider)
 {
@@ -56,4 +56,3 @@ public sealed class GetCalendarioUseCase(
         return new Competencia(ano.Value, mes.Value);
     }
 }
-

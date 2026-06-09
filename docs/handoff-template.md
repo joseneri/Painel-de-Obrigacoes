@@ -52,7 +52,6 @@ agente precisar continuar.
 ## Proximo Agente Deve
 
 1. Ler `AGENTS.md`.
-2. Ler `docs/agents.md`.
-3. Ler `docs/architecture.md`.
-4. Ler este handoff.
-5. Conferir `git status --short`.
+2. Ler `architecture.md`.
+3. Ler este handoff.
+4. Conferir `git status --short`.

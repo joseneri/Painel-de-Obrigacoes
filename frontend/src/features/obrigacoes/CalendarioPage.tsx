@@ -41,11 +41,24 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
     [filters.empresaId, filters.ano, filters.mes, filters.status]
   );
 
-  const empresas = useEmpresas();
-  const obrigacoes = useObrigacoes(obrigacoesFilters);
+  const {
+    data: empresas = [],
+    isLoading: isEmpresasLoading,
+    isError: isEmpresasError,
+    error: empresasError,
+    isFetching: isEmpresasFetching
+  } = useEmpresas();
+  const {
+    data: obrigacoes = [],
+    isLoading: isObrigacoesLoading,
+    isError: isObrigacoesError,
+    error: obrigacoesError,
+    isFetching: isObrigacoesFetching,
+    refetch: refetchObrigacoes
+  } = useObrigacoes(obrigacoesFilters);
   const registrarEntrega = useRegistrarEntrega();
 
-  const error = empresas.error ?? obrigacoes.error;
+  const error = isEmpresasError ? empresasError : isObrigacoesError ? obrigacoesError : null;
 
   function handleRegistrarEntrega(values: EntregaFormValues) {
     if (!selectedObrigacao) {
@@ -89,13 +102,13 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
           </div>
 
           <Space wrap>
-            <Button icon={<ReloadOutlined />} onClick={() => obrigacoes.refetch()}>
+            <Button icon={<ReloadOutlined />} onClick={() => refetchObrigacoes()}>
               Atualizar
             </Button>
             <Button
               icon={<DownloadOutlined />}
-              disabled={!obrigacoes.data?.length}
-              onClick={() => exportObrigacoesCsv(obrigacoes.data ?? [])}
+              disabled={!obrigacoes.length}
+              onClick={() => exportObrigacoesCsv(obrigacoes)}
             >
               CSV
             </Button>
@@ -108,10 +121,10 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
             showSearch
             placeholder="Empresa"
             value={filters.empresaId}
-            loading={empresas.isLoading}
+            loading={isEmpresasLoading || isEmpresasFetching}
             onChange={(empresaId) => onFiltersChange({ empresaId })}
             optionFilterProp="label"
-            options={(empresas.data ?? []).map((empresa) => ({
+            options={empresas.map((empresa) => ({
               value: empresa.id,
               label: `${empresa.razaoSocial} - ${labelRegime(empresa.regimeTributario)}`
             }))}
@@ -136,8 +149,8 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
       </section>
 
       <ObrigacoesTable
-        data={obrigacoes.data ?? []}
-        loading={obrigacoes.isLoading || obrigacoes.isFetching}
+        data={obrigacoes}
+        loading={isObrigacoesLoading || isObrigacoesFetching}
         onRegistrarEntrega={setSelectedObrigacao}
       />
 

@@ -5,9 +5,9 @@ using PainelObrigacoes.Domain.Entities;
 using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 
-namespace PainelObrigacoes.Application.UseCases.Entregas;
+namespace PainelObrigacoes.Application.Services.Entregas;
 
-public sealed class RegistrarEntregaUseCase(IObrigacaoRepository obrigacaoRepository)
+public sealed class RegistrarEntregaService(IObrigacaoRepository obrigacaoRepository)
 {
     private const int MaxObservacaoLength = 500;
 

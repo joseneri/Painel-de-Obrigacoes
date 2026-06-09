@@ -1,7 +1,7 @@
 # Template de Plano de Desenvolvimento
 
 Use este template para tarefas medias ou complexas. Tarefas triviais podem ter
-um plano curto, mas ainda precisam respeitar `docs/agents.md`.
+um plano curto, mas ainda precisam respeitar `AGENTS.md`.
 
 ## Contexto
 

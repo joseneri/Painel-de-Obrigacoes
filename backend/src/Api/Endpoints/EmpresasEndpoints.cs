@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using PainelObrigacoes.Application.DTOs;
-using PainelObrigacoes.Application.UseCases.Empresas;
+using PainelObrigacoes.Application.Services.Empresas;
 
 namespace PainelObrigacoes.Api.Endpoints;
 
@@ -9,36 +9,36 @@ public static class EmpresasEndpoints
     public static RouteGroupBuilder MapEmpresasEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet(string.Empty, async (
-            GetEmpresasUseCase useCase,
+            GetEmpresasService service,
             ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
-                () => useCase.ExecuteAsync(cancellationToken),
+                () => service.ExecuteAsync(cancellationToken),
                 Results.Ok,
                 loggerFactory);
         });
 
         group.MapPost(string.Empty, async (
             CreateEmpresaDto input,
-            CreateEmpresaUseCase useCase,
+            CreateEmpresaService service,
             ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
-                () => useCase.ExecuteAsync(input, cancellationToken),
+                () => service.ExecuteAsync(input, cancellationToken),
                 result => Results.Created($"/api/empresas/{result.Id}", result),
                 loggerFactory);
         });
 
         group.MapDelete("/{id:guid}", async (
             Guid id,
-            DeleteEmpresaUseCase useCase,
+            DeleteEmpresaService service,
             ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
             return await EndpointErrorHandler.ExecuteAsync(
-                () => useCase.ExecuteAsync(id, cancellationToken),
+                () => service.ExecuteAsync(id, cancellationToken),
                 Results.NoContent,
                 loggerFactory);
         });

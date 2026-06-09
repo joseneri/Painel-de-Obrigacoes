@@ -15,7 +15,7 @@ interface EmpresaFormValues {
 export function EmpresasPage() {
   const { message } = AntApp.useApp();
   const [form] = Form.useForm<EmpresaFormValues>();
-  const empresas = useEmpresas();
+  const { data: empresas = [], isLoading, isError, error, isFetching } = useEmpresas();
   const createEmpresa = useCreateEmpresa();
 
   function handleSubmit(values: EmpresaFormValues) {
@@ -37,12 +37,12 @@ export function EmpresasPage() {
 
   return (
     <div className="page-stack">
-      {empresas.error && (
+      {isError && error && (
         <Alert
           type="error"
           showIcon
           title="Não foi possível carregar as empresas"
-          description={getErrorMessage(empresas.error)}
+          description={getErrorMessage(error)}
         />
       )}
 
@@ -98,7 +98,7 @@ export function EmpresasPage() {
         </Form>
       </section>
 
-      <EmpresasTable data={empresas.data ?? []} loading={empresas.isLoading || empresas.isFetching} />
+      <EmpresasTable data={empresas} loading={isLoading || isFetching} />
     </div>
   );
 }

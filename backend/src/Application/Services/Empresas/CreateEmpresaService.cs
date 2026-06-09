@@ -6,9 +6,9 @@ using PainelObrigacoes.Domain.Interfaces;
 using PainelObrigacoes.Domain.Services;
 using PainelObrigacoes.Domain.ValueObjects;
 
-namespace PainelObrigacoes.Application.UseCases.Empresas;
+namespace PainelObrigacoes.Application.Services.Empresas;
 
-public sealed class CreateEmpresaUseCase(
+public sealed class CreateEmpresaService(
     IEmpresaRepository empresaRepository,
     IObrigacaoRepository obrigacaoRepository,
     ObrigacaoRulesEngine rulesEngine,

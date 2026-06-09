@@ -11,10 +11,20 @@ interface DashboardPageProps {
 }
 
 export function DashboardPage({ onOpenCalendario }: DashboardPageProps) {
-  const dashboard = useDashboard();
-  const alertas = useAlertas();
+  const {
+    data: dashboardData,
+    isLoading: isDashboardLoading,
+    isError: isDashboardError,
+    error: dashboardError
+  } = useDashboard();
+  const {
+    data: alertasData,
+    isLoading: isAlertasLoading,
+    isError: isAlertasError,
+    error: alertasError
+  } = useAlertas();
 
-  const error = dashboard.error ?? alertas.error;
+  const error = isDashboardError ? dashboardError : isAlertasError ? alertasError : null;
 
   return (
     <div className="page-stack">
@@ -40,15 +50,15 @@ export function DashboardPage({ onOpenCalendario }: DashboardPageProps) {
         </Button>
       </div>
 
-      <MetricCards data={dashboard.data} loading={dashboard.isLoading} />
+      <MetricCards data={dashboardData} loading={isDashboardLoading} />
 
       <div className="dashboard-grid">
         <section className="panel">
-          {dashboard.isLoading ? <Skeleton active paragraph={{ rows: 5 }} /> : <StatusOverview data={dashboard.data} />}
+          {isDashboardLoading ? <Skeleton active paragraph={{ rows: 5 }} /> : <StatusOverview data={dashboardData} />}
         </section>
 
         <section className="panel">
-          <AlertasPanel data={alertas.data ?? []} loading={alertas.isLoading} />
+          <AlertasPanel data={alertasData ?? []} loading={isAlertasLoading} />
         </section>
       </div>
     </div>

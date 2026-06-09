@@ -1,4 +1,4 @@
-import { Card, Statistic } from "antd";
+import { Skeleton } from "antd";
 import {
   ApartmentOutlined,
   CheckCircleOutlined,
@@ -14,17 +14,44 @@ interface MetricCardsProps {
   loading: boolean;
 }
 
+type MetricTone = "default" | "success" | "warning" | "danger";
+
+interface MetricProps {
+  title: string;
+  value?: number;
+  caption?: string;
+  loading: boolean;
+  icon: ReactNode;
+  tone?: MetricTone;
+}
+
+const toneClassNames = {
+  default: {
+    icon: "bg-[#e6f1fb] text-[#1677ff]",
+    value: "text-[#0f172a]"
+  },
+  warning: {
+    icon: "bg-[#fff3e0] text-[#e65100]",
+    value: "text-[#e65100]"
+  },
+  success: {
+    icon: "bg-[#e8f5e9] text-[#2e7d32]",
+    value: "text-[#2e7d32]"
+  },
+  danger: {
+    icon: "bg-[#ffebee] text-[#c62828]",
+    value: "text-[#c62828]"
+  }
+} satisfies Record<MetricTone, { icon: string; value: string }>;
+
+const currentMonthName = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(new Date());
+
 export function MetricCards({ data, loading }: MetricCardsProps) {
   return (
-    <div className="metrics-grid">
+    <div className="grid grid-cols-[repeat(5,minmax(160px,1fr))] gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-6 pt-5 max-[1180px]:grid-cols-2 max-[720px]:grid-cols-1">
+      <Metric title="Empresas" value={data?.totalEmpresas} loading={loading} icon={<ApartmentOutlined />} />
       <Metric
-        title="Empresas"
-        value={data?.totalEmpresas}
-        loading={loading}
-        icon={<ApartmentOutlined />}
-      />
-      <Metric
-        title="Obrigações do mês"
+        title={`Obrigações do mês de ${currentMonthName}`}
         value={data?.obrigacoesMes}
         loading={loading}
         icon={<FileDoneOutlined />}
@@ -57,21 +84,23 @@ export function MetricCards({ data, loading }: MetricCardsProps) {
   );
 }
 
-interface MetricProps {
-  title: string;
-  value?: number;
-  caption?: string;
-  loading: boolean;
-  icon: ReactNode;
-  tone?: "success" | "warning" | "danger";
-}
+function Metric({ title, value, caption, loading, icon, tone = "default" }: MetricProps) {
+  const classes = toneClassNames[tone];
 
-function Metric({ title, value, caption, loading, icon, tone }: MetricProps) {
   return (
-    <Card className="metric-card">
-      <span className={`metric-icon ${tone ?? ""}`}>{icon}</span>
-      <Statistic title={title} value={value ?? 0} loading={loading} />
-      {caption && <span className="metric-caption">{caption}</span>}
-    </Card>
+    <div className="flex min-h-[124px] min-w-0 items-center gap-4 rounded-lg border border-[#f1f5f9] bg-white px-6 py-[22px] shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:min-h-[104px]">
+      <span className={`inline-grid h-12 w-12 flex-none place-items-center rounded-[10px] text-[21px] ${classes.icon}`}>
+        {icon}
+      </span>
+      <span className="min-w-0">
+        {loading ? (
+          <Skeleton.Input active className="!h-[34px] !w-20" size="small" />
+        ) : (
+          <strong className={`block text-[34px] leading-none ${classes.value}`}>{value ?? 0}</strong>
+        )}
+        <span className="mt-2 block text-[13px] font-bold uppercase text-[#667085]">{title}</span>
+        {caption && <span className="mt-1 block text-xs text-[#94a3b8]">{caption}</span>}
+      </span>
+    </div>
   );
 }

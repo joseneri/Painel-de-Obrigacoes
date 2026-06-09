@@ -8,7 +8,7 @@ export function exportObrigacoesCsv(rows: ObrigacaoDto[]) {
     "Obrigação",
     "Competência",
     "Vencimento",
-    "Urgencia",
+    "Urgência",
     "Periodicidade",
     "Status",
     "Conclusão"

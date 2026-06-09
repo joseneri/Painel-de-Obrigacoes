@@ -12,8 +12,8 @@ function NotFoundPage() {
   return (
     <Result
       status="404"
-      title="Pagina nao encontrada"
-      subTitle="A rota solicitada nao existe neste painel."
+      title="Página não encontrada"
+      subTitle="A rota solicitada não existe neste painel."
       extra={
         <Link to="/dashboard">
           <Button type="primary">Voltar ao dashboard</Button>

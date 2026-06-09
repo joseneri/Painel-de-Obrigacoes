@@ -6,7 +6,7 @@ import type { ObrigacaoDto } from "../../../api/types";
 import { labelStatus, labelTipo, normalizeStatus, StatusObrigacao } from "../../../shared/utils/domain";
 import { formatDate } from "../../../shared/utils/formatters";
 import { classNames } from "../../../shared/utils/classNames";
-import { statusClassName, urgencyLabel, urgencyLevel } from "./calendarioPresentation";
+import { statusClassName, urgencyLevel, urgencyPresentation } from "./calendarioPresentation";
 
 interface ObrigacoesTableProps {
   data: ObrigacaoDto[];
@@ -16,16 +16,18 @@ interface ObrigacoesTableProps {
 
 const pageSize = 10;
 const tablePanelClassName = classNames(
-  "min-w-0 rounded-lg border border-[#f1f5f9] bg-white px-6 pb-[18px] pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.06)] max-[720px]:px-3",
-  "[&_.ant-table-thead>tr>th]:text-[11px] [&_.ant-table-thead>tr>th]:font-bold [&_.ant-table-thead>tr>th]:uppercase",
-  "[&_.ant-table-thead>tr>th]:tracking-normal [&_.ant-table-thead>tr>th]:text-[#64748b]",
-  "[&_.ant-table-tbody>tr.obrigacoes-row-odd>td]:bg-[#f8fafc] [&_.ant-table-tbody>tr:hover>td]:!bg-[#eff6ff]",
+  "min-w-0 rounded-lg border border-[#e5edf5] bg-white px-6 pb-[18px] pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.05)] max-[720px]:px-3",
+  "[&_.ant-table-thead>tr>th]:!bg-[#f8fafc] [&_.ant-table-thead>tr>th]:text-[11px]",
+  "[&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:uppercase",
+  "[&_.ant-table-thead>tr>th]:tracking-normal [&_.ant-table-thead>tr>th]:text-[#334155]",
+  "[&_.ant-table-tbody>tr>td]:!py-3 [&_.ant-table-tbody>tr>td]:text-[14px]",
+  "[&_.ant-table-tbody>tr.obrigacoes-row-odd>td]:bg-[#fbfdff] [&_.ant-table-tbody>tr:hover>td]:!bg-[#f1f7ff]",
   "[&_.ant-table-pagination.ant-pagination]:mx-0 [&_.ant-table-pagination.ant-pagination]:mb-1",
   "[&_.ant-table-pagination.ant-pagination]:mt-5 [&_.ant-table-pagination.ant-pagination]:flex",
   "[&_.ant-table-pagination.ant-pagination]:w-full [&_.ant-table-pagination.ant-pagination]:justify-center",
   "[&_.ant-table-pagination.ant-pagination]:gap-2 [&_.ant-pagination-total-text]:me-2",
   "[&_.ant-pagination-total-text]:h-[38px] [&_.ant-pagination-total-text]:text-[13px]",
-  "[&_.ant-pagination-total-text]:font-bold [&_.ant-pagination-total-text]:leading-[38px]",
+  "[&_.ant-pagination-total-text]:font-semibold [&_.ant-pagination-total-text]:leading-[38px]",
   "[&_.ant-pagination-total-text]:text-[#475569] [&_.ant-pagination-item]:h-[38px]",
   "[&_.ant-pagination-item]:min-w-[38px] [&_.ant-pagination-item]:rounded-[10px]",
   "[&_.ant-pagination-item]:leading-9 [&_.ant-pagination-prev]:h-[38px]",
@@ -38,21 +40,24 @@ const tablePanelClassName = classNames(
   "[&_.ant-pagination-item-active_a]:font-extrabold [&_.ant-pagination-item-active_a]:!text-white"
 );
 const dueDateClassNames = {
-  ok: "text-[#2e7d32]",
-  atencao: "text-[#f57f17]",
-  urgente: "text-[#c62828]"
+  ok: "text-[#047857]",
+  atencao: "text-[#b45309]",
+  urgente: "text-[#b91c1c]"
 };
 const urgencyClassNames = {
-  ok: "bg-[#e8f5e9] text-[#2e7d32]",
-  atencao: "bg-[#fff3e0] text-[#f57f17]",
-  urgente: "bg-[#ffebee] text-[#c62828]"
+  ok: "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]",
+  atencao: "border-[#fed7aa] bg-[#fff7ed] text-[#c2410c]",
+  urgente: "border-[#fecdd3] bg-[#fff1f2] text-[#be123c]",
+  concluida: "border-[#a7f3d0] bg-[#ecfdf5] text-[#047857]",
+  neutra: "border-[#e2e8f0] bg-[#f8fafc] text-[#64748b]"
 };
 const statusBadgeClassNames: Record<string, string> = {
-  pendente: "border-[#fde68a] bg-[#fffbeb] text-[#b45309]",
+  pendente: "border-[#fed7aa] bg-[#fff7ed] text-[#c2410c]",
   entregue: "border-[#a7f3d0] bg-[#ecfdf5] text-[#047857]",
-  atrasada: "border-[#fecaca] bg-[#fef2f2] text-[#b91c1c]",
-  "nao-aplicavel": "border-[#cbd5e1] bg-[#f8fafc] text-[#64748b]"
+  atrasada: "border-[#fecdd3] bg-[#fff1f2] text-[#be123c]",
+  "nao-aplicavel": "border-[#e2e8f0] bg-[#f8fafc] text-[#64748b]"
 };
+const badgeClassName = "inline-flex h-7 items-center whitespace-nowrap rounded-md border px-2.5 text-xs font-semibold";
 const deliveredButtonClassName =
   "[&.ant-btn[disabled]]:!border-[#a7f3d0] [&.ant-btn[disabled]]:!bg-[#ecfdf5] [&.ant-btn[disabled]]:!text-[#047857]";
 
@@ -69,12 +74,12 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
 
   const columns: ColumnsType<ObrigacaoDto> = [
     {
-      title: "Obrigacao",
+      title: "Obrigação",
       dataIndex: "tipo",
       width: 160,
       onCell: (_, index) => ({ rowSpan: spanAt(obligationSpans, index) }),
       render: (tipo) => (
-        <Typography.Text className="!text-[#1677ff]" strong>
+        <Typography.Text className="!font-semibold !text-[#1d4ed8]">
           {labelTipo(tipo)}
         </Typography.Text>
       )
@@ -84,7 +89,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       dataIndex: "empresaRazaoSocial",
       width: 240,
       ellipsis: true,
-      render: (value) => <Typography.Text>{value}</Typography.Text>
+      render: (value) => <Typography.Text className="!font-medium !text-[#172033]">{value}</Typography.Text>
     },
     {
       title: "Vencimento",
@@ -95,24 +100,22 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
         const level = urgencyLevel(row.diasParaVencer);
 
         return (
-          <span className={`inline-flex items-center whitespace-nowrap text-[13px] font-bold ${dueDateClassNames[level]}`}>
+          <span className={`inline-flex items-center whitespace-nowrap text-[13px] font-semibold ${dueDateClassNames[level]}`}>
             {formatDate(value)}
           </span>
         );
       }
     },
     {
-      title: "Urgencia",
+      title: "Urgência",
       dataIndex: "diasParaVencer",
       width: 150,
-      render: (days) => {
-        const level = urgencyLevel(days);
+      render: (days, row) => {
+        const { label, level } = urgencyPresentation(row.status, days);
 
         return (
-          <span
-            className={`inline-flex min-h-7 items-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-xs font-extrabold ${urgencyClassNames[level]}`}
-          >
-            {urgencyLabel(days)}
+          <span className={`${badgeClassName} ${urgencyClassNames[level]}`}>
+            {label}
           </span>
         );
       }
@@ -125,9 +128,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
         const tone = statusClassName(status);
 
         return (
-          <span
-            className={`inline-flex items-center gap-[7px] whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-bold ${statusBadgeClassNames[tone]}`}
-          >
+          <span className={`${badgeClassName} gap-2 ${statusBadgeClassNames[tone]}`}>
             <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
             {labelStatus(status)}
           </span>
@@ -135,7 +136,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       }
     },
     {
-      title: "Acoes",
+      title: "Ações",
       key: "actions",
       fixed: "right",
       width: 170,
@@ -144,16 +145,20 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
         const delivered = status === StatusObrigacao.Entregue;
         const disabled = delivered || status === StatusObrigacao.NaoAplicavel;
         const tooltip = delivered
-          ? "Entrega ja registrada"
+          ? "Entrega já registrada"
           : status === StatusObrigacao.NaoAplicavel
-            ? "Nao aplicavel"
+            ? "Não aplicável"
             : "Marcar como entregue";
 
         return (
           <Space className="min-w-[132px]" size={4}>
             <Tooltip title={tooltip}>
               <Button
-                className={classNames("min-w-[92px] rounded-lg font-bold", delivered && deliveredButtonClassName)}
+                className={classNames(
+                  "!h-7 !min-w-[92px] !rounded-md !font-semibold",
+                  "[&.ant-btn-primary]:!border-[#2563eb] [&.ant-btn-primary]:!bg-[#2563eb]",
+                  delivered && deliveredButtonClassName
+                )}
                 type={delivered ? "default" : "primary"}
                 size="small"
                 icon={<CheckCircleOutlined />}
@@ -163,8 +168,8 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
                 {delivered ? "Entregue" : "Entregar"}
               </Button>
             </Tooltip>
-            <Tooltip title="Mais opcoes">
-              <Button aria-label="Mais opcoes" type="text" shape="circle" icon={<MoreOutlined />} />
+            <Tooltip title="Mais opções">
+              <Button aria-label="Mais opções" className="!h-7 !w-7 !rounded-md" type="text" icon={<MoreOutlined />} />
             </Tooltip>
           </Space>
         );
@@ -187,7 +192,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
           pageSize,
           placement: ["bottomCenter"],
           showSizeChanger: false,
-          showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} obrigacoes`,
+          showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} obrigações`,
           onChange: setPage
         }}
       />

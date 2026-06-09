@@ -23,8 +23,8 @@ export const navigationItems: NavigationItem[] = [
   {
     key: "calendario",
     path: "/calendario",
-    label: "Calendario",
-    title: "Calendario de obrigacoes",
+    label: "Calendário",
+    title: "Calendário de obrigações",
     icon: <CalendarOutlined />
   },
   {

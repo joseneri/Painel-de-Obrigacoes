@@ -29,7 +29,7 @@ interface CalendarioControlsProps {
 const monthNames = [
   "janeiro",
   "fevereiro",
-  "marco",
+  "março",
   "abril",
   "maio",
   "junho",
@@ -105,7 +105,7 @@ export function CalendarioControls({
     <div className="border-b border-[#edf1f5] bg-[#f8fafc] px-7 pb-[22px] pt-5 max-[720px]:p-4">
       <div className="grid grid-cols-[minmax(180px,0.9fr)_minmax(216px,1.25fr)_minmax(170px,0.9fr)_minmax(calc((82px*3)+20px),auto)] items-start gap-3.5 rounded-lg border border-[#e5edf6] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] max-[1180px]:grid-cols-2 max-[720px]:grid-cols-1 max-[720px]:p-3.5">
         <div className={fieldClassName}>
-          <span className={labelClassName}>Competencia</span>
+          <span className={labelClassName}>Competência</span>
           <DatePicker
             allowClear={false}
             className="h-12 min-h-12 w-full border-[#dbe5ef] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
@@ -150,7 +150,7 @@ export function CalendarioControls({
         </div>
 
         <div className={fieldClassName}>
-          <span className={labelClassName}>Acoes</span>
+          <span className={labelClassName}>Ações</span>
           <div className="grid w-full grid-cols-[repeat(3,82px)] justify-end gap-2.5 max-[1180px]:justify-start max-[720px]:grid-cols-1">
             <Button className={actionButtonClassName} icon={<CloseCircleOutlined />} onClick={onReset}>
               Limpar

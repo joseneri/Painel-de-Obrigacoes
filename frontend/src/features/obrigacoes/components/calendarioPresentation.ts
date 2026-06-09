@@ -2,7 +2,8 @@ import type { ObrigacaoDto } from "../../../api/types";
 import { normalizeStatus, StatusObrigacao } from "../../../shared/utils/domain";
 
 export type CalendarioModo = "competencia" | "vencimento";
-export type UrgencyLevel = "ok" | "atencao" | "urgente";
+export type DeadlineLevel = "ok" | "atencao" | "urgente";
+export type UrgencyLevel = DeadlineLevel | "concluida" | "neutra";
 
 export interface CalendarioSummaryData {
   total: number;
@@ -25,7 +26,7 @@ export function calcCalendarioSummary(data: ObrigacaoDto[]): CalendarioSummaryDa
   };
 }
 
-export function urgencyLevel(days: number): UrgencyLevel {
+export function urgencyLevel(days: number): DeadlineLevel {
   if (days < 0) {
     return "urgente";
   }
@@ -39,6 +40,20 @@ export function urgencyLabel(days: number) {
   }
 
   return days === 0 ? "Vence hoje" : `${days}d restantes`;
+}
+
+export function urgencyPresentation(statusValue: ObrigacaoDto["status"], days: number) {
+  const status = normalizeStatus(statusValue);
+
+  if (status === StatusObrigacao.Entregue) {
+    return { label: "Concluída", level: "concluida" as const };
+  }
+
+  if (status === StatusObrigacao.NaoAplicavel) {
+    return { label: "Não aplicável", level: "neutra" as const };
+  }
+
+  return { label: urgencyLabel(days), level: urgencyLevel(days) };
 }
 
 export function statusClassName(statusValue: ObrigacaoDto["status"]) {
@@ -61,6 +76,6 @@ export function statusClassName(statusValue: ObrigacaoDto["status"]) {
 
 export function modeDescription(modo: CalendarioModo) {
   return modo === "vencimento"
-    ? "Obrigacoes com prazo no mes selecionado, status e conclusao."
-    : "Obrigacoes da competencia selecionada, prazos e entregas.";
+    ? "Obrigações com prazo no mês selecionado, status e conclusão."
+    : "Obrigações da competência selecionada, prazos e entregas.";
 }

@@ -47,7 +47,7 @@ export function CalendarioSummary({ summary }: CalendarioSummaryProps) {
     { key: "atrasadas", label: "Atrasadas", value: summary.atrasadas, tone: "atrasada", icon: <AlertOutlined /> },
     {
       key: "pct",
-      label: "Concluidas",
+      label: "Concluídas",
       value: `${summary.pctConcluidas}%`,
       tone: "entregue",
       icon: <PercentageOutlined />
@@ -57,7 +57,7 @@ export function CalendarioSummary({ summary }: CalendarioSummaryProps) {
   return (
     <div
       className="grid grid-cols-[repeat(5,minmax(160px,1fr))] gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-7 pb-6 pt-5 max-[980px]:grid-cols-2 max-[720px]:grid-cols-1"
-      aria-label="Resumo do calendario"
+      aria-label="Resumo do calendário"
     >
       {tiles.map((tile) => (
         <div

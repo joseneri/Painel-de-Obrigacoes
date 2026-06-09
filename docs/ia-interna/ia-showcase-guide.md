@@ -216,7 +216,71 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
-### Pendente de hash - `feat: migrate calendar to tailwind and dashboard totals`
+### Pendente de hash - `feat: align frontend screens with tailwind UI`
+
+O que mudou:
+
+- Dashboard, Painel de Alertas e Empresas foram alinhados ao design operacional
+  novo do Calendario.
+- As telas migradas passaram a usar Tailwind CSS direto nos componentes, sem
+  imports dos CSS legados de dashboard, alertas e empresas.
+- `styles.css` foi reduzido a Tailwind/base e ajustes globais indispensaveis.
+- Os componentes de metricas, distribuicao de status, alertas e tabela de
+  empresas ganharam wrappers responsivos, bordas discretas e hierarquia visual
+  consistente.
+- Textos visiveis do frontend foram normalizados para portugues do Brasil com
+  acentos, mantendo rotas, DTOs, enums e contratos HTTP sem acentos.
+- A tabela do Calendario recebeu polimento visual em badges, acoes, urgencia e
+  textos de status.
+
+Decisoes tecnicas:
+
+- A migracao continuou incremental: telas operacionais foram alinhadas ao
+  Calendario sem criar design system novo nem alterar backend.
+- O frontend segue como cliente da API; filtros locais de Empresas continuam
+  apenas apresentacionais sobre a lista ja carregada.
+- CSS legado das features foi removido somente depois de confirmar que nao
+  havia imports restantes.
+- Acentos foram tratados como copy de interface, preservando identificadores
+  tecnicos e contratos sem acentos.
+
+Como a IA ajudou:
+
+- Consultou os planos, achados e riscos registrados em `tmp/` antes de preparar
+  o commit.
+- Revisou o diff para separar migracao visual, copy pt-BR e polimento de tabela.
+- Usou validacoes registradas de build, checagem de CSS, line count e browser
+  para fechar riscos.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente commitar todo o worktree atual.
+- A alteracao foi mantida no escopo de frontend visual/copy, sem mover regra
+  fiscal para o cliente.
+- A validacao visual integrada teve limitacao de Browser; foi usado fallback
+  local com screenshots e build ja registrado em `tmp/`.
+
+Validacoes executadas:
+
+- `npm run build` em `frontend/`: passou.
+- `rg '\.css' frontend/src`: restaram apenas `antd/dist/reset.css` e
+  `app/styles.css`.
+- Checagem de tamanho em `frontend/src`: nenhum `.ts`/`.tsx` acima de 250
+  linhas.
+- `git diff --check`: sem erro bloqueante, apenas avisos esperados LF/CRLF no
+  Windows.
+- Browser local/Edge headless: `/dashboard`, `/alertas`, `/empresas` e
+  `/calendario` conferidos conforme riscos finais em `tmp/`.
+
+Como apresentar esse commit:
+
+- "O visual das telas principais agora segue uma linguagem unica, com Tailwind
+  real e sem CSS legado de feature."
+- "A migracao preservou os contratos HTTP e manteve a regra fiscal no backend."
+- "O app ficou mais pronto para demo: Dashboard, Alertas, Empresas e Calendario
+  falam a mesma lingua visual."
+
+### `c4b17bc` - `feat: migrate calendar to tailwind and dashboard totals`
 
 O que mudou:
 
@@ -293,7 +357,7 @@ Como apresentar esse commit:
 - "O dashboard agora diferencia claramente obrigacoes do mes de status
   consolidados, sem empurrar agregacao de regra para o frontend."
 
-### Pendente de hash - `feat: redesign calendar dashboard UI`
+### `7257216` - `feat: redesign calendar dashboard UI`
 
 O que mudou:
 
@@ -359,7 +423,7 @@ Como apresentar esse commit:
 - "A tabela mostra menos informacao repetida e destaca melhor urgencia, status e
   acao de entrega."
 
-### Pendente de hash - `feat: add company list filters`
+### `35815de` - `feat: add company list filters`
 
 O que mudou:
 

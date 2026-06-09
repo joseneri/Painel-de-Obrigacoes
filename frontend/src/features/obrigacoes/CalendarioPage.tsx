@@ -88,12 +88,12 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
   }
 
   return (
-    <div className="page-stack">
+    <div className="grid gap-5">
       {error && (
         <Alert
           type="error"
           showIcon
-          title="Nao foi possivel carregar o calendario"
+          title="Não foi possível carregar o calendário"
           description={getErrorMessage(error)}
         />
       )}
@@ -105,7 +105,7 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
               className="!mb-2 !mt-0 !text-[30px] !font-extrabold !leading-[1.12] !tracking-normal !text-[#0f172a] max-[720px]:!text-[25px]"
               level={2}
             >
-              Calendario de Obrigacoes
+              Calendário de Obrigações
             </Typography.Title>
             <Typography.Text className="!text-[15px] !text-[#526173]" type="secondary">
               {modeDescription(filters.modo)}
@@ -121,7 +121,7 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
                 label: (
                   <span className="inline-flex items-center gap-2">
                     <CalendarOutlined />
-                    Competencia
+                    Competência
                   </span>
                 ),
                 value: "competencia"

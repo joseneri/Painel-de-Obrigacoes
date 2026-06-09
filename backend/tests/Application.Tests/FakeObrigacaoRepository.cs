@@ -36,7 +36,12 @@ internal sealed class FakeObrigacaoRepository : IObrigacaoRepository
         DateTime dataLimite,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult<IReadOnlyCollection<Obrigacao>>(_obrigacoes);
+        return Task.FromResult<IReadOnlyCollection<Obrigacao>>(
+            _obrigacoes
+                .Where(o => o.Status != StatusObrigacao.Entregue)
+                .Where(o => o.DataVencimento.Date <= dataLimite.Date)
+                .OrderBy(o => o.DataVencimento)
+                .ToArray());
     }
 
     public Task<IReadOnlyCollection<Obrigacao>> GetByVencimentoAsync(

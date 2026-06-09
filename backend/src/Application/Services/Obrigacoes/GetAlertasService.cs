@@ -1,5 +1,6 @@
 using PainelObrigacoes.Application.DTOs;
 using PainelObrigacoes.Application.Mappers;
+using PainelObrigacoes.Domain.Entities;
 using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
 
@@ -22,9 +23,15 @@ public sealed class GetAlertasService(
                 return obrigacao;
             })
             .Where(obrigacao => obrigacao.Status is StatusObrigacao.Atrasada or StatusObrigacao.Pendente)
-            .OrderByDescending(obrigacao => obrigacao.Status == StatusObrigacao.Atrasada)
+            .OrderBy(obrigacao => AlertPriority(obrigacao, today))
+            .ThenBy(obrigacao => Math.Abs((obrigacao.DataVencimento.Date - today).Days))
             .ThenBy(obrigacao => obrigacao.DataVencimento)
             .Select(obrigacao => DtoMapper.ToAlertaDto(obrigacao, today))
             .ToArray();
+    }
+
+    private static int AlertPriority(Obrigacao obrigacao, DateTime today)
+    {
+        return obrigacao.DataVencimento.Date >= today.Date ? 0 : 1;
     }
 }

@@ -1,0 +1,42 @@
+.alerts-summary {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.alerts-groups { display: grid; gap: 22px; }
+
+.alerts-group { display: grid; gap: 10px; }
+
+.alerts-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dbe5ef;
+}
+
+.alerts-group-header h4.ant-typography { margin: 0; }
+
+.alerts-list { display: grid; gap: 12px; }
+
+.alert-item {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e6edf5;
+}
+
+.alert-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.alert-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

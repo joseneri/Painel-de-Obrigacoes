@@ -188,27 +188,6 @@ body {
 
 .dashboard-action-copy { display: grid; gap: 6px; }
 
-.alerts-list { display: grid; gap: 12px; }
-
-.alert-item {
-  display: grid;
-  gap: 6px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e6edf5;
-}
-
-.alert-item:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.alert-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 @media (max-width: 1100px) {
   .metrics-grid {
     grid-template-columns: repeat(2, minmax(160px, 1fr));

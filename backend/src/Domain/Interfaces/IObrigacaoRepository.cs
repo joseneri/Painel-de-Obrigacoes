@@ -25,8 +25,13 @@ public interface IObrigacaoRepository
         Competencia competencia,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyCollection<Obrigacao>> GetByEmpresaEPeriodoAsync(
+        Guid empresaId,
+        Competencia inicio,
+        Competencia fim,
+        CancellationToken cancellationToken);
+
     Task AddEntregaAsync(Entrega entrega, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }
-

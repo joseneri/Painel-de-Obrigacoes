@@ -3,17 +3,13 @@ using PainelObrigacoes.Application.DTOs;
 using PainelObrigacoes.Application.Mappers;
 using PainelObrigacoes.Domain.Entities;
 using PainelObrigacoes.Domain.Interfaces;
-using PainelObrigacoes.Domain.Services;
-using PainelObrigacoes.Domain.ValueObjects;
+using PainelObrigacoes.Application.Services.Obrigacoes;
 
 namespace PainelObrigacoes.Application.Services.Empresas;
 
 public sealed class CreateEmpresaService(
     IEmpresaRepository empresaRepository,
-    IObrigacaoRepository obrigacaoRepository,
-    ObrigacaoRulesEngine rulesEngine,
-    VencimentoCalculator vencimentoCalculator,
-    TimeProvider timeProvider)
+    EnsureObrigacoesFuturasService ensureObrigacoesFuturasService)
 {
     private const int MaxRazaoSocialLength = 180;
 
@@ -21,11 +17,9 @@ public sealed class CreateEmpresaService(
     {
         var cnpj = await ValidateAsync(input, cancellationToken);
         var empresa = new Empresa(Guid.NewGuid(), input.RazaoSocial.Trim(), cnpj, input.RegimeTributario);
-        var obrigacoes = GenerateObrigacoes(empresa).ToArray();
 
         await empresaRepository.AddAsync(empresa, cancellationToken);
-        await obrigacaoRepository.AddRangeAsync(obrigacoes, cancellationToken);
-        await empresaRepository.SaveChangesAsync(cancellationToken);
+        await ensureObrigacoesFuturasService.EnsureForEmpresaAsync(empresa, cancellationToken);
 
         return DtoMapper.ToDto(empresa);
     }
@@ -64,27 +58,5 @@ public sealed class CreateEmpresaService(
         }
 
         return cnpj;
-    }
-
-    private IEnumerable<Obrigacao> GenerateObrigacoes(Empresa empresa)
-    {
-        var today = timeProvider.GetUtcNow().UtcDateTime;
-        var competencia = new Competencia(today.Year, today.Month);
-
-        for (var index = 0; index < 12; index++)
-        {
-            foreach (var tipo in rulesEngine.GetObrigacoesAplicaveis(empresa.RegimeTributario, competencia))
-            {
-                yield return new Obrigacao(
-                    Guid.NewGuid(),
-                    empresa.Id,
-                    tipo,
-                    competencia,
-                    vencimentoCalculator.CalcularVencimento(tipo, competencia),
-                    rulesEngine.GetPeriodicidade(tipo));
-            }
-
-            competencia = competencia.ProximoMes();
-        }
     }
 }

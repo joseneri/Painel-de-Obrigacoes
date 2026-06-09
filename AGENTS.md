@@ -89,6 +89,15 @@ Descricao funcional: calendario fiscal inteligente para obrigacoes acessorias.
 O sistema nao calcula impostos; gera e controla obrigacoes tributarias por
 regime: Simples Nacional, Lucro Presumido, Lucro Real e Imune/Isento.
 
+## Consulta Rapida do PDF do Case
+
+Antes de responder perguntas sobre requisitos do case, consulte primeiro
+`tmp/requisitos-case-painel-obrigacoes.md`.
+
+O PDF original permanece como fonte canonica em
+`C:\Users\Neri\Downloads\case_painel_obrigacoes_eauditoria (3).pdf` e deve ser
+conferido em caso de duvida, divergencia ou pergunta especifica.
+
 ## Regras de Ouro
 
 - Domain layer: zero imports de `Microsoft.*`, `System.Data.*` ou EF Core.

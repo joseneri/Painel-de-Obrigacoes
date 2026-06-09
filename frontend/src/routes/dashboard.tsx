@@ -8,5 +8,10 @@ export const Route = createFileRoute("/dashboard")({
 function DashboardRoute() {
   const navigate = useNavigate({ from: "/dashboard" });
 
-  return <DashboardPage onOpenCalendario={() => navigate({ to: "/calendario" })} />;
+  return (
+    <DashboardPage
+      onOpenAlertas={() => navigate({ to: "/alertas" })}
+      onOpenCalendario={() => navigate({ to: "/calendario" })}
+    />
+  );
 }

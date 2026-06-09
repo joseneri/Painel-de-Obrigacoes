@@ -31,12 +31,7 @@ export function ObrigacoesTable({ data, loading, onRegistrarEntrega }: Obrigacoe
       title: "Empresa",
       dataIndex: "empresaRazaoSocial",
       minWidth: 240,
-      render: (value, row) => (
-        <div>
-          <Typography.Text>{value}</Typography.Text>
-          <div className="muted-row">{row.empresaId}</div>
-        </div>
-      )
+      render: (value) => <Typography.Text>{value}</Typography.Text>
     },
     {
       title: "Competência",

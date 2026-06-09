@@ -7,18 +7,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   min-width: 320px;
 }
 
-.app-shell {
-  min-height: 100vh;
-}
+.app-shell { min-height: 100vh; }
 
 .app-sidebar {
   position: sticky;
@@ -54,9 +50,7 @@ body {
   line-height: 1.2;
 }
 
-.brand-title {
-  font-weight: 700;
-}
+.brand-title { font-weight: 700; }
 
 .brand-subtitle {
   opacity: 0.72;
@@ -74,9 +68,7 @@ body {
   border-bottom: 1px solid #dbe5ef;
 }
 
-.app-header h2.ant-typography {
-  margin: 0 0 4px;
-}
+.app-header h2.ant-typography { margin: 0 0 4px; }
 
 .app-content {
   width: 100%;
@@ -84,10 +76,7 @@ body {
   padding: 24px 28px 32px;
 }
 
-.page-stack {
-  display: grid;
-  gap: 20px;
-}
+.page-stack { display: grid; gap: 20px; }
 
 .metrics-grid {
   display: grid;
@@ -95,13 +84,9 @@ body {
   gap: 16px;
 }
 
-.metric-card {
-  min-height: 132px;
-}
+.metric-card { min-height: 132px; }
 
-.metric-card .ant-statistic-title {
-  min-height: 22px;
-}
+.metric-card .ant-statistic-title { min-height: 22px; }
 
 .metric-icon {
   display: inline-grid;
@@ -152,9 +137,7 @@ body {
   margin-bottom: 16px;
 }
 
-.panel-header h3.ant-typography {
-  margin: 0 0 4px;
-}
+.panel-header h3.ant-typography { margin: 0 0 4px; }
 
 .toolbar {
   display: flex;
@@ -178,24 +161,13 @@ body {
   align-items: end;
 }
 
-.muted-row {
-  color: #667085;
-  font-size: 12px;
-}
+.muted-row { color: #667085; font-size: 12px; }
 
-.table-action {
-  width: 34px;
-}
+.table-action { width: 34px; }
 
-.status-list {
-  display: grid;
-  gap: 14px;
-}
+.status-list { display: grid; gap: 14px; }
 
-.status-line {
-  display: grid;
-  gap: 6px;
-}
+.status-line { display: grid; gap: 6px; }
 
 .status-line-header {
   display: flex;
@@ -203,10 +175,20 @@ body {
   gap: 12px;
 }
 
-.alerts-list {
+.dashboard-actions {
   display: grid;
-  gap: 12px;
+  gap: 18px;
+  align-content: start;
+  min-height: 174px;
+  padding: 18px;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  background: #f5f7fa;
 }
+
+.dashboard-action-copy { display: grid; gap: 6px; }
+
+.alerts-list { display: grid; gap: 12px; }
 
 .alert-item {
   display: grid;

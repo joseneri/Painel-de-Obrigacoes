@@ -68,6 +68,22 @@ public sealed class ObrigacaoRepository(AppDbContext dbContext) : IObrigacaoRepo
             .ToArrayAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyCollection<Obrigacao>> GetByEmpresaEPeriodoAsync(
+        Guid empresaId,
+        Competencia inicio,
+        Competencia fim,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Obrigacoes
+            .Where(o => o.EmpresaId == empresaId)
+            .Where(o =>
+                (o.CompetenciaAno > inicio.Ano ||
+                    (o.CompetenciaAno == inicio.Ano && o.CompetenciaMes >= inicio.Mes)) &&
+                (o.CompetenciaAno < fim.Ano ||
+                    (o.CompetenciaAno == fim.Ano && o.CompetenciaMes <= fim.Mes)))
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task AddEntregaAsync(Entrega entrega, CancellationToken cancellationToken)
     {
         await dbContext.Entregas.AddAsync(entrega, cancellationToken);

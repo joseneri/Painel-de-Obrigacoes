@@ -44,7 +44,8 @@ VITE_API_BASE_URL=http://localhost:8080
 
 ## Telas implementadas
 
-- Relatorio fiscal com KPIs do dashboard, distribuicao de status e alertas.
+- Relatorio fiscal com KPIs do dashboard e distribuicao de status.
+- Painel de alertas para atrasadas e vencimentos dos proximos 30 dias.
 - Calendario de obrigacoes por empresa, competencia e status.
 - Registro de entrega com data de conclusao e observacao.
 - Exportacao CSV do calendario filtrado.

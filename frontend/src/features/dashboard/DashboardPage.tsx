@@ -1,48 +1,38 @@
 import { Alert, Button, Skeleton, Typography } from "antd";
-import { CalendarOutlined } from "@ant-design/icons";
-import { useAlertas, useDashboard } from "../../api/hooks";
+import { AlertOutlined, CalendarOutlined } from "@ant-design/icons";
+import { useDashboard } from "../../api/hooks";
 import { getErrorMessage } from "../../shared/utils/errors";
-import { AlertasPanel } from "./components/AlertasPanel";
 import { MetricCards } from "./components/MetricCards";
 import { StatusOverview } from "./components/StatusOverview";
 
 interface DashboardPageProps {
   onOpenCalendario: () => void;
+  onOpenAlertas: () => void;
 }
 
-export function DashboardPage({ onOpenCalendario }: DashboardPageProps) {
+export function DashboardPage({ onOpenCalendario, onOpenAlertas }: DashboardPageProps) {
   const {
     data: dashboardData,
     isLoading: isDashboardLoading,
     isError: isDashboardError,
     error: dashboardError
   } = useDashboard();
-  const {
-    data: alertasData,
-    isLoading: isAlertasLoading,
-    isError: isAlertasError,
-    error: alertasError
-  } = useAlertas();
-
-  const error = isDashboardError ? dashboardError : isAlertasError ? alertasError : null;
 
   return (
     <div className="page-stack">
-      {error && (
+      {isDashboardError && (
         <Alert
           type="error"
           showIcon
           title="Não foi possível carregar os dados da API"
-          description={getErrorMessage(error)}
+          description={getErrorMessage(dashboardError)}
         />
       )}
 
       <div className="panel-header">
         <div>
           <Typography.Title level={3}>Visão consolidada</Typography.Title>
-          <Typography.Text type="secondary">
-            Indicadores do mês corrente, prazos críticos e saldo operacional.
-          </Typography.Text>
+          <Typography.Text type="secondary">Indicadores do mês corrente e saldo operacional.</Typography.Text>
         </div>
 
         <Button type="primary" icon={<CalendarOutlined />} onClick={onOpenCalendario}>
@@ -58,7 +48,27 @@ export function DashboardPage({ onOpenCalendario }: DashboardPageProps) {
         </section>
 
         <section className="panel">
-          <AlertasPanel data={alertasData ?? []} loading={isAlertasLoading} />
+          <div className="panel-header">
+            <div>
+              <Typography.Title level={3}>Prazos críticos</Typography.Title>
+              <Typography.Text type="secondary">
+                A lista operacional fica concentrada no Painel de Alertas.
+              </Typography.Text>
+            </div>
+          </div>
+
+          <div className="dashboard-actions">
+            <div className="dashboard-action-copy">
+              <Typography.Text strong>{dashboardData?.atrasadas ?? 0} obrigação(ões) atrasada(s)</Typography.Text>
+              <Typography.Text type="secondary">
+                Consulte atrasadas e vencimentos dos próximos 30 dias na tela dedicada.
+              </Typography.Text>
+            </div>
+
+            <Button type="default" icon={<AlertOutlined />} onClick={onOpenAlertas}>
+              Abrir painel de alertas
+            </Button>
+          </div>
         </section>
       </div>
     </div>

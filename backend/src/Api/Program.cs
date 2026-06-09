@@ -32,6 +32,7 @@ builder.Services.AddScoped<DeleteEmpresaService>();
 builder.Services.AddScoped<GetCalendarioService>();
 builder.Services.AddScoped<GetAlertasService>();
 builder.Services.AddScoped<GetDashboardService>();
+builder.Services.AddScoped<EnsureObrigacoesFuturasService>();
 builder.Services.AddScoped<RegistrarEntregaService>();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -57,7 +58,9 @@ static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
     await using var scope = app.Services.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    var ensureObrigacoes = scope.ServiceProvider.GetRequiredService<EnsureObrigacoesFuturasService>();
 
     await dbContext.Database.MigrateAsync();
     await seeder.SeedAsync();
+    await ensureObrigacoes.EnsureForTodasEmpresasAsync(CancellationToken.None);
 }

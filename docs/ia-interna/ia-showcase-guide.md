@@ -216,6 +216,40 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
+### Pendente de hash - `docs: clean readme decisions`
+
+O que mudou:
+
+- Removido um bloco comentado residual do README na secao de decisoes tecnicas.
+
+Decisoes tecnicas:
+
+- A mudanca e apenas documental e nao altera backend, frontend, Docker,
+  contratos HTTP ou regra fiscal.
+- Manter o README sem comentarios residuais melhora a leitura publica do
+  repositorio.
+
+Como a IA ajudou:
+
+- Conferiu o status apos o push inicial e identificou que havia uma nova
+  alteracao local em `README.md`.
+- Inspecionou o diff antes de commitar para confirmar que era limpeza de
+  documentacao.
+
+Correcao e decisao humana:
+
+- O usuario havia pedido push de tudo para o repositorio publico; por isso a
+  mudanca residual tambem foi incluida em novo commit, sem force push.
+
+Validacoes executadas:
+
+- `git diff --check`: sem erro bloqueante.
+
+Como apresentar esse commit:
+
+- "Limpei um comentario residual do README para deixar a pagina publica mais
+  direta."
+
 ### Pendente de hash - `feat: dockerize full-stack demo`
 
 O que mudou:

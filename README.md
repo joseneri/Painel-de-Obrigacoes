@@ -118,11 +118,6 @@ README. As principais decisoes e seus motivos sao:
 | Servidor da SPA | Build estatico do Vite servido por Nginx no container frontend | `frontend/nginx.conf` nao e requisito funcional; ele serve os arquivos da SPA, expoe healthcheck e aplica fallback para `index.html` nas rotas client-side. |
 | URL da API no frontend | `VITE_API_BASE_URL=http://localhost:8080` fixado no build do Compose | A SPA roda no navegador do host e precisa chamar a API pela porta publicada, nao pelo nome interno do container. |
 
-<!--
-- Geração futura de obrigacoes roda ao cadastrar empresa e tambem no startup da
-  API, de forma idempotente.
-
--->
 
 ## Regras Fiscais do Case
 

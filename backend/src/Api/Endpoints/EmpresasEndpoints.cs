@@ -15,6 +15,15 @@ public static class EmpresasEndpoints
             return Results.Ok(result);
         });
 
+        group.MapGet("/{id:guid}/entregas", async (
+            Guid id,
+            GetHistoricoEntregasEmpresaService service,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await service.ExecuteAsync(id, cancellationToken);
+            return Results.Ok(result);
+        });
+
         group.MapPost(string.Empty, async (
             CreateEmpresaDto input,
             CreateEmpresaService service,

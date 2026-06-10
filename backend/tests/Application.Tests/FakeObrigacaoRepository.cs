@@ -81,6 +81,19 @@ internal sealed class FakeObrigacaoRepository : IObrigacaoRepository
                 .ToArray());
     }
 
+    public Task<IReadOnlyCollection<Obrigacao>> GetEntregasByEmpresaAsync(
+        Guid empresaId,
+        CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IReadOnlyCollection<Obrigacao>>(
+            _obrigacoes
+                .Where(o => o.EmpresaId == empresaId)
+                .Where(o => o.Entrega is not null)
+                .OrderByDescending(o => o.Entrega!.DataConclusao)
+                .ThenBy(o => o.DataVencimento)
+                .ToArray());
+    }
+
     public Task AddEntregaAsync(Entrega entrega, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;

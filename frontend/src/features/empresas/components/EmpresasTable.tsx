@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { App as AntApp, Button, Dropdown, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { MoreOutlined } from "@ant-design/icons";
+import { HistoryOutlined, MoreOutlined } from "@ant-design/icons";
 import type { EmpresaDto } from "../../../api/types";
 import { useDeleteEmpresa } from "../../../api/hooks";
 import { operationalTableClassName } from "../../../shared/ui/styles";
@@ -15,6 +15,7 @@ interface EmpresasTableProps {
   data: EmpresaDto[];
   loading: boolean;
   toolbar: ReactNode;
+  onOpenHistorico: (empresa: EmpresaDto) => void;
 }
 
 const defaultPageSize = 8;
@@ -26,7 +27,7 @@ const actionsMenuClassName = classNames(
 const actionButtonClassName =
   "!h-9 !w-9 !rounded-md !text-[#475569] hover:!bg-[#eff6ff] hover:!text-[#2563eb]";
 
-export function EmpresasTable({ data, loading, toolbar }: EmpresasTableProps) {
+export function EmpresasTable({ data, loading, toolbar, onOpenHistorico }: EmpresasTableProps) {
   const { message, modal } = AntApp.useApp();
   const deleteEmpresa = useDeleteEmpresa();
 
@@ -83,9 +84,17 @@ export function EmpresasTable({ data, loading, toolbar }: EmpresasTableProps) {
           placement="bottomRight"
           overlayClassName={actionsMenuClassName}
           menu={{
-            items: [{ key: "delete", label: "Excluir Empresa", danger: true }],
-            onClick: ({ domEvent }) => {
+            items: [
+              { key: "history", label: "Historico de entregas", icon: <HistoryOutlined /> },
+              { key: "delete", label: "Excluir Empresa", danger: true }
+            ],
+            onClick: ({ key, domEvent }) => {
               domEvent.stopPropagation();
+              if (key === "history") {
+                onOpenHistorico(row);
+                return;
+              }
+
               confirmDelete(row);
             }
           }}

@@ -6,6 +6,7 @@ export const queryKeys = {
   dashboard: ["dashboard"] as const,
   alertas: ["alertas"] as const,
   empresas: ["empresas"] as const,
+  historicoEntregas: (empresaId?: string) => ["empresas", empresaId, "entregas"] as const,
   obrigacoes: (filters: ObrigacoesFilters) => ["obrigacoes", filters] as const
 };
 
@@ -19,6 +20,14 @@ export function useAlertas() {
 
 export function useEmpresas() {
   return useQuery({ queryKey: queryKeys.empresas, queryFn: api.getEmpresas });
+}
+
+export function useHistoricoEntregasEmpresa(empresaId?: string) {
+  return useQuery({
+    queryKey: queryKeys.historicoEntregas(empresaId),
+    queryFn: () => api.getHistoricoEntregasEmpresa(empresaId!),
+    enabled: Boolean(empresaId)
+  });
 }
 
 export function useObrigacoes(filters: ObrigacoesFilters) {

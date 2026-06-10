@@ -56,6 +56,7 @@ builder.Services.AddSingleton<VencimentoCalculator>();
 builder.Services.AddScoped<CreateEmpresaService>();
 builder.Services.AddScoped<GetEmpresasService>();
 builder.Services.AddScoped<DeleteEmpresaService>();
+builder.Services.AddScoped<GetHistoricoEntregasEmpresaService>();
 builder.Services.AddScoped<GetCalendarioService>();
 builder.Services.AddScoped<GetAlertasService>();
 builder.Services.AddScoped<GetDashboardService>();

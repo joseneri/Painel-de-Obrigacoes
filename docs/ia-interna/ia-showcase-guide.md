@@ -217,6 +217,68 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
+### Pendente de hash - `feat: add company delivery history`
+
+O que mudou:
+
+- Adicionado endpoint `GET /api/empresas/{id}/entregas` para consultar o
+  historico de entregas de uma empresa.
+- Criado `EntregaHistoricoDto` com obrigacao, competencia, vencimento, status,
+  data de conclusao e observacao.
+- Criado `GetHistoricoEntregasEmpresaService` na Application, mantendo endpoint
+  fino e validando empresa inexistente com `NotFoundException`.
+- `IObrigacaoRepository` e `ObrigacaoRepository` ganharam query filtrada por
+  empresa e entregas existentes, ordenada por conclusao mais recente.
+- Frontend ganhou acao `Historico de entregas` no menu da tabela de empresas.
+- Criado Drawer com Timeline no Ant Design para mostrar o historico por empresa.
+- Adicionados testes de Application para ordenacao do historico e empresa
+  inexistente.
+
+Decisoes tecnicas:
+
+- O historico ficou sob `/api/empresas/{id}/entregas` porque o diferencial do
+  case e explicitamente por empresa.
+- Nao houve migration: a entidade `Entrega` e o relacionamento com `Obrigacao`
+  ja existiam.
+- O frontend nao junta dados nem replica regra fiscal; ele consome um DTO pronto
+  da API e apenas formata datas/enums.
+- A UI usa Drawer para atender o diferencial sem criar rota nova ou fluxo pesado
+  demais para o escopo.
+
+Como a IA ajudou:
+
+- Auditou os diferenciais do case e registrou a lacuna em `tmp/`.
+- Planejou a implementacao em backend, frontend e validacao antes de codificar.
+- Revisou o encaixe com Clean Architecture e evitou incluir testes de integracao
+  ou mudancas de README nesta etapa.
+
+Correcao e decisao humana:
+
+- O usuario aprovou implementar apenas o historico de entregas, deixando testes
+  de integracao para outra etapa.
+- A decisao foi preservar alteracoes preexistentes no `README.md` e nao fazer
+  stage de arquivos fora da tarefa.
+
+Validacoes executadas:
+
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 55 testes
+  passaram.
+- `npm run build --prefix frontend`: build passou.
+- Checagem de tamanho em `backend/src`, `backend/tests` e `frontend/src`:
+  nenhum `.cs`, `.ts` ou `.tsx` acima de 250 linhas.
+- Checagem de imports proibidos no Domain: sem ocorrencias.
+- `git diff --check`: sem erro bloqueante; apenas avisos LF/CRLF esperados no
+  Windows.
+- Browser local em `/empresas`: rota renderizada; ambiente local sem empresas
+  visiveis para clicar no dropdown real.
+
+Como apresentar esse commit:
+
+- "Completei o diferencial de historico de entregas por empresa com uma linha do
+  tempo dedicada."
+- "O endpoint entrega um DTO pronto; o frontend so renderiza a timeline."
+- "Nao precisei criar migration porque as entregas ja eram persistidas."
+
 ### Pendente de hash - `feat: cache national holidays from BrasilAPI`
 
 O que mudou:

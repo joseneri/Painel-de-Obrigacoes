@@ -49,6 +49,17 @@ export interface EntregaDto {
   observacao?: string | null;
 }
 
+export interface EntregaHistoricoDto {
+  entregaId: string;
+  obrigacaoId: string;
+  tipo: EnumValue;
+  competencia: string;
+  dataVencimento: string;
+  status: EnumValue;
+  dataConclusao: string;
+  observacao?: string | null;
+}
+
 export interface CreateEmpresaDto {
   razaoSocial: string;
   cnpj: string;

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { App as AntApp, Alert, Button, Form, Input, Select } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useCreateEmpresa, useEmpresas } from "../../api/hooks";
+import type { EmpresaDto } from "../../api/types";
 import { PageHeader } from "../../shared/ui/PageHeader";
 import {
   filterFieldClassName,
@@ -15,6 +16,7 @@ import { getErrorMessage } from "../../shared/utils/errors";
 import { formatCnpj, onlyDigits } from "../../shared/utils/formatters";
 import { normalizeRegime, regimeOptions } from "../../shared/utils/domain";
 import { EmpresasTable } from "./components/EmpresasTable";
+import { HistoricoEntregasDrawer } from "./components/HistoricoEntregasDrawer";
 
 interface EmpresaFormValues {
   razaoSocial: string;
@@ -30,6 +32,7 @@ export function EmpresasPage() {
   const [form] = Form.useForm<EmpresaFormValues>();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegime, setSelectedRegime] = useState<number>();
+  const [empresaHistorico, setEmpresaHistorico] = useState<EmpresaDto>();
   const { data: empresas = [], isLoading, isError, error, isFetching } = useEmpresas();
   const createEmpresa = useCreateEmpresa();
 
@@ -130,6 +133,7 @@ export function EmpresasPage() {
       <EmpresasTable
         data={filteredEmpresas}
         loading={isLoading || isFetching}
+        onOpenHistorico={setEmpresaHistorico}
         toolbar={
           <div className="grid min-w-0 w-[min(760px,100%)] grid-cols-[minmax(360px,1fr)_minmax(180px,220px)] items-end gap-3 max-[1180px]:w-full max-[720px]:grid-cols-1">
             <Input
@@ -156,6 +160,12 @@ export function EmpresasPage() {
             </div>
           </div>
         }
+      />
+
+      <HistoricoEntregasDrawer
+        empresa={empresaHistorico}
+        open={Boolean(empresaHistorico)}
+        onClose={() => setEmpresaHistorico(undefined)}
       />
     </div>
   );

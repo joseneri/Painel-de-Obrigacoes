@@ -110,6 +110,18 @@ public sealed class ObrigacaoRepository(AppDbContext dbContext) : IObrigacaoRepo
             .ToArrayAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyCollection<Obrigacao>> GetEntregasByEmpresaAsync(
+        Guid empresaId,
+        CancellationToken cancellationToken)
+    {
+        return await QueryWithIncludes()
+            .Where(o => o.EmpresaId == empresaId)
+            .Where(o => o.Entrega != null)
+            .OrderByDescending(o => o.Entrega!.DataConclusao)
+            .ThenBy(o => o.DataVencimento)
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task AddEntregaAsync(Entrega entrega, CancellationToken cancellationToken)
     {
         await dbContext.Entregas.AddAsync(entrega, cancellationToken);

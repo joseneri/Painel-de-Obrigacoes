@@ -54,4 +54,20 @@ internal static class DtoMapper
             entrega.DataConclusao,
             entrega.Observacao);
     }
+
+    public static EntregaHistoricoDto ToHistoricoDto(Obrigacao obrigacao)
+    {
+        var entrega = obrigacao.Entrega
+            ?? throw new InvalidOperationException("Obrigacao sem entrega nao pode compor historico.");
+
+        return new EntregaHistoricoDto(
+            entrega.Id,
+            obrigacao.Id,
+            obrigacao.Tipo,
+            obrigacao.Competencia.ToString(),
+            obrigacao.DataVencimento,
+            obrigacao.Status,
+            entrega.DataConclusao,
+            entrega.Observacao);
+    }
 }

@@ -4,7 +4,9 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public readonly status: number,
-    public readonly details?: unknown
+    public readonly details?: unknown,
+    public readonly correlationId?: string,
+    public readonly traceId?: string
   ) {
     super(message);
   }
@@ -21,6 +23,7 @@ interface RequestOptions {
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const url = new URL(`${apiBaseUrl}${path}`);
+  const requestCorrelationId = createCorrelationId();
 
   Object.entries(options.query ?? {}).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") {
@@ -32,6 +35,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     method: options.method ?? "GET",
     headers: {
       Accept: "application/json",
+      "X-Correlation-ID": requestCorrelationId,
       ...(options.body ? { "Content-Type": "application/json" } : {})
     },
     body: options.body ? JSON.stringify(options.body) : undefined
@@ -39,7 +43,14 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 
   if (!response.ok) {
     const payload = await readErrorPayload(response);
-    throw new ApiError(resolveErrorMessage(payload, response.statusText), response.status, payload);
+    const ids = readResponseIds(response, requestCorrelationId);
+    throw new ApiError(
+      resolveErrorMessage(payload, response.statusText),
+      response.status,
+      payload,
+      ids.correlationId,
+      ids.traceId
+    );
   }
 
   if (response.status === 204) {
@@ -47,6 +58,21 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   return response.json() as Promise<T>;
+}
+
+function createCorrelationId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function readResponseIds(response: Response, fallbackCorrelationId: string) {
+  return {
+    correlationId: response.headers.get("X-Correlation-ID") ?? fallbackCorrelationId,
+    traceId: response.headers.get("X-Trace-ID") ?? undefined
+  };
 }
 
 async function readErrorPayload(response: Response) {

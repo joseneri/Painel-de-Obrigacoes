@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PainelObrigacoes.Domain.Entities;
 using PainelObrigacoes.Domain.Enums;
+using PainelObrigacoes.Domain.Interfaces;
 using PainelObrigacoes.Domain.Services;
 using PainelObrigacoes.Domain.ValueObjects;
 
@@ -8,6 +9,7 @@ namespace PainelObrigacoes.Infrastructure.Persistence.Seed;
 
 public sealed class DatabaseSeeder(
     AppDbContext dbContext,
+    IFeriadoNacionalRepository feriadoRepository,
     ObrigacaoRulesEngine rulesEngine,
     VencimentoCalculator vencimentoCalculator,
     TimeProvider timeProvider)
@@ -21,7 +23,10 @@ public sealed class DatabaseSeeder(
 
         var today = timeProvider.GetUtcNow().UtcDateTime.Date;
         var empresas = CreateEmpresas(today);
-        var obrigacoes = empresas.SelectMany(empresa => GenerateObrigacoes(empresa, today)).ToList();
+        var feriadosNacionais = await GetFeriadosNacionaisAsync(today, cancellationToken);
+        var obrigacoes = empresas
+            .SelectMany(empresa => GenerateObrigacoes(empresa, today, feriadosNacionais))
+            .ToList();
         var entregas = CreateEntregas(obrigacoes, today);
 
         await dbContext.Empresas.AddRangeAsync(empresas, cancellationToken);
@@ -69,7 +74,10 @@ public sealed class DatabaseSeeder(
         ];
     }
 
-    private IEnumerable<Obrigacao> GenerateObrigacoes(Empresa empresa, DateTime today)
+    private IEnumerable<Obrigacao> GenerateObrigacoes(
+        Empresa empresa,
+        DateTime today,
+        IReadOnlySet<DateTime> feriadosNacionais)
     {
         var competenciaAtual = new Competencia(today.Year, today.Month);
         var competencia = new Competencia(today.Year, 1);
@@ -84,7 +92,7 @@ public sealed class DatabaseSeeder(
                     empresa.Id,
                     tipo,
                     competencia,
-                    vencimentoCalculator.CalcularVencimento(tipo, competencia),
+                    vencimentoCalculator.CalcularVencimento(tipo, competencia, feriadosNacionais),
                     rulesEngine.GetPeriodicidade(tipo));
 
                 obrigacao.RecalcularStatus(today);
@@ -93,6 +101,19 @@ public sealed class DatabaseSeeder(
 
             competencia = competencia.ProximoMes();
         }
+    }
+
+    private async Task<IReadOnlySet<DateTime>> GetFeriadosNacionaisAsync(
+        DateTime today,
+        CancellationToken cancellationToken)
+    {
+        var competenciaAtual = new Competencia(today.Year, today.Month);
+        var fimCompetencia = AddMonths(competenciaAtual, 11);
+        var inicio = new DateTime(today.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var fim = new DateTime(fimCompetencia.Ano + 1, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+        var feriados = await feriadoRepository.GetByPeriodoAsync(inicio, fim, cancellationToken);
+
+        return feriados.Select(feriado => feriado.Data).ToHashSet();
     }
 
     private static Competencia AddMonths(Competencia competencia, int months)

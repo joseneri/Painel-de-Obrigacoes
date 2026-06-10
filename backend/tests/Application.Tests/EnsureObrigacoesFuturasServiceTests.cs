@@ -118,9 +118,11 @@ public sealed class EnsureObrigacoesFuturasServiceTests
         return new EnsureObrigacoesFuturasService(
             new FakeEmpresaRepository(empresas),
             obrigacoesRepository,
+            new FakeFeriadoNacionalRepository(),
             new ObrigacaoRulesEngine(),
             new VencimentoCalculator(),
-            new FixedTimeProvider(new DateTimeOffset(2026, 6, 9, 12, 0, 0, TimeSpan.Zero)));
+            new FixedTimeProvider(new DateTimeOffset(2026, 6, 9, 12, 0, 0, TimeSpan.Zero)),
+            new FakeQueryCache());
     }
 
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider

@@ -8,6 +8,7 @@ namespace PainelObrigacoes.Domain.Tests;
 public sealed class VencimentoCalculatorTests
 {
     private readonly VencimentoCalculator _calculator = new();
+    private readonly HashSet<DateTime> _feriados = [new(2025, 4, 21, 0, 0, 0, DateTimeKind.Utc)];
 
     [Theory]
     [InlineData(TipoObrigacao.DAS, 2025, 1, 2025, 2, 20)]
@@ -29,7 +30,7 @@ public sealed class VencimentoCalculatorTests
         int mesEsperado,
         int diaEsperado)
     {
-        var result = _calculator.CalcularVencimento(tipo, new Competencia(ano, mes));
+        var result = _calculator.CalcularVencimento(tipo, new Competencia(ano, mes), _feriados);
 
         result.Should().Be(new DateTime(anoEsperado, mesEsperado, diaEsperado, 0, 0, 0, DateTimeKind.Utc));
     }

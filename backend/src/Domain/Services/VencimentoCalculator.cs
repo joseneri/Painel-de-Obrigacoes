@@ -5,7 +5,10 @@ namespace PainelObrigacoes.Domain.Services;
 
 public sealed class VencimentoCalculator
 {
-    public DateTime CalcularVencimento(TipoObrigacao tipo, Competencia competencia)
+    public DateTime CalcularVencimento(
+        TipoObrigacao tipo,
+        Competencia competencia,
+        IReadOnlySet<DateTime> feriadosNacionais)
     {
         var vencimento = tipo switch
         {
@@ -23,7 +26,7 @@ public sealed class VencimentoCalculator
             _ => throw new ArgumentOutOfRangeException(nameof(tipo), tipo, "Tipo de obrigação inválido.")
         };
 
-        return CalendarioDiaUtil.ProximoDiaUtil(vencimento);
+        return CalendarioDiaUtil.ProximoDiaUtil(vencimento, feriadosNacionais);
     }
 
     private static DateTime DiaMesSeguinte(Competencia competencia, int dia)

@@ -25,11 +25,14 @@ public sealed class GetAlertasServiceTests
         await repository.AddRangeAsync(
             [atrasadaAntiga, atrasadaRecente, venceEmTrezeDias, foraDaJanela, venceEmSeisDias],
             CancellationToken.None);
+        var cache = new FakeQueryCache();
         var service = new GetAlertasService(
             repository,
+            cache,
             new FixedTimeProvider(new DateTimeOffset(2026, 6, 9, 12, 0, 0, TimeSpan.Zero)));
 
         var result = await service.ExecuteAsync(CancellationToken.None);
+        await service.ExecuteAsync(CancellationToken.None);
 
         result.Select(alerta => alerta.ObrigacaoId).Should().Equal(
             atrasadaAntiga.Id,
@@ -39,6 +42,7 @@ public sealed class GetAlertasServiceTests
         result.Should().NotContain(alerta => alerta.ObrigacaoId == foraDaJanela.Id);
         result.Count(alerta => alerta.DiasParaVencer >= 0).Should().Be(2);
         result.Count(alerta => alerta.DiasParaVencer < 0).Should().Be(2);
+        cache.FactoryCalls.Should().Be(1);
     }
 
     private static Obrigacao CreateObrigacao(Empresa empresa, TipoObrigacao tipo, DateTime vencimento)

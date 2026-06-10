@@ -52,8 +52,8 @@ Pontos importantes:
 5. Mostrar API: endpoints de empresas, calendário, alertas, dashboard e entregas.
 6. Mostrar persistência: migration versionada, seed automático e índices.
 7. Mostrar execução: `docker compose up --build`, `/health`, `/scalar`.
-8. Fechar com limitações documentadas: feriados nacionais fora do escopo e
-   Imune/Isento sem obrigações nesta versão.
+8. Fechar com feriados nacionais sincronizados via BrasilAPI + cache local e
+   limitações documentadas para regras locais e Imune/Isento.
 
 ## Nome e Estrutura Para Explicar
 Nome oficial do produto: **Painel de Obrigações Acessórias**.
@@ -113,10 +113,11 @@ composto confiável e migration limpa.
 `Entregue` é preservado. Para obrigações não entregues, `RecalcularStatus` compara
 a data atual com vencimento: futuro vira `Pendente`, vencido vira `Atrasada`.
 
-### Como vencimento de fim de semana funciona?
+### Como vencimento em fim de semana e feriado funciona?
 O vencimento base é calculado por tipo de obrigação. Se cair sábado, soma 2 dias;
-se cair domingo, soma 1 dia. Feriados nacionais ficaram documentados como fora do
-escopo.
+se cair domingo, soma 1 dia. Depois, o backend consulta os feriados nacionais
+salvos no banco e avança para o próximo dia útil. Esses feriados são importados
+da BrasilAPI para o ano corrente e os próximos 4 anos.
 
 ### Por que TanStack Router no frontend?
 Resposta curta para demo:
@@ -215,6 +216,86 @@ Se perguntarem "por que nao Next.js?":
 > produto.
 
 ## Diário Por Commit
+
+### Pendente de hash - `feat: cache national holidays from BrasilAPI`
+
+O que mudou:
+
+- Feriados nacionais deixaram de ficar hardcoded no `CalendarioDiaUtil`.
+- Criada entidade `FeriadoNacional`, porta `IFeriadoNacionalRepository`,
+  repositorio EF e migration `AddFeriadosNacionais`.
+- A Infrastructure ganhou cliente HTTP da BrasilAPI e service de sincronizacao
+  para ano corrente + proximos 4 anos.
+- O startup da API agora aplica migrations, sincroniza feriados, roda seed e
+  garante obrigacoes futuras nessa ordem.
+- `VencimentoCalculator` e `CalendarioDiaUtil` continuam no Domain, mas recebem
+  a colecao de feriados carregada do banco pela Application/Infrastructure.
+- O backend ganhou `IQueryCache` com implementacao em memoria para consultas de
+  dashboard, alertas e calendario, com invalidacao nos fluxos que mudam dados.
+- O handler antigo de erros foi substituido por `GlobalExceptionHandler`, com
+  Problem Details, tratamento de `BadHttpRequestException` e logs com
+  correlation id.
+- README, ADR e decisoes fiscais documentam a decisao BrasilAPI + cache local.
+- Dashboard voltou a exibir card de total consolidado e texto de base de status,
+  reaproveitando o painel compartilhado de metricas.
+
+Decisoes tecnicas:
+
+- A regra fiscal permanece no backend; o frontend nao calcula feriados nem
+  vencimentos.
+- A BrasilAPI nao e chamada no caminho critico de calculo. Ela alimenta cache
+  local no PostgreSQL, e o Domain calcula usando dados ja carregados.
+- Se a BrasilAPI falhar depois da primeira carga, o sistema usa o snapshot local
+  dos anos sincronizados.
+- Se o banco estiver vazio e a primeira sincronizacao falhar, o startup falha
+  explicitamente para evitar gerar vencimentos sem base de feriados.
+- Cache de consulta ficou na Application por interface e na Infrastructure por
+  implementacao, mantendo endpoints sem logica de negocio e Domain sem EF/HTTP.
+- Feriados estaduais, municipais, pontos facultativos e regras por UF continuam
+  fora do escopo.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, docs internas e registros em `tmp/` antes de
+  implementar e antes do commit.
+- Pesquisou alternativas gratuitas de feriados e validou o endpoint da
+  BrasilAPI.
+- Separou a solucao em Domain puro, Application com porta de repositorio e
+  Infrastructure com EF/HTTP.
+- Atualizou testes para passar feriados explicitamente, mantendo determinismo.
+- Ajustou os testes de Application para cobrir o novo contrato de cache sem
+  depender de `IMemoryCache`.
+
+Correcao e decisao humana:
+
+- O usuario escolheu a abordagem BrasilAPI + cache local e aprovou a
+  implementacao.
+- O usuario pediu `commita tudo`, autorizando incluir tambem as alteracoes de
+  hardening/cache e frontend ja presentes na worktree.
+- A decisao foi nao criar tela administrativa nem API paga/token nesta etapa.
+
+Validacoes executadas:
+
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 53 testes
+  passaram.
+- `dotnet build backend/PainelObrigacoes.sln --configuration Release`: passou
+  com 0 erros e 0 warnings.
+- `npm run build --prefix frontend`: build de producao passou.
+- `docker compose config`: Compose valido.
+- Checagem de tamanho em `backend/src`, `backend/tests` e `frontend/src`: nenhum
+  `.cs`, `.ts` ou `.tsx` acima de 250 linhas.
+- Checagem de imports proibidos no Domain: sem ocorrencias.
+- `git diff --check`: sem erro bloqueante, apenas avisos LF/CRLF esperados no
+  Windows.
+
+Como apresentar esse commit:
+
+- "Feriados nacionais agora sao dados sincronizados e cacheados, nao regra
+  estatica no codigo."
+- "A dependencia externa fica na Infrastructure; o Domain continua puro e
+  testavel."
+- "O sistema nao depende da BrasilAPI para cada calculo de vencimento; depois da
+  carga inicial usa o banco local."
 
 ### Pendente de hash - `docs: clean readme decisions`
 

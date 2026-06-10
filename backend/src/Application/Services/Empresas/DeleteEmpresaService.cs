@@ -3,7 +3,9 @@ using PainelObrigacoes.Domain.Interfaces;
 
 namespace PainelObrigacoes.Application.Services.Empresas;
 
-public sealed class DeleteEmpresaService(IEmpresaRepository empresaRepository)
+public sealed class DeleteEmpresaService(
+    IEmpresaRepository empresaRepository,
+    IQueryCache queryCache)
 {
     public async Task ExecuteAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -12,5 +14,6 @@ public sealed class DeleteEmpresaService(IEmpresaRepository empresaRepository)
 
         empresaRepository.Delete(empresa);
         await empresaRepository.SaveChangesAsync(cancellationToken);
+        queryCache.RemoveByPrefix(QueryCacheKeys.AllPrefix);
     }
 }

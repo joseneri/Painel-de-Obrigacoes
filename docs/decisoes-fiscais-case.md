@@ -58,6 +58,11 @@ calendario consistente e:
 > data-base cair em sabado, domingo ou feriado nacional, o sistema prorroga para
 > o proximo dia util.
 
+Os feriados nacionais nao ficam hardcoded no Domain. A API sincroniza a
+BrasilAPI para o ano corrente e os proximos 4 anos, persiste o resultado no
+banco e o calculo usa esse cache local. Assim a fonte pode ser atualizada sem
+deploy, mas a geracao de obrigacoes nao depende de chamada externa em tempo real.
+
 Limites documentados:
 
 - feriados estaduais e municipais ficam fora do escopo;

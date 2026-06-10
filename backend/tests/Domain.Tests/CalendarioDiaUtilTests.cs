@@ -9,8 +9,12 @@ public sealed class CalendarioDiaUtilTests
     public void ProximoDiaUtil_deve_pular_fim_de_semana_e_feriado_nacional()
     {
         var domingoAntesDeTiradentes = new DateTime(2025, 4, 20, 0, 0, 0, DateTimeKind.Utc);
+        var feriados = new HashSet<DateTime>
+        {
+            new(2025, 4, 21, 0, 0, 0, DateTimeKind.Utc)
+        };
 
-        var result = CalendarioDiaUtil.ProximoDiaUtil(domingoAntesDeTiradentes);
+        var result = CalendarioDiaUtil.ProximoDiaUtil(domingoAntesDeTiradentes, feriados);
 
         result.Should().Be(new DateTime(2025, 4, 22, 0, 0, 0, DateTimeKind.Utc));
     }
@@ -19,8 +23,9 @@ public sealed class CalendarioDiaUtilTests
     public void SextaFeiraSanta_deve_ser_tratada_como_feriado_nacional_do_case()
     {
         var sextaFeiraSanta = new DateTime(2026, 4, 3, 0, 0, 0, DateTimeKind.Utc);
+        var feriados = new HashSet<DateTime> { sextaFeiraSanta };
 
-        var result = CalendarioDiaUtil.EhFeriadoNacional(sextaFeiraSanta);
+        var result = CalendarioDiaUtil.EhFeriadoNacional(sextaFeiraSanta, feriados);
 
         result.Should().BeTrue();
     }

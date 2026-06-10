@@ -1,3 +1,4 @@
+using PainelObrigacoes.Application.Common;
 using PainelObrigacoes.Domain.Entities;
 using PainelObrigacoes.Domain.Enums;
 using PainelObrigacoes.Domain.Interfaces;
@@ -9,9 +10,11 @@ namespace PainelObrigacoes.Application.Services.Obrigacoes;
 public sealed class EnsureObrigacoesFuturasService(
     IEmpresaRepository empresaRepository,
     IObrigacaoRepository obrigacaoRepository,
+    IFeriadoNacionalRepository feriadoRepository,
     ObrigacaoRulesEngine rulesEngine,
     VencimentoCalculator vencimentoCalculator,
-    TimeProvider timeProvider)
+    TimeProvider timeProvider,
+    IQueryCache queryCache)
 {
     private const int HorizonMonths = 12;
 
@@ -40,16 +43,25 @@ public sealed class EnsureObrigacoesFuturasService(
             fim,
             cancellationToken);
         var existentesPorChave = existentes.ToDictionary(o => (o.Tipo, o.CompetenciaAno, o.CompetenciaMes));
-        var novas = GenerateObrigacoes(empresa, inicio, fim, existentesPorChave, today).ToArray();
+        var feriadosNacionais = await GetFeriadosNacionaisAsync(inicio, fim, cancellationToken);
+        var novas = GenerateObrigacoes(
+            empresa,
+            inicio,
+            fim,
+            existentesPorChave,
+            feriadosNacionais,
+            today).ToArray();
 
         if (novas.Length == 0)
         {
             await obrigacaoRepository.SaveChangesAsync(cancellationToken);
+            queryCache.RemoveByPrefix(QueryCacheKeys.AllPrefix);
             return 0;
         }
 
         await obrigacaoRepository.AddRangeAsync(novas, cancellationToken);
         await obrigacaoRepository.SaveChangesAsync(cancellationToken);
+        queryCache.RemoveByPrefix(QueryCacheKeys.AllPrefix);
 
         return novas.Length;
     }
@@ -59,6 +71,7 @@ public sealed class EnsureObrigacoesFuturasService(
         Competencia inicio,
         Competencia fim,
         Dictionary<(TipoObrigacao Tipo, int Ano, int Mes), Obrigacao> existentesPorChave,
+        IReadOnlySet<DateTime> feriadosNacionais,
         DateTime today)
     {
         var competencia = inicio;
@@ -69,7 +82,10 @@ public sealed class EnsureObrigacoesFuturasService(
             {
                 var chave = (tipo, competencia.Ano, competencia.Mes);
                 var periodicidade = rulesEngine.GetPeriodicidade(tipo);
-                var vencimento = vencimentoCalculator.CalcularVencimento(tipo, competencia);
+                var vencimento = vencimentoCalculator.CalcularVencimento(
+                    tipo,
+                    competencia,
+                    feriadosNacionais);
 
                 if (existentesPorChave.TryGetValue(chave, out var existente))
                 {
@@ -92,6 +108,21 @@ public sealed class EnsureObrigacoesFuturasService(
 
             competencia = competencia.ProximoMes();
         }
+    }
+
+    private async Task<IReadOnlySet<DateTime>> GetFeriadosNacionaisAsync(
+        Competencia inicio,
+        Competencia fim,
+        CancellationToken cancellationToken)
+    {
+        var inicioConsulta = new DateTime(inicio.Ano, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var fimConsulta = new DateTime(fim.Ano + 1, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+        var feriados = await feriadoRepository.GetByPeriodoAsync(
+            inicioConsulta,
+            fimConsulta,
+            cancellationToken);
+
+        return feriados.Select(feriado => feriado.Data).ToHashSet();
     }
 
     private static Competencia AddMonths(Competencia competencia, int months)

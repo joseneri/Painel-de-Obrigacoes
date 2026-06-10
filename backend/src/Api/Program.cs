@@ -1,10 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PainelObrigacoes.Api.Endpoints;
+using PainelObrigacoes.Api.Errors;
+using PainelObrigacoes.Api.Observability;
 using PainelObrigacoes.Application.Services.Empresas;
 using PainelObrigacoes.Application.Services.Entregas;
 using PainelObrigacoes.Application.Services.Obrigacoes;
 using PainelObrigacoes.Domain.Services;
 using PainelObrigacoes.Infrastructure.Extensions;
+using PainelObrigacoes.Infrastructure.External;
 using PainelObrigacoes.Infrastructure.Persistence;
 using PainelObrigacoes.Infrastructure.Persistence.Seed;
 using Scalar.AspNetCore;
@@ -12,7 +16,16 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions["traceId"] = CorrelationIds.GetTraceId(context.HttpContext);
+        context.ProblemDetails.Extensions["correlationId"] =
+            CorrelationIds.GetCorrelationId(context.HttpContext);
+    };
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
@@ -25,8 +38,16 @@ builder.Services.AddCors(options =>
                 "http://localhost:8081",
                 "http://127.0.0.1:8081")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .WithExposedHeaders(
+                CorrelationIds.CorrelationHeaderName,
+                CorrelationIds.TraceHeaderName);
     });
+});
+builder.Logging.Configure(options =>
+{
+    options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId |
+        ActivityTrackingOptions.SpanId;
 });
 
 builder.Services.AddSingleton(TimeProvider.System);
@@ -50,6 +71,9 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 app.UseCors("Frontend");
 app.MapGet("/health", () => Results.Ok(new { status = "ok", utc = DateTime.UtcNow }));
 app.MapGroup("/api/empresas").WithTags("Empresas").MapEmpresasEndpoints();
@@ -63,10 +87,12 @@ static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
 {
     await using var scope = app.Services.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var feriadoSync = scope.ServiceProvider.GetRequiredService<FeriadoNacionalSyncService>();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     var ensureObrigacoes = scope.ServiceProvider.GetRequiredService<EnsureObrigacoesFuturasService>();
 
     await dbContext.Database.MigrateAsync();
+    await feriadoSync.SyncAsync(CancellationToken.None);
     await seeder.SeedAsync();
     await ensureObrigacoes.EnsureForTodasEmpresasAsync(CancellationToken.None);
 }

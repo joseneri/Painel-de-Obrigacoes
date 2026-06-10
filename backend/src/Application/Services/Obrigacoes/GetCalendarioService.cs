@@ -10,8 +10,11 @@ namespace PainelObrigacoes.Application.Services.Obrigacoes;
 
 public sealed class GetCalendarioService(
     IObrigacaoRepository obrigacaoRepository,
+    IQueryCache queryCache,
     TimeProvider timeProvider)
 {
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromSeconds(30);
+
     public async Task<IReadOnlyCollection<ObrigacaoDto>> ExecuteAsync(
         Guid? empresaId,
         int? ano,
@@ -21,23 +24,40 @@ public sealed class GetCalendarioService(
         CancellationToken cancellationToken)
     {
         var competencia = BuildCompetencia(ano, mes);
-        var today = timeProvider.GetUtcNow().UtcDateTime;
-        var obrigacoes = await GetObrigacoesAsync(
+        var today = timeProvider.GetUtcNow().UtcDateTime.Date;
+        var modoCalendario = ParseModo(modo);
+        var cacheKey = QueryCacheKeys.Calendario(
+            DateOnly.FromDateTime(today),
             empresaId,
             competencia,
-            ParseModo(modo),
+            status,
+            modoCalendario.ToString().ToLowerInvariant());
+
+        return await queryCache.GetOrCreateAsync(
+            cacheKey,
+            CacheDuration,
+            ExecuteCoreAsync,
             cancellationToken);
 
-        return obrigacoes
-            .Select(obrigacao =>
-            {
-                obrigacao.RecalcularStatus(today);
-                return obrigacao;
-            })
-            .Where(obrigacao => status is null || obrigacao.Status == status)
-            .OrderBy(obrigacao => obrigacao.DataVencimento)
-            .Select(obrigacao => DtoMapper.ToDto(obrigacao, today))
-            .ToArray();
+        async Task<IReadOnlyCollection<ObrigacaoDto>> ExecuteCoreAsync(CancellationToken token)
+        {
+            var obrigacoes = await GetObrigacoesAsync(
+                empresaId,
+                competencia,
+                modoCalendario,
+                token);
+
+            return obrigacoes
+                .Select(obrigacao =>
+                {
+                    obrigacao.RecalcularStatus(today);
+                    return obrigacao;
+                })
+                .Where(obrigacao => status is null || obrigacao.Status == status)
+                .OrderBy(obrigacao => obrigacao.DataVencimento)
+                .Select(obrigacao => DtoMapper.ToDto(obrigacao, today))
+                .ToArray();
+        }
     }
 
     private async Task<IReadOnlyCollection<Obrigacao>> GetObrigacoesAsync(

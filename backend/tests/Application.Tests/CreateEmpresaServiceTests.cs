@@ -46,14 +46,17 @@ public sealed class CreateEmpresaServiceTests
     {
         empresaRepository ??= new FakeEmpresaRepository([]);
         var obrigacaoRepository = new FakeObrigacaoRepository();
+        var queryCache = new FakeQueryCache();
         var ensureService = new EnsureObrigacoesFuturasService(
             empresaRepository,
             obrigacaoRepository,
+            new FakeFeriadoNacionalRepository(),
             new ObrigacaoRulesEngine(),
             new VencimentoCalculator(),
-            new FixedTimeProvider(new DateTimeOffset(2026, 6, 9, 12, 0, 0, TimeSpan.Zero)));
+            new FixedTimeProvider(new DateTimeOffset(2026, 6, 9, 12, 0, 0, TimeSpan.Zero)),
+            queryCache);
 
-        return new CreateEmpresaService(empresaRepository, ensureService);
+        return new CreateEmpresaService(empresaRepository, ensureService, queryCache);
     }
 
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider

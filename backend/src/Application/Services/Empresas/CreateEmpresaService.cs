@@ -1,15 +1,16 @@
 using PainelObrigacoes.Application.Common;
 using PainelObrigacoes.Application.DTOs;
 using PainelObrigacoes.Application.Mappers;
+using PainelObrigacoes.Application.Services.Obrigacoes;
 using PainelObrigacoes.Domain.Entities;
 using PainelObrigacoes.Domain.Interfaces;
-using PainelObrigacoes.Application.Services.Obrigacoes;
 
 namespace PainelObrigacoes.Application.Services.Empresas;
 
 public sealed class CreateEmpresaService(
     IEmpresaRepository empresaRepository,
-    EnsureObrigacoesFuturasService ensureObrigacoesFuturasService)
+    EnsureObrigacoesFuturasService ensureObrigacoesFuturasService,
+    IQueryCache queryCache)
 {
     private const int MaxRazaoSocialLength = 180;
 
@@ -20,6 +21,7 @@ public sealed class CreateEmpresaService(
 
         await empresaRepository.AddAsync(empresa, cancellationToken);
         await ensureObrigacoesFuturasService.EnsureForEmpresaAsync(empresa, cancellationToken);
+        queryCache.RemoveByPrefix(QueryCacheKeys.AllPrefix);
 
         return DtoMapper.ToDto(empresa);
     }

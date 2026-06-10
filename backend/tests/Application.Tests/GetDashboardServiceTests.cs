@@ -26,18 +26,23 @@ public sealed class GetDashboardServiceTests
         await repository.AddRangeAsync(
             [pendenteDoMes, pendenteForaDoMes, atrasadaForaDoMes, entregueForaDoMes],
             CancellationToken.None);
+        var cache = new FakeQueryCache();
         var service = new GetDashboardService(
             new FakeEmpresaRepository(empresas),
             repository,
+            cache,
             new FixedTimeProvider(new DateTimeOffset(2026, 6, 9, 12, 0, 0, TimeSpan.Zero)));
 
         var result = await service.ExecuteAsync(CancellationToken.None);
+        var cachedResult = await service.ExecuteAsync(CancellationToken.None);
 
         result.TotalEmpresas.Should().Be(2);
         result.ObrigacoesMes.Should().Be(1);
         result.Pendentes.Should().Be(2);
         result.Entregues.Should().Be(1);
         result.Atrasadas.Should().Be(1);
+        cachedResult.Should().BeEquivalentTo(result);
+        cache.FactoryCalls.Should().Be(1);
     }
 
     private static Obrigacao CreateObrigacao(Empresa empresa, TipoObrigacao tipo, DateTime vencimento)

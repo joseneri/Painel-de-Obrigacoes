@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using PainelObrigacoes.Application.Services.Obrigacoes;
 using PainelObrigacoes.Domain.Enums;
 
@@ -15,35 +14,32 @@ public static class ObrigacoesEndpoints
             StatusObrigacao? status,
             string? modo,
             GetCalendarioService service,
-            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
-            return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(empresaId, ano, mes, status, modo, cancellationToken),
-                Results.Ok,
-                loggerFactory);
+            var result = await service.ExecuteAsync(
+                empresaId,
+                ano,
+                mes,
+                status,
+                modo,
+                cancellationToken);
+            return Results.Ok(result);
         });
 
         group.MapGet("/alertas", async (
             GetAlertasService service,
-            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
-            return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(cancellationToken),
-                Results.Ok,
-                loggerFactory);
+            var result = await service.ExecuteAsync(cancellationToken);
+            return Results.Ok(result);
         });
 
         group.MapGet("/dashboard", async (
             GetDashboardService service,
-            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
-            return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(cancellationToken),
-                Results.Ok,
-                loggerFactory);
+            var result = await service.ExecuteAsync(cancellationToken);
+            return Results.Ok(result);
         });
 
         return group;

@@ -7,7 +7,9 @@ using PainelObrigacoes.Domain.Interfaces;
 
 namespace PainelObrigacoes.Application.Services.Entregas;
 
-public sealed class RegistrarEntregaService(IObrigacaoRepository obrigacaoRepository)
+public sealed class RegistrarEntregaService(
+    IObrigacaoRepository obrigacaoRepository,
+    IQueryCache queryCache)
 {
     private const int MaxObservacaoLength = 500;
 
@@ -26,6 +28,7 @@ public sealed class RegistrarEntregaService(IObrigacaoRepository obrigacaoReposi
         await obrigacaoRepository.AddEntregaAsync(entrega, cancellationToken);
         obrigacao.MarcarComoEntregue();
         await obrigacaoRepository.SaveChangesAsync(cancellationToken);
+        queryCache.RemoveByPrefix(QueryCacheKeys.AllPrefix);
 
         return DtoMapper.ToDto(entrega);
     }

@@ -12,11 +12,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<Entrega> Entregas => Set<Entrega>();
 
+    public DbSet<FeriadoNacional> FeriadosNacionais => Set<FeriadoNacional>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ConfigureEmpresa(modelBuilder);
         ConfigureObrigacao(modelBuilder);
         ConfigureEntrega(modelBuilder);
+        ConfigureFeriadoNacional(modelBuilder);
     }
 
     private static void ConfigureEmpresa(ModelBuilder modelBuilder)
@@ -66,5 +69,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .HasForeignKey<Entrega>(e => e.ObrigacaoId)
             .OnDelete(DeleteBehavior.Cascade);
         entity.HasIndex(e => e.ObrigacaoId).IsUnique();
+    }
+
+    private static void ConfigureFeriadoNacional(ModelBuilder modelBuilder)
+    {
+        var entity = modelBuilder.Entity<FeriadoNacional>();
+        entity.ToTable("FeriadosNacionais");
+        entity.HasKey(f => f.Id);
+        entity.Property(f => f.Data).HasColumnType("timestamp with time zone").IsRequired();
+        entity.Property(f => f.Nome).HasMaxLength(120).IsRequired();
+        entity.Property(f => f.Fonte).HasMaxLength(80).IsRequired();
+        entity.Property(f => f.SincronizadoEm).HasColumnType("timestamp with time zone").IsRequired();
+        entity.HasIndex(f => f.Data).IsUnique();
     }
 }

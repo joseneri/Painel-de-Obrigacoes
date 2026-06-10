@@ -50,6 +50,9 @@ export function StatusOverview({ data }: StatusOverviewProps) {
               </Typography.Text>
               <span className="text-[22px] font-extrabold leading-tight text-[#0f172a]">Status das obrigações</span>
             </div>
+            <Typography.Text className="!text-[13px] !font-bold !text-[#475569]">
+              Base consolidada de {total} registros
+            </Typography.Text>
           </div>
 
           <div

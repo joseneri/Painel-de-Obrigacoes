@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using PainelObrigacoes.Application.DTOs;
 using PainelObrigacoes.Application.Services.Empresas;
 
@@ -10,37 +9,28 @@ public static class EmpresasEndpoints
     {
         group.MapGet(string.Empty, async (
             GetEmpresasService service,
-            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
-            return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(cancellationToken),
-                Results.Ok,
-                loggerFactory);
+            var result = await service.ExecuteAsync(cancellationToken);
+            return Results.Ok(result);
         });
 
         group.MapPost(string.Empty, async (
             CreateEmpresaDto input,
             CreateEmpresaService service,
-            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
-            return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(input, cancellationToken),
-                result => Results.Created($"/api/empresas/{result.Id}", result),
-                loggerFactory);
+            var result = await service.ExecuteAsync(input, cancellationToken);
+            return Results.Created($"/api/empresas/{result.Id}", result);
         });
 
         group.MapDelete("/{id:guid}", async (
             Guid id,
             DeleteEmpresaService service,
-            ILoggerFactory loggerFactory,
             CancellationToken cancellationToken) =>
         {
-            return await EndpointErrorHandler.ExecuteAsync(
-                () => service.ExecuteAsync(id, cancellationToken),
-                Results.NoContent,
-                loggerFactory);
+            await service.ExecuteAsync(id, cancellationToken);
+            return Results.NoContent();
         });
 
         return group;

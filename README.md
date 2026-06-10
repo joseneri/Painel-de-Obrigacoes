@@ -19,7 +19,7 @@ empresa, regime tributario, competencia, vencimento e status de entrega.
 
 ### Subir toda a infraestrutura
 
-Na raiz do repositorio, execute:
+Na raiz do repositorio, onde esta o `docker-compose.yml`, execute:
 
 ```bash
 docker compose up --build

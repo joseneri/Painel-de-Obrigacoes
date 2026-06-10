@@ -216,6 +216,87 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
+### Pendente de hash - `feat: dockerize full-stack demo`
+
+O que mudou:
+
+- `docker-compose.yml` passou a subir PostgreSQL, API e frontend em um unico
+  comando de entrega.
+- O PostgreSQL deixou de publicar a porta `5432` no host no Compose principal,
+  ficando disponivel apenas na rede interna dos servicos.
+- A API passou a rodar em `Production` no Compose e liberou CORS para o frontend
+  containerizado em `localhost:8081`.
+- O frontend ganhou `Dockerfile` multi-stage com build Vite e runtime Nginx.
+- `frontend/nginx.conf` adicionou healthcheck e fallback para `index.html` nas
+  rotas client-side do TanStack Router.
+- O seed foi ampliado para 20 empresas, cobrindo todos os regimes do case com
+  datas de cadastro variadas, entregas antes/no/depois do vencimento e
+  obrigacoes pendentes/atrasadas/entregues.
+- `Empresa` passou a aceitar `CriadaEm` opcional para seed deterministico em UTC.
+- A rotina de garantia de obrigacoes futuras passou a recalcular status ao
+  atualizar obrigacoes existentes e ao criar novas.
+- Testes de Domain/Application foram expandidos para matriz de janeiro,
+  periodicidade, recalculo de status e geracao futura.
+- README e docs de estrutura foram simplificados para destacar a execucao por
+  `docker compose up --build` e o estado full-stack atual.
+
+Decisoes tecnicas:
+
+- Usar Nginx no container do frontend e uma decisao de entrega: o Vite gera
+  arquivos estaticos e o Nginx serve a SPA com fallback para rotas do
+  TanStack Router.
+- A API base do frontend fica como argumento de build
+  `VITE_API_BASE_URL=http://localhost:8080`, porque a SPA roda no navegador do
+  host e chama a API pela porta publicada.
+- Manter o banco sem porta publicada no Compose principal reduz superficie de
+  exposicao sem atrapalhar a demo full-stack.
+- O seed maior melhora o showcase com massa realista sem alterar contratos HTTP
+  nem mover regra fiscal para o frontend.
+- Recalcular status na geracao futura evita obrigacoes antigas permanecerem
+  como pendentes quando deveriam aparecer como atrasadas.
+
+Como a IA ajudou:
+
+- Releu `AGENTS.md`, `architecture.md`, guia de IA, resumo de implementacao e
+  registros recentes em `tmp/` antes do commit.
+- Revisou o diff para separar mudancas de Docker, seed, status, testes,
+  documentacao e pequenos ajustes de apresentacao do dashboard/alertas.
+- Executou varredura de seguranca para push publico, identificando apenas
+  credenciais locais de demo `postgres/postgres` e falsos positivos como
+  `CancellationToken`.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente commit e push de todo o worktree atual para o
+  repositorio publico `joseneri/Painel-de-Obrigacoes`.
+- A decisao foi nao usar force push e nao reescrever historico; se o remoto
+  rejeitar, o proximo passo deve ser decidido manualmente.
+- Os arquivos internos `tmp/` e `docs/ia-interna/` continuam protegidos por
+  `.gitignore`, mas este guia e rastreado e foi atualizado por exigencia do
+  protocolo do projeto.
+
+Validacoes executadas:
+
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 53 testes
+  passaram.
+- `npm run build` em `frontend/`: passou com TypeScript e Vite.
+- `docker compose config`: Compose valido com `db`, `api` e `frontend`.
+- `git diff --check`: sem erro bloqueante; apenas avisos LF/CRLF esperados no
+  Windows.
+- Checagem de tamanho em `backend/src`, `backend/tests` e `frontend/src`:
+  nenhum `.cs`, `.ts` ou `.tsx` acima de 250 linhas.
+- Checagem de imports proibidos no Domain: sem ocorrencias.
+
+Como apresentar esse commit:
+
+- "A entrega agora sobe completa com um unico Docker Compose: banco, API e
+  frontend."
+- "O frontend e buildado como artefato estatico e servido por Nginx, que tambem
+  resolve refresh de rotas da SPA."
+- "A massa de demo ficou mais rica para mostrar dashboard, alertas, calendario e
+  status reais sem depender de cadastro manual."
+- "A regra fiscal continua no backend/Domain; o frontend so consome API."
+
 ### Pendente de hash - `feat: consolidate operational frontend UI`
 
 O que mudou:

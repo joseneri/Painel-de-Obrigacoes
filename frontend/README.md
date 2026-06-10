@@ -10,17 +10,25 @@ SPA React/Vite do **Painel de Obrigacoes Acessorias**.
 - TanStack Router para rotas file-based e search params tipados
 - Day.js para datas
 
-## Como rodar local
+## Como rodar na entrega
 
-No desenvolvimento, suba apenas o banco pelo Compose dev e rode API e frontend
-localmente.
+Na raiz do repositorio:
 
 ```bash
-docker compose -f ../docker-compose.dev.yml up -d
-dotnet run --project ../backend/src/Api/PainelObrigacoes.Api.csproj --launch-profile http
+docker compose up --build
 ```
 
-Em outro terminal:
+O Compose builda o frontend e serve a SPA por Nginx em:
+
+- `http://localhost:8081`
+
+A API consumida pelo build de entrega fica em:
+
+- `http://localhost:8080`
+
+## Desenvolvimento local do frontend
+
+Para trabalhar apenas na SPA, instale as dependencias e rode o Vite:
 
 ```bash
 npm install
@@ -31,12 +39,9 @@ Por padrao o Vite sobe em:
 
 - `http://localhost:5241`
 
-A API esperada por padrao no desenvolvimento local e:
-
-- `http://localhost:5280`
-
-O arquivo `.env.example` registra essa URL. Para apontar temporariamente para a
-API do Compose principal em `8080`, crie um `.env.local`:
+O arquivo `.env.example` aponta para `http://localhost:5280`, usado quando a API
+e executada localmente com `dotnet run`. Para apontar o frontend local para a
+API do Compose em `8080`, crie um `.env.local`:
 
 ```bash
 VITE_API_BASE_URL=http://localhost:8080
@@ -44,31 +49,30 @@ VITE_API_BASE_URL=http://localhost:8080
 
 ## Telas implementadas
 
-- Relatorio fiscal com KPIs do dashboard e distribuicao de status.
+- Dashboard com KPIs e distribuicao de status.
 - Painel de alertas para atrasadas e vencimentos dos proximos 30 dias.
-- Calendario de obrigacoes por empresa, competencia e status.
+- Calendario de obrigacoes por empresa, competencia, vencimento e status.
 - Registro de entrega com data de conclusao e observacao.
-- Exportacao CSV do calendario filtrado.
+- Exportacao CSV/PDF do calendario filtrado.
 - Cadastro, listagem e remocao de empresas.
 
 ## Arquitetura de rotas
 
 O frontend usa TanStack Router porque a aplicacao e uma SPA React/Vite, mas
-precisa de uma divisao clara de rotas e estado de URL:
+precisa de divisao clara de rotas e estado de URL:
 
 - `src/app/App.tsx`: monta apenas o `RouterProvider`.
 - `src/app/AppShell.tsx`: layout global com sidebar, header e `Outlet`.
 - `src/app/router.tsx`: cria o router e injeta o `queryClient` no contexto.
-- `src/routes`: rotas file-based (`/dashboard`, `/calendario`, `/empresas`).
+- `src/routes`: rotas file-based (`/dashboard`, `/calendario`, `/alertas`,
+  `/empresas`).
 - `src/features`: telas e componentes de dominio.
 
 TanStack Query continua cuidando de dados da API; TanStack Router cuida de
 navegacao e search params. Exemplo: filtros do calendario podem ser reabertos
 por URL em `/calendario?ano=2026&mes=6&status=2`.
 
-## Base funcional
-
-A interface foi desenhada a partir do PDF do case e dos contratos reais da API:
+## Contratos consumidos
 
 - `GET /api/obrigacoes/dashboard`
 - `GET /api/obrigacoes/alertas`

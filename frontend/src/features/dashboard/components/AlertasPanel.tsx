@@ -72,7 +72,7 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
 
   return (
     <>
-      <PageHeader title="Painel de Alertas" subtitle="Atrasadas e vencendo nos próximos 30 dias." />
+      <PageHeader title="Painel de Alertas" subtitle="Atrasadas e pendentes nos próximos 30 dias." />
 
       <AlertasSummary
         total={overdueAlerts.length + upcomingAlerts.length}

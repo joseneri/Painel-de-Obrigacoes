@@ -49,7 +49,7 @@ export function emptyAlertasDescription(filter: AlertFilter) {
   }
 
   if (filter === "vencendo") {
-    return "Nenhuma obrigação vencendo nos próximos 30 dias";
+    return "Nenhuma obrigação pendente nos próximos 30 dias";
   }
 
   return "Nenhum prazo crítico encontrado";

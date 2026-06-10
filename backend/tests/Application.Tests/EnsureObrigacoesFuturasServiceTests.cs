@@ -32,6 +32,16 @@ public sealed class EnsureObrigacoesFuturasServiceTests
             .Distinct()
             .Should()
             .HaveCount(40);
+        obrigacoesRepository.Obrigacoes.Should().Contain(o =>
+            o.Tipo == TipoObrigacao.DAS &&
+            o.CompetenciaAno == 2026 &&
+            o.CompetenciaMes == 1 &&
+            o.Status == StatusObrigacao.Atrasada);
+        obrigacoesRepository.Obrigacoes.Should().Contain(o =>
+            o.Tipo == TipoObrigacao.eSocial &&
+            o.CompetenciaAno == 2026 &&
+            o.CompetenciaMes == 6 &&
+            o.Status == StatusObrigacao.Pendente);
     }
 
     [Fact]
@@ -94,6 +104,7 @@ public sealed class EnsureObrigacoesFuturasServiceTests
 
         obrigacaoAntiga.DataVencimento.Should()
             .Be(new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc));
+        obrigacaoAntiga.Status.Should().Be(StatusObrigacao.Atrasada);
         obrigacoesRepository.Obrigacoes.Count(o =>
             o.Tipo == TipoObrigacao.SPED_ECD &&
             o.CompetenciaAno == 2026 &&

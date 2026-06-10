@@ -29,6 +29,11 @@ export const metricPanelClassName = classNames(
   "max-[980px]:grid-cols-1 max-[720px]:px-4"
 );
 
+export const dashboardMetricPanelClassName = classNames(
+  "grid grid-cols-2 gap-3.5 border-b border-[#e2e8f0] bg-[#f8fafc] px-6 pb-[18px] pt-4",
+  "max-[980px]:grid-cols-1 max-[720px]:px-4"
+);
+
 export const metricToneClassNames = {
   info: {
     accent: "border-l-[#1677ff]",

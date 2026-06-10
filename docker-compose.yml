@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: painel_obrigacoes
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -29,7 +27,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Default: Host=db;Port=5432;Database=painel_obrigacoes;Username=postgres;Password=postgres
     ports:
@@ -39,6 +37,27 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    networks:
+      - painel
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: painel-obrigacoes-frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - painel
 

@@ -30,7 +30,8 @@ public sealed class EnsureObrigacoesFuturasService(
 
     public async Task<int> EnsureForEmpresaAsync(Empresa empresa, CancellationToken cancellationToken)
     {
-        var competenciaAtual = CompetenciaAtual();
+        var today = timeProvider.GetUtcNow().UtcDateTime.Date;
+        var competenciaAtual = new Competencia(today.Year, today.Month);
         var inicio = new Competencia(competenciaAtual.Ano, 1);
         var fim = AddMonths(competenciaAtual, HorizonMonths - 1);
         var existentes = await obrigacaoRepository.GetByEmpresaEPeriodoAsync(
@@ -39,7 +40,7 @@ public sealed class EnsureObrigacoesFuturasService(
             fim,
             cancellationToken);
         var existentesPorChave = existentes.ToDictionary(o => (o.Tipo, o.CompetenciaAno, o.CompetenciaMes));
-        var novas = GenerateObrigacoes(empresa, inicio, fim, existentesPorChave).ToArray();
+        var novas = GenerateObrigacoes(empresa, inicio, fim, existentesPorChave, today).ToArray();
 
         if (novas.Length == 0)
         {
@@ -57,7 +58,8 @@ public sealed class EnsureObrigacoesFuturasService(
         Empresa empresa,
         Competencia inicio,
         Competencia fim,
-        Dictionary<(TipoObrigacao Tipo, int Ano, int Mes), Obrigacao> existentesPorChave)
+        Dictionary<(TipoObrigacao Tipo, int Ano, int Mes), Obrigacao> existentesPorChave,
+        DateTime today)
     {
         var competencia = inicio;
 
@@ -72,26 +74,24 @@ public sealed class EnsureObrigacoesFuturasService(
                 if (existentesPorChave.TryGetValue(chave, out var existente))
                 {
                     existente.AtualizarRegra(vencimento, periodicidade);
+                    existente.RecalcularStatus(today);
                     continue;
                 }
 
-                yield return new Obrigacao(
+                var obrigacao = new Obrigacao(
                     Guid.NewGuid(),
                     empresa.Id,
                     tipo,
                     competencia,
                     vencimento,
                     periodicidade);
+
+                obrigacao.RecalcularStatus(today);
+                yield return obrigacao;
             }
 
             competencia = competencia.ProximoMes();
         }
-    }
-
-    private Competencia CompetenciaAtual()
-    {
-        var today = timeProvider.GetUtcNow().UtcDateTime;
-        return new Competencia(today.Year, today.Month);
     }
 
     private static Competencia AddMonths(Competencia competencia, int months)

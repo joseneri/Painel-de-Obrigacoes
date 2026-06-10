@@ -12,13 +12,20 @@ public sealed class Empresa
         CNPJ = string.Empty;
     }
 
-    public Empresa(Guid id, string razaoSocial, string cnpj, RegimeTributario regimeTributario)
+    public Empresa(
+        Guid id,
+        string razaoSocial,
+        string cnpj,
+        RegimeTributario regimeTributario,
+        DateTime? criadaEm = null)
     {
         Id = id;
         RazaoSocial = razaoSocial;
         CNPJ = cnpj;
         RegimeTributario = regimeTributario;
-        CriadaEm = DateTime.UtcNow;
+        CriadaEm = criadaEm is null
+            ? DateTime.UtcNow
+            : DateTime.SpecifyKind(criadaEm.Value, DateTimeKind.Utc);
     }
 
     public Guid Id { get; private set; }
@@ -33,4 +40,3 @@ public sealed class Empresa
 
     public IReadOnlyCollection<Obrigacao> Obrigacoes => _obrigacoes.AsReadOnly();
 }
-

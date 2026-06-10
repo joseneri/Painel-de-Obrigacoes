@@ -1,4 +1,4 @@
-import { Empty, Progress, Tag, Typography } from "antd";
+import { Empty, Progress, Typography } from "antd";
 import type { DashboardDto } from "../../../api/types";
 
 interface StatusOverviewProps {
@@ -39,9 +39,6 @@ export function StatusOverview({ data }: StatusOverviewProps) {
             Proporção dos status em todas as obrigações cadastradas.
           </Typography.Text>
         </div>
-        <Tag className="rounded-full border-[#bfdbfe] bg-[#eff6ff] px-3 py-1 font-bold text-[#1677ff]">
-          {total} obrigações
-        </Tag>
       </div>
 
       <div className="grid gap-5">
@@ -53,9 +50,6 @@ export function StatusOverview({ data }: StatusOverviewProps) {
               </Typography.Text>
               <span className="text-[22px] font-extrabold leading-tight text-[#0f172a]">Status das obrigações</span>
             </div>
-            <Typography.Text className="!text-[13px] !font-bold !text-[#475569]">
-              Base consolidada de {total} registros
-            </Typography.Text>
           </div>
 
           <div

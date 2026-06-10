@@ -38,7 +38,7 @@ export function AlertasSummary({
   const tiles: SummaryTile[] = [
     { key: "todos", label: "Total", value: total, tone: summaryToneMap.total, icon: <UnorderedListOutlined /> },
     { key: "atrasadas", label: "Atrasadas", value: overdue, tone: summaryToneMap.atrasada, icon: <AlertOutlined /> },
-    { key: "vencendo", label: "Vencendo", value: upcoming, tone: summaryToneMap.vencendo, icon: <ClockCircleOutlined /> }
+    { key: "vencendo", label: "Pendentes", value: upcoming, tone: summaryToneMap.vencendo, icon: <ClockCircleOutlined /> }
   ];
 
   return (

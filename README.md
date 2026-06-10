@@ -1,212 +1,141 @@
 # Painel de Obrigacoes Acessorias
 
-Aplicacao full-stack para o case tecnico da e-Auditoria. O nome do produto e
-**Painel de Obrigacoes Acessorias**; sua funcao principal e ser um calendario
-fiscal inteligente. O sistema nao calcula impostos: ele gera obrigacoes
-acessorias por regime tributario, calcula vencimentos e permite registrar
-entregas.
+Aplicacao full-stack para o case tecnico da e-Auditoria. O produto e um
+calendario fiscal inteligente para controlar obrigacoes acessorias por regime
+tributario. Ele nao calcula impostos: gera obrigacoes, calcula vencimentos e
+permite registrar entregas.
+
+## Como Subir Localmente
+
+Pre-requisitos:
+
+- Docker
+- Docker Compose
+
+Comando unico de entrega:
+
+```bash
+docker compose up --build
+```
+
+Servicos:
+
+- Frontend: `http://localhost:8081`
+- API health check: `http://localhost:8080/health`
+- Banco PostgreSQL: servico interno `db:5432` na rede do Compose
+
+Credenciais do banco no Compose:
+
+- Database: `painel_obrigacoes`
+- Usuario: `postgres`
+- Senha: `postgres`
+
+O startup da API aplica migrations e executa o seed automaticamente. Em um banco
+novo, a demo nasce com 20 empresas, obrigacoes futuras e entregas variadas.
+
+Para recriar a base de demonstracao do zero:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+Use `down -v` apenas quando quiser apagar o volume local do PostgreSQL.
 
 ## Stack
 
 - .NET 9 com Minimal APIs
-- Clean Architecture com DDD leve
 - Entity Framework Core 9
 - PostgreSQL 16
-- React 18 + Vite em `frontend/`
-- TanStack Query + TanStack Router no frontend
+- React 18 + Vite + TypeScript
+- Ant Design
+- TanStack Query + TanStack Router
 - xUnit + FluentAssertions
 - Docker + Docker Compose
 
 ## Estrutura
 
 ```text
-painel-obrigacoes/
-  backend/
-    PainelObrigacoes.sln
-    src/
-      Api/
-      Application/
-      Domain/
-      Infrastructure/
-    tests/
-      Domain.Tests/
-  frontend/
-    src/
-      api/
-      app/
-      features/
-      routes/
-      shared/
-  docs/
-  docker-compose.yml
-  docker-compose.dev.yml
+backend/
+  PainelObrigacoes.sln
+  src/
+    Api/
+    Application/
+    Domain/
+    Infrastructure/
+  tests/
+    Application.Tests/
+    Domain.Tests/
+frontend/
+  src/
+    api/
+    app/
+    features/
+    routes/
+    shared/
+docker-compose.yml
 ```
 
-O repositorio e um monorepo: backend, frontend, docs e Docker Compose ficam no
-mesmo Git. A solution .NET fica dentro de `backend/`, entao nao precisa repetir
-"Backend" no nome. O React/Vite e uma SPA separada que consome a API.
+O backend e a regra fiscal vivem em `backend/`. O frontend e uma SPA React/Vite
+separada em `frontend/`, servida em container por Nginx no modo de entrega.
 
-## Como Rodar Demo
+## Dados de Demonstracao
 
-Pre-requisitos: Docker e Docker Compose.
+O seed automatico cria:
 
-O Compose principal sobe API e PostgreSQL:
+- 20 empresas com datas de cadastro diferentes.
+- Empresas dos regimes Simples Nacional, Lucro Presumido, Lucro Real e
+  Imune/Isento.
+- Obrigacoes de janeiro do ano corrente ate o horizonte futuro.
+- Entregas registradas antes, no dia e apos o vencimento.
+- Obrigacoes pendentes, atrasadas e entregues para alimentar dashboard,
+  calendario e alertas.
 
-```bash
-docker compose up --build
-```
-
-API no Compose principal (Docker/demo):
-
-- `http://localhost:8080/health`
-- `http://localhost:8080/openapi/v1.json`
-- `http://localhost:8080/scalar` em ambiente Development
-
-Essas URLs em `8080` so respondem quando a API estiver rodando pelo
-`docker compose up --build`. No desenvolvimento local com `dotnet run` ou
-Visual Studio, use as URLs em `5280` da secao "Desenvolvimento Local".
-
-Frontend local:
-
-- `http://localhost:5241`
-
-Banco:
-
-- Host local: `localhost:5432`
-- Database: `painel_obrigacoes`
-- Usuario/senha: `postgres/postgres`
-
-Se o frontend local precisar consumir a API do Compose principal em `8080`,
-configure `frontend/.env.local` com:
-
-```bash
-VITE_API_BASE_URL=http://localhost:8080
-```
-
-## Desenvolvimento Local
-
-Para desenvolver e debugar, use o Compose de desenvolvimento apenas com
-PostgreSQL e rode API + frontend localmente. Ele usa a mesma porta `5432` do
-`appsettings.json`, entao pare o Compose completo antes de subir o banco dev.
-
-```bash
-docker compose down
-docker compose -f docker-compose.dev.yml up -d
-dotnet run --project backend/src/Api/PainelObrigacoes.Api.csproj --launch-profile http
-```
-
-No Visual Studio:
-
-- Abra `backend/PainelObrigacoes.sln`.
-- Defina `PainelObrigacoes.Api` como startup project.
-- Escolha o profile `http`.
-- Rode com F5 para debugar.
-
-URLs no modo desenvolvimento local:
-
-- `http://localhost:5280/health`
-- `http://localhost:5280/openapi/v1.json`
-- `http://localhost:5280/scalar`
-- `http://localhost:5280/scalar/#tag/painelobrigacoesapi`
-
-Frontend:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Por padrao o frontend consome a API local em `http://localhost:5280`, alinhado
-ao `dotnet run --launch-profile http`. O arquivo `frontend/.env.example`
-registra esse valor.
-
-Comandos uteis:
-
-```bash
-# Parar o banco de desenvolvimento
-docker compose -f docker-compose.dev.yml down
-
-# Resetar os dados de desenvolvimento
-docker compose -f docker-compose.dev.yml down -v
-
-# Voltar para o modo entrega/demo com API + banco em Docker
-docker compose -f docker-compose.dev.yml down
-docker compose up --build -d
-```
-
-No modo entrega/demo, a API volta para `http://localhost:8080`. A imagem da API
-e publicada em `Release` pelo Dockerfile, mas o Compose principal mantem
-`ASPNETCORE_ENVIRONMENT=Development` para expor o Scalar na demonstracao. O
-arquivo `docker-compose.dev.yml` e auxiliar para desenvolvimento: ele sobe o
-banco/infra, enquanto API e frontend rodam localmente.
-
-## Endpoints
-
-- `GET /api/empresas`
-- `POST /api/empresas`
-- `DELETE /api/empresas/{id}`
-- `GET /api/obrigacoes?empresaId=&ano=&mes=&status=`
-- `GET /api/obrigacoes/alertas`
-- `GET /api/obrigacoes/dashboard`
-- `POST /api/entregas`
+Empresas Imune/Isento nao geram obrigacoes nesta versao. Essa foi a decisao
+documentada para o case, porque o PDF diz que ficam dispensadas da maioria das
+obrigacoes, mas nao define uma matriz propria.
 
 ## Decisoes Tecnicas
 
-- As decisoes abertas da secao 4.2 do case foram tratadas de forma explicita:
-  backend em Clean Architecture com Minimal APIs por feature; erros expostos em
-  Problem Details; migrations e seed automatico no startup para demonstracao;
-  Ant Design com tema proprio e layout operacional; monorepo com backend por
-  camadas e frontend organizado por `api`, `app`, `routes`, `features` e
-  `shared`.
-- Domain e puro, sem dependencia de `Microsoft.*`, EF Core ou ASP.NET.
-- A engine tributaria (`ObrigacaoRulesEngine`) e o calculo de vencimentos
-  (`VencimentoCalculator`) sao stateless e testaveis sem banco.
-- Obrigacoes sao persistidas no cadastro/seed para facilitar dashboard e
-  alertas.
-- `Competencia` e um value object `struct` imutavel no Domain. Para o indice
-  composto no EF Core, a entidade persiste `CompetenciaAno` e `CompetenciaMes`
-  como colunas escalares e expoe `Competencia` como valor calculado.
-- OpenAPI usa o suporte integrado do .NET 9 com Scalar UI em desenvolvimento.
-- Migrations e seed rodam automaticamente no startup, adequado para demo/case.
-- O frontend usa TanStack Router file-based para deixar `App.tsx` pequeno,
-  separar layout/rotas/features e manter filtros do calendario na URL.
-- TanStack Query continua responsavel por dados da API; TanStack Router cuida
-  de navegacao e estado de URL.
+O PDF deixa algumas escolhas abertas e pede que elas sejam documentadas no
+README. As principais decisoes e seus motivos sao:
 
-### Edge Cases Fiscais e Ambiguidades do Case
+| Decisao | Escolha | Motivo |
+| --- | --- | --- |
+| Arquitetura do backend | Clean Architecture com Domain, Application, Infrastructure e Api | A regra fiscal e o nucleo do case; separar camadas deixa a engine testavel sem banco ou HTTP e evita acoplamento com frameworks. |
+| Minimal APIs | Endpoints por feature chamando application services | Atende ao requisito de .NET 9 com Minimal APIs e mantem os endpoints finos, sem regra de negocio dentro da camada HTTP. |
+| Domain puro | Sem dependencia de ASP.NET, EF Core, `Microsoft.*` ou banco | Preserva a regra fiscal independente de infraestrutura e facilita testes unitarios rapidos. |
+| Engine tributaria | Regras hardcoded no Domain, stateless e cobertas por testes | O case define uma matriz minima fixa por regime; codigo explicito e testado e mais adequado que criar um motor configuravel fora do escopo. |
+| Persistencia de obrigacoes | Obrigacoes sao geradas e salvas ao criar empresa e no seed | Dashboard, alertas e calendario ficam simples e eficientes, sem recalcular toda a agenda fiscal a cada request. |
+| Geracao futura | Service idempotente roda ao cadastrar empresa e no startup da API | Entrega o diferencial do case de meses futuros e evita duplicidade quando a rotina roda mais de uma vez. |
+| `Competencia` | Value object no Domain, persistido como `CompetenciaAno` e `CompetenciaMes` | Mantem o modelo de dominio expressivo e permite indice composto confiavel no PostgreSQL/EF Core. |
+| Tratamento de erros | Problem Details para validacao, conflitos, nao encontrados e erros inesperados | O frontend recebe respostas previsiveis e erros internos nao vazam detalhes de excecao para o usuario. |
+| Seed de demonstracao | Migrations e seed automaticos no startup, com 20 empresas | O avaliador sobe o projeto com um comando e ja encontra massa de dados para dashboard, alertas, calendario e entregas. |
+| Regime Imune/Isento | Nao gera obrigacoes nesta versao | O PDF informa dispensa da maioria das obrigacoes, mas nao define matriz propria; a ausencia de obrigacoes representa `Nao Aplicavel`. |
+| Frontend | SPA React/Vite com Ant Design, TanStack Query e TanStack Router | Ant Design atende ao requisito visual; Query cuida de estado servidor; Router deixa navegacao e filtros na URL. |
+| Regra fiscal no frontend | Frontend consome contratos HTTP e nao replica a engine | Evita divergencia entre telas e backend; a fonte da verdade tributaria permanece no Domain/Application. |
+| Docker de entrega | Um unico `docker compose up --build` sobe banco, API e frontend | Atende diretamente ao requisito do PDF de subir toda a infraestrutura com um comando. |
+| Servidor da SPA | Build estatico do Vite servido por Nginx no container frontend | `frontend/nginx.conf` nao e requisito funcional; ele serve os arquivos da SPA, expoe healthcheck e aplica fallback para `index.html` nas rotas client-side. |
+| URL da API no frontend | `VITE_API_BASE_URL=http://localhost:8080` fixado no build do Compose | A SPA roda no navegador do host e precisa chamar a API pela porta publicada, nao pelo nome interno do container. |
 
-O case informa que edge cases de regime e vencimento fazem parte da avaliacao.
-Por isso, a regra fiscal implementada separa competencia fiscal de vencimento
-operacional:
+<!--
+- Geração futura de obrigacoes roda ao cadastrar empresa e tambem no startup da
+  API, de forma idempotente.
 
-- Competencia explica de onde a obrigacao vem.
-- Data de vencimento manda no status, alertas, atraso e urgencia.
-- Obrigacoes anuais aparecem apenas em janeiro por competencia, mas entram nos
-  alertas e status pelo mes real de vencimento.
-- No dia do vencimento a obrigacao continua pendente; ela so fica atrasada a
-  partir do dia seguinte, se nao houver entrega registrada.
-- Entrega registrada prevalece sobre status pendente ou atrasada.
+-->
 
-A politica de dia util adotada para o perfil do case e uniforme: se qualquer
-vencimento calculado cair em sabado, domingo ou feriado nacional, o prazo e
-prorrogado para o proximo dia util. A especificacao explicita essa regra apenas
-para DAS, entao a generalizacao fica documentada como decisao tecnica para
-manter o calendario consistente. Feriados estaduais/municipais, pontos
-facultativos, regras por UF e prazos reais que divergem do PDF ficam fora do
-escopo desta versao.
+## Regras Fiscais do Case
 
-Detalhamento da decisao fiscal: `docs/decisoes-fiscais-case.md`.
+- Anuais aparecem apenas em janeiro por competencia.
+- Status `Pendente`: vencimento futuro ou no dia atual, sem entrega.
+- Status `Atrasada`: vencimento anterior ao dia atual, sem entrega.
+- Status `Entregue`: existe registro de entrega.
+- Status `Nao Aplicavel`: representado pela ausencia de obrigacao gerada para
+  regimes aos quais ela nao se aplica.
+- Fins de semana e feriados nacionais do perfil do case prorrogam vencimento
+  para o proximo dia util.
 
-## Limitacoes Conhecidas
-
-- Feriados estaduais/municipais e pontos facultativos nao entram no calendario
-  de dia util desta versao.
-- Regras fiscais por UF e divergencias atuais da legislacao em relacao ao PDF
-  foram documentadas como fora do escopo do case.
-- Regime Imune/Isento nao gera obrigacoes nesta versao.
-- O Compose principal atual sobe backend e PostgreSQL. O frontend roda
-  localmente via Vite nesta etapa.
+Detalhes e limites fiscais estao em `docs/decisoes-fiscais-case.md`.
 
 ## Testes
 
@@ -214,21 +143,33 @@ Detalhamento da decisao fiscal: `docs/decisoes-fiscais-case.md`.
 dotnet test backend/PainelObrigacoes.sln --configuration Release
 ```
 
-Cobertura atual: engine de regras, calculo de vencimentos e value object de
-competencia.
+O projeto cobre engine de regras, vencimentos, status de obrigacoes,
+competencia e services de aplicacao ligados a geracao futura, dashboard,
+alertas e cadastro.
+
+Build do frontend:
+
+```bash
+cd frontend
+npm install
+npm run build
+```
 
 ## Uso de IA
 
-Usei Codex para acelerar pesquisa oficial, implementacao guiada por fases e
-validacao de constraints. A principal correcao humana/arquitetural foi ajustar
-o mapeamento de `Competencia`: o plano inicial tentou usar membro aninhado de
-complex property no indice EF, mas a migration validou que colunas escalares
-eram a opcao mais segura para manter o Domain imutavel.
+Usei Codex como par de programacao e acelerador de pesquisa, nao como piloto
+automatico. A IA ajudou a estruturar fases, consultar documentacao oficial,
+gerar codigo inicial e revisar constraints. As decisoes foram validadas com
+build, testes, Docker Compose e revisao das regras do PDF.
 
-Para estudar o projeto inteiro em ordem didatica no rich view do Codex, veja
-`tmp/documentacao-preview-fe-be.md`.
-Para preparar a defesa tecnica e o showcase, veja
-`docs/ia-interna/ia-showcase-guide.md`.
-Para um inventario detalhado do que ja foi implementado em backend, frontend,
-Docker, validacoes e proximas fases, veja
-`docs/ia-interna/implementation-summary.md`.
+Um exemplo de correcao importante foi o mapeamento de `Competencia`: a abordagem
+inicial com membro aninhado no indice do EF Core foi substituida por colunas
+escalares, preservando o Domain puro e mantendo indice composto confiavel.
+
+## Limitacoes Conhecidas
+
+- Regras reais que divergirem do PDF ficam fora do escopo desta entrega.
+- Feriados estaduais/municipais, pontos facultativos e regras por UF nao entram
+  no calendario desta versao.
+- A base de demo so e recriada automaticamente quando o banco esta vazio; para
+  trocar uma base antiga pelo seed novo, use `docker compose down -v`.

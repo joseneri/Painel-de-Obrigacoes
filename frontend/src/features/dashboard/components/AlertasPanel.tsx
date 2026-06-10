@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Empty, Skeleton, Typography } from "antd";
+import { Empty, Skeleton } from "antd";
 import type { AlertaDto, EnumValue } from "../../../api/types";
+import { PageHeader } from "../../../shared/ui/PageHeader";
 import { labelTipo } from "../../../shared/utils/domain";
 import { AlertasFilters } from "./AlertasFilters";
 import { AlertasList } from "./AlertasList";
@@ -36,12 +37,7 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
     [data]
   );
   const scopedAlerts = useMemo(
-    () =>
-      data.filter(
-        (item) =>
-          (!empresaId || item.empresaId === empresaId) &&
-          (!tipoKey || enumKey(item.tipo) === tipoKey)
-      ),
+    () => data.filter((item) => (!empresaId || item.empresaId === empresaId) && (!tipoKey || enumKey(item.tipo) === tipoKey)),
     [data, empresaId, tipoKey]
   );
   const upcomingAlerts = useMemo(() => sortAlerts(scopedAlerts.filter(isUpcomingAlert)), [scopedAlerts]);
@@ -76,17 +72,7 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
 
   return (
     <>
-      <div className="relative border-b border-[#edf1f5] bg-white px-8 pb-6 pt-7 before:absolute before:inset-y-0 before:left-0 before:w-[5px] before:bg-[#1677ff] before:content-[''] max-[720px]:px-4">
-        <Typography.Title
-          className="!mb-2 !mt-0 !text-[30px] !font-extrabold !leading-[1.12] !tracking-normal !text-[#0f172a] max-[720px]:!text-[25px]"
-          level={2}
-        >
-          Painel de Alertas
-        </Typography.Title>
-        <Typography.Text className="!text-[15px] !text-[#526173]" type="secondary">
-          Atrasadas e vencendo nos próximos 30 dias.
-        </Typography.Text>
-      </div>
+      <PageHeader title="Painel de Alertas" subtitle="Atrasadas e vencendo nos próximos 30 dias." />
 
       <AlertasSummary
         total={overdueAlerts.length + upcomingAlerts.length}

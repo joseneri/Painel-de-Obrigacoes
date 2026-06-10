@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { Button, DatePicker, Select } from "antd";
 import { CalendarOutlined, DownloadOutlined, FilePdfOutlined } from "@ant-design/icons";
 import type { Dayjs } from "dayjs";
+import {
+  filterFieldClassName,
+  filterLabelClassName,
+  filterPanelClassName,
+  filterSelectClassName,
+  ghostActionButtonClassName
+} from "../../../shared/ui/styles";
 
 type CalendarPanelMode = "time" | "date" | "week" | "month" | "quarter" | "year" | "decade";
 
@@ -41,11 +48,6 @@ const monthNames = [
   "dezembro"
 ];
 
-const fieldClassName = "grid min-w-0 grid-rows-[18px_48px] items-start gap-[9px]";
-const labelClassName = "text-xs font-extrabold leading-[18px] tracking-normal text-[#111827]";
-const selectClassName =
-  "!h-12 !min-h-12 !min-w-0 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
-const actionButtonClassName = "h-9 min-w-0 justify-center rounded-lg px-2 text-xs";
 const filterRowClassName =
   "grid grid-cols-[264px_minmax(220px,1fr)_200px_144px] items-start gap-3.5 max-[1040px]:grid-cols-[minmax(190px,0.85fr)_minmax(220px,1fr)] max-[720px]:grid-cols-1";
 
@@ -104,11 +106,11 @@ export function CalendarioControls({
   }
 
   return (
-    <div className="border-b border-[#edf1f5] bg-[#f8fafc] px-7 pb-[22px] pt-5 max-[720px]:p-4">
-      <div className="grid gap-3.5 rounded-lg border border-[#e5edf6] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] max-[720px]:p-3.5">
+    <div className="border-b border-[#edf1f5] bg-[#f8fafc] px-6 pb-[22px] pt-5 max-[720px]:p-4">
+      <div className={filterPanelClassName}>
         <div className={filterRowClassName}>
-          <div className={fieldClassName}>
-            <span className={labelClassName}>Competência</span>
+          <div className={filterFieldClassName}>
+            <span className={filterLabelClassName}>Competência</span>
             <DatePicker
               allowClear={false}
               className="h-12 min-h-12 !min-w-0 w-full border-[#e5e7eb] bg-white [&_.ant-picker-input>input]:cursor-pointer [&_.ant-picker-input>input]:text-center [&_.ant-picker-input>input]:text-sm [&_.ant-picker-input>input]:font-bold [&_.ant-picker-input>input]:text-[#0f172a]"
@@ -125,12 +127,12 @@ export function CalendarioControls({
             />
           </div>
 
-          <div className={fieldClassName}>
-            <span className={labelClassName}>Empresas</span>
+          <div className={filterFieldClassName}>
+            <span className={filterLabelClassName}>Empresas</span>
             <Select
               allowClear
               showSearch
-              className={selectClassName}
+              className={filterSelectClassName}
               placeholder="Todas as empresas"
               value={empresaId}
               loading={empresasLoading}
@@ -140,11 +142,11 @@ export function CalendarioControls({
             />
           </div>
 
-          <div className={fieldClassName}>
-            <span className={labelClassName}>Status</span>
+          <div className={filterFieldClassName}>
+            <span className={filterLabelClassName}>Status</span>
             <Select
               allowClear
-              className={selectClassName}
+              className={filterSelectClassName}
               placeholder="Todos os status"
               value={status}
               options={statusOptions}
@@ -152,13 +154,13 @@ export function CalendarioControls({
             />
           </div>
 
-          <div className={fieldClassName}>
-            <span className={labelClassName}>Exportar</span>
+          <div className={filterFieldClassName}>
+            <span className={filterLabelClassName}>Exportar</span>
             <div className="grid h-12 w-full grid-cols-[64px_64px] items-center gap-2 max-[720px]:h-auto max-[720px]:grid-cols-1">
-              <Button className={actionButtonClassName} icon={<FilePdfOutlined />} disabled={!canExport} onClick={onExportPdf}>
+              <Button className={ghostActionButtonClassName} icon={<FilePdfOutlined />} disabled={!canExport} onClick={onExportPdf}>
                 PDF
               </Button>
-              <Button className={actionButtonClassName} icon={<DownloadOutlined />} disabled={!canExport} onClick={onExportCsv}>
+              <Button className={ghostActionButtonClassName} icon={<DownloadOutlined />} disabled={!canExport} onClick={onExportCsv}>
                 CSV
               </Button>
             </div>

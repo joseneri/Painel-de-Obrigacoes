@@ -1,7 +1,16 @@
 import { useMemo, useState } from "react";
-import { App as AntApp, Alert, Button, Form, Input, Select, Typography } from "antd";
+import { App as AntApp, Alert, Button, Form, Input, Select } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useCreateEmpresa, useEmpresas } from "../../api/hooks";
+import { PageHeader } from "../../shared/ui/PageHeader";
+import {
+  filterFieldClassName,
+  filterInputClassName,
+  filterLabelClassName,
+  filterSelectClassName,
+  pageCardClassName,
+  pageShellClassName
+} from "../../shared/ui/styles";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { formatCnpj, onlyDigits } from "../../shared/utils/formatters";
 import { normalizeRegime, regimeOptions } from "../../shared/utils/domain";
@@ -15,14 +24,6 @@ interface EmpresaFormValues {
 
 const formGridClassName =
   "grid min-w-0 grid-cols-[minmax(220px,1.4fr)_minmax(180px,0.9fr)_minmax(180px,0.9fr)_auto] items-end gap-3 max-[1100px]:grid-cols-2 max-[720px]:grid-cols-1 [&_.ant-form-item-label>label]:!h-[18px] [&_.ant-form-item-label>label]:!text-xs [&_.ant-form-item-label>label]:!font-extrabold [&_.ant-form-item-label>label]:!tracking-normal [&_.ant-form-item-label>label]:!text-[#1f2937]";
-const inputClassName =
-  "h-12 min-w-0 rounded-lg border-[#aebdcc] bg-[#f8fafc] font-semibold text-[#0f172a] shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] placeholder:font-semibold placeholder:text-[#64748b] [&_.ant-input-prefix]:text-[#475569]";
-const selectClassName =
-  "h-12 min-w-0 w-full [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#aebdcc] [&_.ant-select-selector]:!bg-[#f8fafc] [&_.ant-select-selector]:!shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] [&_.ant-select-selection-placeholder]:!font-semibold [&_.ant-select-selection-placeholder]:!leading-[46px] [&_.ant-select-selection-placeholder]:!text-[#64748b] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!leading-[46px] [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-arrow]:!text-[#475569] [&_.ant-select-suffix]:!text-[#475569]";
-const filterFieldClassName = "grid min-w-0 grid-rows-[18px_48px] items-start gap-[9px]";
-const filterLabelClassName = "text-xs font-extrabold leading-[18px] tracking-normal text-[#111827]";
-const filterSelectClassName =
-  "!h-12 !min-h-12 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
 
 export function EmpresasPage() {
   const { message } = AntApp.useApp();
@@ -62,7 +63,7 @@ export function EmpresasPage() {
   }
 
   return (
-    <div className="box-border grid min-w-0 max-w-full gap-5 max-[720px]:pr-3">
+    <div className={pageShellClassName}>
       {isError && error && (
         <Alert
           type="error"
@@ -72,20 +73,8 @@ export function EmpresasPage() {
         />
       )}
 
-      <section className="min-w-0 max-w-full overflow-hidden rounded-lg border border-[#dbe5ef] bg-white max-[720px]:w-[calc(100%-24px)]">
-        <div className="relative flex items-start justify-between gap-5 border-b border-[#edf1f5] bg-white px-8 pb-6 pt-7 before:absolute before:inset-y-0 before:left-0 before:w-[5px] before:bg-[#1677ff] before:content-[''] max-[720px]:px-4">
-          <div>
-            <Typography.Title
-              className="!mb-2 !mt-0 !text-[30px] !font-extrabold !leading-[1.12] !tracking-normal !text-[#0f172a] max-[720px]:!text-[25px]"
-              level={2}
-            >
-              Empresas
-            </Typography.Title>
-            <Typography.Text className="!text-[15px] !text-[#526173]" type="secondary">
-              Cadastre CNPJs e mantenha a geração de obrigações por regime.
-            </Typography.Text>
-          </div>
-        </div>
+      <section className={pageCardClassName}>
+        <PageHeader title="Empresas" subtitle="Cadastre CNPJs e mantenha a geração de obrigações por regime." />
 
         <div className="border-b border-[#edf1f5] bg-[#f8fafc] px-7 pb-6 pt-5 max-[720px]:p-4">
           <Form form={form} layout="vertical" onFinish={handleSubmit}>
@@ -96,7 +85,7 @@ export function EmpresasPage() {
                 label="Razão social"
                 rules={[{ required: true, message: "Informe a razão social." }]}
               >
-                <Input className={inputClassName} placeholder="Ex.: Contabilidade Alfa Ltda" />
+                <Input className={filterInputClassName} placeholder="Ex.: Contabilidade Alfa Ltda" />
               </Form.Item>
 
               <Form.Item
@@ -109,7 +98,7 @@ export function EmpresasPage() {
                   { validator: validateCnpjLength }
                 ]}
               >
-                <Input className={inputClassName} placeholder="00.000.000/0000-00" maxLength={18} />
+                <Input className={filterInputClassName} placeholder="00.000.000/0000-00" maxLength={18} />
               </Form.Item>
 
               <Form.Item
@@ -118,7 +107,7 @@ export function EmpresasPage() {
                 label="Regime tributário"
                 rules={[{ required: true, message: "Selecione o regime." }]}
               >
-                <Select className={selectClassName} placeholder="Selecione" options={regimeOptions} />
+                <Select className={filterSelectClassName} placeholder="Selecione" options={regimeOptions} />
               </Form.Item>
 
               <Form.Item className="!mb-0 min-w-0" label=" ">
@@ -146,7 +135,7 @@ export function EmpresasPage() {
             <Input
               allowClear
               aria-label="Buscar empresa por razão social"
-              className={inputClassName}
+              className={filterInputClassName}
               prefix={<SearchOutlined />}
               placeholder="Buscar por razão social"
               value={searchTerm}

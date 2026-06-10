@@ -1,4 +1,5 @@
 import type { AlertaDto } from "../../../api/types";
+import { fixedBadgeClassName, statusBadgeClassNames, urgencyBadgeClassNames } from "../../../shared/ui/styles";
 import { normalizeStatus, StatusObrigacao } from "../../../shared/utils/domain";
 
 export type AlertFilter = "todos" | "atrasadas" | "vencendo";
@@ -8,22 +9,12 @@ export type StatusTone = "pendente" | "entregue" | "atrasada" | "nao-aplicavel";
 
 export const alertasPageSize = 10;
 
-export const alertBadgeClassName =
-  "inline-flex h-7 items-center whitespace-nowrap rounded-md border px-2.5 text-xs font-semibold";
-export const alertUrgencyBadgeClassName = `${alertBadgeClassName} min-w-[128px] justify-center`;
+export const alertBadgeClassName = fixedBadgeClassName;
+export const alertUrgencyBadgeClassName = fixedBadgeClassName;
 
-export const alertStatusClassNames = {
-  pendente: "border-[#fed7aa] bg-[#fff7ed] text-[#c2410c]",
-  entregue: "border-[#a7f3d0] bg-[#ecfdf5] text-[#047857]",
-  atrasada: "border-[#fecdd3] bg-[#fff1f2] text-[#be123c]",
-  "nao-aplicavel": "border-[#e2e8f0] bg-[#f8fafc] text-[#64748b]"
-} satisfies Record<StatusTone, string>;
+export const alertStatusClassNames = statusBadgeClassNames satisfies Record<StatusTone, string>;
 
-export const alertUrgencyClassNames = {
-  ok: "border-[#bbf7d0] bg-[#f0fdf4] text-[#15803d]",
-  atencao: "border-[#fed7aa] bg-[#fff7ed] text-[#c2410c]",
-  urgente: "border-[#fecdd3] bg-[#fff1f2] text-[#be123c]"
-} satisfies Record<UrgencyTone, string>;
+export const alertUrgencyClassNames = urgencyBadgeClassNames satisfies Record<UrgencyTone, string>;
 
 export function getFilteredAlerts(filter: AlertFilter, overdueAlerts: AlertaDto[], upcomingAlerts: AlertaDto[]) {
   if (filter === "atrasadas") {

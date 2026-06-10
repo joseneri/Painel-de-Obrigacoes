@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
-import { App as AntApp, Alert, Segmented, Typography } from "antd";
+import { App as AntApp, Alert, Segmented } from "antd";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useEmpresas, useObrigacoes, useRegistrarEntrega } from "../../api/hooks";
 import type { ObrigacaoDto } from "../../api/types";
+import { PageHeader } from "../../shared/ui/PageHeader";
+import { pageCardClassName, pageShellClassName } from "../../shared/ui/styles";
 import { getErrorMessage } from "../../shared/utils/errors";
 import { labelRegime, statusOptions } from "../../shared/utils/domain";
 import { CalendarioControls } from "./components/CalendarioControls";
@@ -83,7 +85,7 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
   }
 
   return (
-    <div className="grid gap-5">
+    <div className={pageShellClassName}>
       {error && (
         <Alert
           type="error"
@@ -93,46 +95,38 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
         />
       )}
 
-      <section className="min-w-0 overflow-hidden rounded-lg border border-[#dbe5ef] bg-white p-0">
-        <div className="flex items-start justify-between gap-5 border-b border-[#edf1f5] bg-white px-8 pb-6 pt-7 max-[720px]:flex-col max-[720px]:items-stretch max-[720px]:px-4">
-          <div>
-            <Typography.Title
-              className="!mb-2 !mt-0 !text-[30px] !font-extrabold !leading-[1.12] !tracking-normal !text-[#0f172a] max-[720px]:!text-[25px]"
-              level={2}
-            >
-              Calendário de Obrigações
-            </Typography.Title>
-            <Typography.Text className="!text-[15px] !text-[#526173]" type="secondary">
-              {modeDescription(filters.modo)}
-            </Typography.Text>
-          </div>
-
-          <Segmented
-            className="border border-[#edf1f5] !bg-[#f3f6fa] p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
-            value={filters.modo}
-            onChange={(value) => onFiltersChange({ modo: value as CalendarioModo })}
-            options={[
-              {
-                label: (
-                  <span className="inline-flex items-center gap-2">
-                    <CalendarOutlined />
-                    Competência
-                  </span>
-                ),
-                value: "competencia"
-              },
-              {
-                label: (
-                  <span className="inline-flex items-center gap-2">
-                    <ClockCircleOutlined />
-                    Vencimento
-                  </span>
-                ),
-                value: "vencimento"
-              }
-            ]}
-          />
-        </div>
+      <section className={pageCardClassName}>
+        <PageHeader
+          title="Calendário de Obrigações"
+          subtitle={modeDescription(filters.modo)}
+          actions={
+            <Segmented
+              className="border border-[#edf1f5] !bg-[#f3f6fa] p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+              value={filters.modo}
+              onChange={(value) => onFiltersChange({ modo: value as CalendarioModo })}
+              options={[
+                {
+                  label: (
+                    <span className="inline-flex items-center gap-2">
+                      <CalendarOutlined />
+                      Competência
+                    </span>
+                  ),
+                  value: "competencia"
+                },
+                {
+                  label: (
+                    <span className="inline-flex items-center gap-2">
+                      <ClockCircleOutlined />
+                      Vencimento
+                    </span>
+                  ),
+                  value: "vencimento"
+                }
+              ]}
+            />
+          }
+        />
 
         <CalendarioControls
           selectedMonth={selectedMonth}

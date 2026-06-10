@@ -216,6 +216,74 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
+### Pendente de hash - `feat: consolidate operational frontend UI`
+
+O que mudou:
+
+- Dashboard, Painel de Alertas, Empresas e Calendario passaram a compartilhar
+  cabecalhos, cards metricos, estilos de filtros, tabelas, badges e botoes.
+- O Dashboard foi enxugado para tres metricas operacionais: total, atrasadas e
+  pendentes.
+- Os resumos do Painel de Alertas passaram a reutilizar o mesmo `MetricTile`,
+  preservando selecao clicavel por total, atrasadas e vencendo.
+- As tabelas de Alertas, Empresas e Calendario passaram a usar o mesmo visual
+  operacional, com fonte maior, hover consistente e paginacao padronizada.
+- A logica de agrupamento de linhas do Calendario foi extraida para utilitario
+  compartilhado.
+- `CalendarioSummary` foi removido porque os indicadores redundantes sairam da
+  tela.
+
+Decisoes tecnicas:
+
+- A mudanca reduz duplicacao visual sem criar novo contrato HTTP nem mover regra
+  fiscal para o frontend.
+- Os componentes compartilhados ficaram pequenos e focados em UI, sem conhecer
+  DTOs fiscais ou regras de negocio.
+- A tabela do Calendario continua agrupando por vencimento e obrigacao, mas a
+  regra de row span agora fica em utilitario reaproveitavel.
+- As telas mantem Ant Design como base e centralizam apenas classes Tailwind
+  repetidas.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, guia de IA, resumo de implementacao e registros
+  recentes em `tmp/` antes do commit.
+- Revisou o diff para separar refino visual, extracao de componentes e remocao
+  de duplicacao.
+- Conferiu riscos de contrato: o backend, DTOs, endpoints e Domain permanecem
+  fora do escopo.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente `commita tudo`, autorizando stage e commit do
+  worktree atual.
+- A decisao foi preservar o escopo como frontend operacional, sem refatorar
+  regras fiscais nem ambiente Docker.
+- A porta alternativa usada para subir a aplicacao localmente foi tratada como
+  detalhe de ambiente, nao como mudanca de codigo.
+
+Validacoes executadas:
+
+- `npm run build` em `frontend/`: passou.
+- `git diff --check`: sem erro bloqueante, apenas avisos LF/CRLF esperados no
+  Windows.
+- Checagem de tamanho em `backend/src`, `backend/tests` e `frontend/src`: nenhum
+  `.cs`, `.ts` ou `.tsx` acima de 250 linhas.
+- Checagem de `using` proibido nos `.cs` do Domain: sem ocorrencias.
+- Browser local em `/dashboard`, `/alertas`, `/empresas` e `/calendario`: rotas
+  renderizadas, sem alertas de erro e sem overflow horizontal.
+- Warning conhecido do Ant Design sobre `overlayClassName` no dropdown de
+  Empresas permanece nao bloqueante.
+
+Como apresentar esse commit:
+
+- "Centralizei os padroes visuais repetidos em componentes pequenos, o que deixa
+  as telas mais consistentes sem alterar regra fiscal."
+- "O Dashboard ficou mais objetivo para a demo: mostra rapidamente total,
+  atrasadas e pendentes."
+- "As tabelas ficaram com uma linguagem operacional unica entre alertas,
+  empresas e calendario."
+
 ### Pendente de hash - `feat: simplify calendar and alert filters`
 
 O que mudou:

@@ -3,10 +3,10 @@ import type { MenuProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { CalendarOutlined, MoreOutlined } from "@ant-design/icons";
 import type { AlertaDto } from "../../../api/types";
+import { operationalTableClassName } from "../../../shared/ui/styles";
 import { labelStatus, labelTipo } from "../../../shared/utils/domain";
 import { formatDate, urgencyText } from "../../../shared/utils/formatters";
-import { classNames } from "../../../shared/utils/classNames";
-import { pageSizeChangerProps, tablePaginationSizeClassName } from "../../../shared/utils/pagination";
+import { pageSizeChangerProps } from "../../../shared/utils/pagination";
 import {
   alertBadgeClassName,
   alertStatusClassNames,
@@ -23,32 +23,6 @@ interface AlertasListProps {
   onPageChange: (page: number, pageSize: number) => void;
   onOpenObrigacao: (alerta: AlertaDto) => void;
 }
-
-const tablePanelClassName = classNames(
-  "min-w-0 rounded-lg border border-[#e5edf5] bg-white px-6 pb-[18px] pt-0 shadow-[0_1px_2px_rgba(15,23,42,0.05)] max-[720px]:px-3",
-  "[&_.ant-table-thead>tr>th]:!bg-[#f8fafc] [&_.ant-table-thead>tr>th]:text-[11px]",
-  "[&_.ant-table-thead>tr>th]:font-semibold [&_.ant-table-thead>tr>th]:uppercase",
-  "[&_.ant-table-thead>tr>th]:tracking-normal [&_.ant-table-thead>tr>th]:text-[#334155]",
-  "[&_.ant-table-tbody>tr>td]:!py-2 [&_.ant-table-tbody>tr>td]:align-top [&_.ant-table-tbody>tr>td]:text-[14px]",
-  "[&_.ant-table-tbody>tr.alertas-row-odd>td]:bg-[#fbfdff] [&_.ant-table-tbody>tr:hover>td]:!bg-[#f1f7ff]",
-  "[&_.ant-table-pagination.ant-pagination]:mx-0 [&_.ant-table-pagination.ant-pagination]:mb-1",
-  "[&_.ant-table-pagination.ant-pagination]:mt-5 [&_.ant-table-pagination.ant-pagination]:flex",
-  "[&_.ant-table-pagination.ant-pagination]:w-full [&_.ant-table-pagination.ant-pagination]:justify-center",
-  "[&_.ant-table-pagination.ant-pagination]:gap-2 [&_.ant-pagination-total-text]:me-2",
-  "[&_.ant-pagination-total-text]:h-[38px] [&_.ant-pagination-total-text]:text-[13px]",
-  "[&_.ant-pagination-total-text]:font-semibold [&_.ant-pagination-total-text]:leading-[38px]",
-  "[&_.ant-pagination-total-text]:text-[#475569] [&_.ant-pagination-item]:h-[38px]",
-  "[&_.ant-pagination-item]:min-w-[38px] [&_.ant-pagination-item]:rounded-[10px]",
-  "[&_.ant-pagination-item]:leading-9 [&_.ant-pagination-prev]:h-[38px]",
-  "[&_.ant-pagination-prev]:min-w-[38px] [&_.ant-pagination-prev]:rounded-[10px]",
-  "[&_.ant-pagination-prev]:leading-9 [&_.ant-pagination-next]:h-[38px]",
-  "[&_.ant-pagination-next]:min-w-[38px] [&_.ant-pagination-next]:rounded-[10px]",
-  "[&_.ant-pagination-next]:leading-9 [&_.ant-pagination-prev_.ant-pagination-item-link]:rounded-[10px]",
-  "[&_.ant-pagination-next_.ant-pagination-item-link]:rounded-[10px]",
-  "[&_.ant-pagination-item-active]:!border-[#1677ff] [&_.ant-pagination-item-active]:!bg-[#1677ff]",
-  "[&_.ant-pagination-item-active_a]:font-extrabold [&_.ant-pagination-item-active_a]:!text-white",
-  tablePaginationSizeClassName
-);
 
 const dueDateClassNames = {
   ok: "text-[#047857]",
@@ -79,7 +53,7 @@ export function AlertasList({ alerts, currentPage, pageSize, onPageChange, onOpe
       dataIndex: "competencia",
       width: 128,
       render: (value) => (
-        <span className="inline-flex items-center whitespace-nowrap text-[13px] font-semibold text-[#1d4ed8]">
+        <span className="inline-flex items-center whitespace-nowrap text-[15px] font-semibold text-[#1d4ed8]">
           {value}
         </span>
       )
@@ -92,7 +66,7 @@ export function AlertasList({ alerts, currentPage, pageSize, onPageChange, onOpe
         const tone = urgencyTone(row.diasParaVencer);
 
         return (
-          <span className={`inline-flex items-center whitespace-nowrap text-[13px] font-semibold ${dueDateClassNames[tone]}`}>
+          <span className={`inline-flex items-center whitespace-nowrap text-[15px] font-semibold ${dueDateClassNames[tone]}`}>
             {formatDate(value)}
           </span>
         );
@@ -111,7 +85,7 @@ export function AlertasList({ alerts, currentPage, pageSize, onPageChange, onOpe
     {
       title: "Status",
       dataIndex: "status",
-      width: 140,
+      width: 150,
       render: (status) => (
         <span className={`${alertBadgeClassName} gap-2 ${alertStatusClassNames[statusTone(status)]}`}>
           <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
@@ -129,13 +103,13 @@ export function AlertasList({ alerts, currentPage, pageSize, onPageChange, onOpe
   ];
 
   return (
-    <section className={tablePanelClassName}>
+    <section className={operationalTableClassName}>
       <Table
         rowKey="obrigacaoId"
         size="small"
         columns={columns}
         dataSource={alerts}
-        rowClassName={(_, index) => (index % 2 === 0 ? "alertas-row-even" : "alertas-row-odd")}
+        rowClassName={(_, index) => (index % 2 === 0 ? "operational-row-even" : "operational-row-odd")}
         scroll={{ x: 1040 }}
         pagination={{
           current: currentPage,
@@ -172,7 +146,7 @@ function AlertActions({ item, onOpenObrigacao }: AlertActionsProps) {
     >
       <Button
         aria-label="Mais opções do alerta"
-        className="!h-7 !w-7 !rounded-md !p-0"
+        className="!h-9 !w-9 !rounded-md !p-0 hover:!bg-[#eff6ff] hover:!text-[#2563eb]"
         type="text"
         icon={<MoreOutlined className="rotate-90" />}
       />

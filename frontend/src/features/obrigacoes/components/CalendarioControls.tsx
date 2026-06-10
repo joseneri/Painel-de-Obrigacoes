@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, DatePicker, Select } from "antd";
-import { CalendarOutlined, CloseCircleOutlined, DownloadOutlined, FilePdfOutlined } from "@ant-design/icons";
+import { CalendarOutlined, DownloadOutlined, FilePdfOutlined } from "@ant-design/icons";
 import type { Dayjs } from "dayjs";
 
 type CalendarPanelMode = "time" | "date" | "week" | "month" | "quarter" | "year" | "decade";
@@ -20,7 +20,6 @@ interface CalendarioControlsProps {
   empresasLoading: boolean;
   canExport: boolean;
   onMonthChange: (value: Dayjs | null) => void;
-  onReset: () => void;
   onEmpresaChange: (empresaId?: string) => void;
   onStatusChange: (status?: number) => void;
   onExportCsv: () => void;
@@ -48,7 +47,7 @@ const selectClassName =
   "!h-12 !min-h-12 !min-w-0 w-full !rounded-lg !border-[#e5e7eb] !bg-white !shadow-none [&_.ant-select-content]:!flex [&_.ant-select-content]:!h-12 [&_.ant-select-content]:!min-h-12 [&_.ant-select-content]:!items-center [&_.ant-select-content]:!rounded-lg [&_.ant-select-content]:!border [&_.ant-select-content]:!border-[#e5e7eb] [&_.ant-select-content]:!bg-white [&_.ant-select-content]:!px-3 [&_.ant-select-selector]:!h-12 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-[#e5e7eb] [&_.ant-select-selector]:!bg-white [&_.ant-select-placeholder]:!font-semibold [&_.ant-select-placeholder]:!text-[#667085] [&_.ant-select-selection-item]:!font-semibold [&_.ant-select-selection-item]:!text-[#0f172a] [&_.ant-select-suffix]:!text-[#98a2b3]";
 const actionButtonClassName = "h-9 min-w-0 justify-center rounded-lg px-2 text-xs";
 const filterRowClassName =
-  "grid grid-cols-[232px_minmax(180px,1fr)_184px_216px] items-start gap-3.5 max-[1040px]:grid-cols-[minmax(170px,0.8fr)_minmax(180px,1fr)] max-[720px]:grid-cols-1";
+  "grid grid-cols-[264px_minmax(220px,1fr)_200px_144px] items-start gap-3.5 max-[1040px]:grid-cols-[minmax(190px,0.85fr)_minmax(220px,1fr)] max-[720px]:grid-cols-1";
 
 export function CalendarioControls({
   selectedMonth,
@@ -60,7 +59,6 @@ export function CalendarioControls({
   empresasLoading,
   canExport,
   onMonthChange,
-  onReset,
   onEmpresaChange,
   onStatusChange,
   onExportCsv,
@@ -70,7 +68,6 @@ export function CalendarioControls({
   const [calendarMode, setCalendarMode] = useState<CalendarPanelMode>("month");
   const [selectedDate, setSelectedDate] = useState(() => defaultDateForMonth(selectedMonth, today));
   const [pickerValue, setPickerValue] = useState(selectedDate);
-  const hasResetFilters = Boolean(empresaId) || status !== undefined;
 
   useEffect(() => {
     setSelectedDate((currentDate) =>
@@ -156,16 +153,8 @@ export function CalendarioControls({
           </div>
 
           <div className={fieldClassName}>
-            <span className={labelClassName}>Ações</span>
-            <div className="grid h-12 w-full grid-cols-[72px_64px_64px] items-center gap-2 max-[720px]:h-auto max-[720px]:grid-cols-1">
-              <Button
-                className={actionButtonClassName}
-                disabled={!hasResetFilters}
-                icon={<CloseCircleOutlined />}
-                onClick={onReset}
-              >
-                Limpar
-              </Button>
+            <span className={labelClassName}>Exportar</span>
+            <div className="grid h-12 w-full grid-cols-[64px_64px] items-center gap-2 max-[720px]:h-auto max-[720px]:grid-cols-1">
               <Button className={actionButtonClassName} icon={<FilePdfOutlined />} disabled={!canExport} onClick={onExportPdf}>
                 PDF
               </Button>

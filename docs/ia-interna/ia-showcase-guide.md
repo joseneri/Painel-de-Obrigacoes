@@ -216,6 +216,59 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
+### Pendente de hash - `feat: simplify calendar and alert filters`
+
+O que mudou:
+
+- O Calendario removeu o botao dedicado `Limpar` da barra de filtros.
+- O bloco de acoes do Calendario passou a se chamar `Exportar`, mantendo apenas
+  `PDF` e `CSV`.
+- A grade de filtros do Calendario redistribuiu o espaco livre para
+  Competencia, Empresas e Status.
+- O Painel de Alertas removeu o botao `Limpar filtros` e deixou a barra apenas
+  com Empresa e Obrigacao, com campos mais largos.
+
+Decisoes tecnicas:
+
+- A limpeza individual continua disponivel pelo `allowClear` dos selects, sem
+  criar novo estado local ou contrato HTTP.
+- A mudanca ficou restrita ao frontend e nao altera DTOs, endpoints, Domain ou
+  engine fiscal.
+- Props e handlers que so existiam para os botoes removidos tambem foram
+  removidos para manter os componentes enxutos.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, registros recentes em `tmp/` e docs internas
+  antes do commit.
+- Localizou os componentes de filtros em Calendario e Painel de Alertas.
+- Validou build, diff, limite de linhas e smoke visual local no Browser.
+
+Correcao e decisao humana:
+
+- O usuario pediu explicitamente a remocao dos botoes e autorizou `commita tudo`.
+- O escopo foi mantido como ajuste visual/operacional, sem refatoracao de
+  regras fiscais ou backend.
+
+Validacoes executadas:
+
+- `npm run build` em `frontend/`: passou.
+- `git diff --check`: sem erro bloqueante, apenas avisos LF/CRLF esperados no
+  Windows.
+- Checagem de tamanho dos quatro arquivos tocados: todos abaixo de 250 linhas.
+- Browser local em `/calendario`: `Exportar`, `PDF` e `CSV` visiveis; `Limpar`
+  ausente.
+- Browser local em `/alertas`: filtros `Empresa` e `Obrigacao` visiveis; botao
+  `Limpar filtros` ausente.
+
+Como apresentar esse commit:
+
+- "As barras de filtros ficaram mais limpas e com mais area para os campos
+  realmente usados."
+- "A exportacao do Calendario ficou semanticamente separada dos filtros."
+- "O frontend continua apenas consumindo a API; a regra fiscal nao saiu do
+  backend."
+
 ### Pendente de hash - `feat: refine frontend operational layout`
 
 O que mudou:

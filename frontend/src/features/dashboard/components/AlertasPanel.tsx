@@ -54,7 +54,6 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
   const safePage = Math.min(currentPage, maxPage);
   const hasAlerts = overdueAlerts.length > 0 || upcomingAlerts.length > 0;
   const hasFilteredAlerts = filteredAlerts.length > 0;
-  const hasOperationalFilters = Boolean(empresaId || tipoKey);
 
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, maxPage));
@@ -73,12 +72,6 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
     }
 
     setCurrentPage(nextPage);
-  }
-
-  function handleResetOperationalFilters() {
-    setEmpresaId(undefined);
-    setTipoKey(undefined);
-    setCurrentPage(1);
   }
 
   return (
@@ -110,7 +103,6 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
           tipoKey={tipoKey}
           empresaOptions={empresaOptions}
           tipoOptions={tipoOptions}
-          hasFilters={hasOperationalFilters}
           onEmpresaChange={(value) => {
             setEmpresaId(value);
             setCurrentPage(1);
@@ -119,7 +111,6 @@ export function AlertasPanel({ data, loading, onOpenObrigacao }: AlertasPanelPro
             setTipoKey(value);
             setCurrentPage(1);
           }}
-          onReset={handleResetOperationalFilters}
         />
 
         {loading ? (

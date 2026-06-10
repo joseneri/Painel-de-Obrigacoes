@@ -82,10 +82,6 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
     }
   }
 
-  function handleResetFilters() {
-    onFiltersChange({ empresaId: undefined, status: undefined });
-  }
-
   return (
     <div className="grid gap-5">
       {error && (
@@ -148,7 +144,6 @@ export function CalendarioPage({ filters, onFiltersChange }: CalendarioPageProps
           canExport={Boolean(obrigacoes.length)}
           today={today}
           onMonthChange={handleMonthChange}
-          onReset={handleResetFilters}
           onEmpresaChange={(empresaId) => onFiltersChange({ empresaId })}
           onStatusChange={(status) => onFiltersChange({ status })}
           onExportCsv={() => exportObrigacoesCsv(obrigacoes)}

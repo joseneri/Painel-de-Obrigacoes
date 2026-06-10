@@ -81,7 +81,11 @@ app.MapGroup("/api/empresas").WithTags("Empresas").MapEmpresasEndpoints();
 app.MapGroup("/api/obrigacoes").WithTags("Obrigações").MapObrigacoesEndpoints();
 app.MapGroup("/api/entregas").WithTags("Entregas").MapEntregasEndpoints();
 
-await ApplyMigrationsAndSeedAsync(app);
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await ApplyMigrationsAndSeedAsync(app);
+}
+
 await app.RunAsync();
 
 static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
@@ -96,4 +100,8 @@ static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
     await feriadoSync.SyncAsync(CancellationToken.None);
     await seeder.SeedAsync();
     await ensureObrigacoes.EnsureForTodasEmpresasAsync(CancellationToken.None);
+}
+
+public partial class Program
+{
 }

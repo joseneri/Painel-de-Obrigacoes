@@ -217,7 +217,70 @@ Se perguntarem "por que nao Next.js?":
 
 ## Diário Por Commit
 
-### Pendente de hash - `feat: add company delivery history`
+### Pendente de hash - `test: add api integration coverage`
+
+O que mudou:
+
+- Criado projeto `backend/tests/Api.Tests` e incluido na solution.
+- Adicionados testes de integracao com `WebApplicationFactory`, xUnit,
+  FluentAssertions e SQLite in-memory.
+- Cobertos os fluxos `GET /health`, `POST /api/empresas`,
+  `GET /api/obrigacoes?empresaId=...`, `POST /api/entregas` e erro de
+  validacao com Problem Details.
+- `Program.cs` passou a expor `public partial class Program` para o factory de
+  testes.
+- Startup externo de migrations, seed e sincronizacao BrasilAPI e pulado apenas
+  no ambiente `Testing`.
+- README foi alinhado para citar os testes de integracao HTTP da API.
+
+Decisoes tecnicas:
+
+- A suite usa `WebApplicationFactory` para exercitar pipeline HTTP, DI,
+  serializacao, status code e Problem Details sem precisar subir servidor real.
+- SQLite in-memory foi escolhido como banco relacional isolado para manter os
+  testes portaveis e sem Docker daemon.
+- O provider Npgsql continua sendo usado nos ambientes normais; o factory remove
+  as configuracoes do DbContext e registra SQLite apenas em `Testing`.
+- Os asserts de Problem Details validam status, content type e chaves principais
+  de erro, evitando acoplamento excessivo a texto completo de mensagem.
+
+Como a IA ajudou:
+
+- Releu protocolo, arquitetura, guia de IA, resumo de implementacao e registros
+  em `tmp/` antes de implementar e commitar.
+- Pesquisou documentacao oficial da Microsoft sobre testes de integracao,
+  Minimal APIs, `WebApplicationFactory`, EF Core testing e Problem Details.
+- Identificou o conflito inicial entre providers EF Core Npgsql e SQLite e
+  corrigiu a configuracao do host de teste.
+
+Correcao e decisao humana:
+
+- O usuario aprovou implementar os testes de integracao como o "numero 2" dos
+  diferenciais do case.
+- Depois pediu `commita tudo`, autorizando stage e commit do worktree atual.
+- A decisao foi manter Testcontainers fora do escopo para nao exigir Docker nos
+  testes automatizados.
+
+Validacoes executadas:
+
+- `dotnet test backend/PainelObrigacoes.sln --configuration Release`: 60 testes
+  passaram.
+- Checagem de tamanho em `backend/src` e `backend/tests`: nenhum `.cs` acima de
+  250 linhas.
+- Checagem de imports proibidos no Domain em arquivos `.cs`: sem ocorrencias.
+- `git diff --check`: sem erro bloqueante; apenas avisos LF/CRLF esperados no
+  Windows.
+
+Como apresentar esse commit:
+
+- "Agora ha testes de integracao reais passando pela API em memoria, nao apenas
+  testes de service."
+- "Eles validam endpoint, DI, JSON, status code, Problem Details e fluxo real de
+  cadastro, geracao de obrigacoes e entrega."
+- "Usei SQLite in-memory para manter a suite rapida e portavel; PostgreSQL segue
+  sendo validado no fluxo Docker/Compose."
+
+### `3f7a1f4` - `feat: add company delivery history`
 
 O que mudou:
 

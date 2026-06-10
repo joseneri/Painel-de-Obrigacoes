@@ -45,12 +45,17 @@ public sealed class FeriadoNacionalRepository(AppDbContext dbContext) : IFeriado
             return;
         }
 
-        var datas = feriados.Select(f => f.Data).ToArray();
+        var feriadosUnicos = feriados
+            .GroupBy(f => f.Data)
+            .Select(grupo => grupo.Last())
+            .ToArray();
+
+        var datas = feriadosUnicos.Select(f => f.Data).ToArray();
         var existentes = await dbContext.FeriadosNacionais
             .Where(f => datas.Contains(f.Data))
             .ToDictionaryAsync(f => f.Data, cancellationToken);
 
-        foreach (var feriado in feriados)
+        foreach (var feriado in feriadosUnicos)
         {
             if (existentes.TryGetValue(feriado.Data, out var existente))
             {
